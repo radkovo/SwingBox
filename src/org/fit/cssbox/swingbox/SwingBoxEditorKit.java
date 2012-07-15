@@ -1,3 +1,4 @@
+
 package org.fit.cssbox.swingbox;
 
 import java.awt.Container;
@@ -37,198 +38,209 @@ import org.xml.sax.InputSource;
 
 /**
  * This is custom implementation of EditoKit for (X)HTML with use of CSSBox.
- *
+ * 
  * @author Peter Bielik
  * @version 1.0
  * @since 1.0 - 28.9.2010
  */
-public class SwingBoxEditorKit extends  StyledEditorKit{
+public class SwingBoxEditorKit extends StyledEditorKit
+{
     private static final long serialVersionUID = -2774578978116020429L;
-    private static final Pattern charsetPattern = Pattern.compile("charset\\s*=[\\s'\"]*([\\-\\.\\:_0-9a-zA-Z]+)[\\s'\\\",;]*");
+    private static final Pattern charsetPattern = Pattern
+            .compile("charset\\s*=[\\s'\"]*([\\-\\.\\:_0-9a-zA-Z]+)[\\s'\\\",;]*");
     private CSSBoxAnalyzer cbanalyzer;
     private ViewFactory vfactory;
     private JEditorPane component;
     private MouseController mcontroller;
 
-
-
     /**
      * Instantiates a new swing box editor kit.
      */
-    public SwingBoxEditorKit() {
-	super();
-	String tmp;
-	tmp = System.getProperty(Constants.DEFAULT_ANALYZER_PROPERTY, Constants.PROPERTY_NOT_SET);
-	if (tmp == Constants.PROPERTY_NOT_SET) {
-	    //sets property for default analyzer, the fully qualified classname
-	    //which is used to instantiate this class by reflection
-	    System.setProperty(Constants.DEFAULT_ANALYZER_PROPERTY, "org.fit.cssbox.swingbox.util.DefaultAnalyzer");
-	}
+    public SwingBoxEditorKit()
+    {
+        super();
+        String tmp;
+        tmp = System.getProperty(Constants.DEFAULT_ANALYZER_PROPERTY,
+                Constants.PROPERTY_NOT_SET);
+        if (tmp == Constants.PROPERTY_NOT_SET)
+        {
+            // sets property for default analyzer, the fully qualified classname
+            // which is used to instantiate this class by reflection
+            System.setProperty(Constants.DEFAULT_ANALYZER_PROPERTY,
+                    "org.fit.cssbox.swingbox.util.DefaultAnalyzer");
+        }
 
-	tmp = System.getProperty(Constants.DOCUMENT_ASYNCHRONOUS_LOAD_PRIORITY_PROPERTY, Constants.PROPERTY_NOT_SET);
-	if (tmp == Constants.PROPERTY_NOT_SET) {
-	    //property not set, load synchronously !
-	    System.setProperty(Constants.DOCUMENT_ASYNCHRONOUS_LOAD_PRIORITY_PROPERTY, "-1");
-	}
+        tmp = System.getProperty(
+                Constants.DOCUMENT_ASYNCHRONOUS_LOAD_PRIORITY_PROPERTY,
+                Constants.PROPERTY_NOT_SET);
+        if (tmp == Constants.PROPERTY_NOT_SET)
+        {
+            // property not set, load synchronously !
+            System.setProperty(
+                    Constants.DOCUMENT_ASYNCHRONOUS_LOAD_PRIORITY_PROPERTY,
+                    "-1");
+        }
 
-	mcontroller = new MouseController();
+        mcontroller = new MouseController();
     }
 
     /**
      * Instantiates a new swing box editor kit with CSSBoxAnalyzer set.
-     *
+     * 
      * @param cba
      *            the CSSBoxAnalyzer to be set
      */
-    public SwingBoxEditorKit(CSSBoxAnalyzer cba) {
-	this();
-	this.cbanalyzer = cba;
+    public SwingBoxEditorKit(CSSBoxAnalyzer cba)
+    {
+        this();
+        this.cbanalyzer = cba;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void install(JEditorPane c) {
-	super.install(c);
-	c.addMouseListener(mcontroller);
-	c.addMouseMotionListener(mcontroller);
-	component = c;
+    public void install(JEditorPane c)
+    {
+        super.install(c);
+        c.addMouseListener(mcontroller);
+        c.addMouseMotionListener(mcontroller);
+        component = c;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void deinstall(JEditorPane c) {
-	super.deinstall(c);
-	c.removeMouseListener(mcontroller);
-	c.removeMouseMotionListener(mcontroller);
-	component = null;
+    public void deinstall(JEditorPane c)
+    {
+        super.deinstall(c);
+        c.removeMouseListener(mcontroller);
+        c.removeMouseMotionListener(mcontroller);
+        component = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Document createDefaultDocument() {
-	SwingBoxDocument doc = new SwingBoxDocument();;
-	//set asynchronous load priority. If set to -1, load synchronously,
-	//otherwise load asynchronously, with given priority :)
-	//this value is stored as internal property under
-	//AbstractDocument.AsyncLoadPriority key.
+    public Document createDefaultDocument()
+    {
+        SwingBoxDocument doc = new SwingBoxDocument();
 
-	int priority = -1;// -1 == synchronously
-	String tmp = System.getProperty(Constants.DOCUMENT_ASYNCHRONOUS_LOAD_PRIORITY_PROPERTY, Constants.PROPERTY_NOT_SET);
-	if (tmp != Constants.PROPERTY_NOT_SET) {
-	    try {
-		priority = Integer.parseInt(tmp);
-	    } catch (Exception ignored) {
-	    }
-	}
+        // set asynchronous load priority. If set to -1, load synchronously,
+        // otherwise load asynchronously, with given priority :)
+        // this value is stored as internal property under
+        // AbstractDocument.AsyncLoadPriority key.
 
-	doc.setAsynchronousLoadPriority(priority);
+        int priority = -1;// -1 == synchronously
+        String tmp = System.getProperty(
+                Constants.DOCUMENT_ASYNCHRONOUS_LOAD_PRIORITY_PROPERTY,
+                Constants.PROPERTY_NOT_SET);
+        if (tmp != Constants.PROPERTY_NOT_SET)
+        {
+            try
+            {
+                priority = Integer.parseInt(tmp);
+            } catch (Exception ignored)
+            {
+            }
+        }
 
-	return doc;
+        doc.setAsynchronousLoadPriority(priority);
+
+        return doc;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public ViewFactory getViewFactory() {
-	if (vfactory == null ) {
-	    vfactory = new SwingBoxViewFactory();
-	}
-	return vfactory;
+    public ViewFactory getViewFactory()
+    {
+        if (vfactory == null)
+        {
+            vfactory = new SwingBoxViewFactory();
+        }
+        return vfactory;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String getContentType() {
-	return "text/html";
+    public String getContentType()
+    {
+        return "text/html";
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Caret createCaret() {
-	return null;
+    public Caret createCaret()
+    {
+        return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void write(OutputStream out, Document doc, int pos, int len)
-    throws IOException, BadLocationException {
-	// this method closes OutputStream
-	if (doc instanceof SwingBoxDocument) {
-	    Writer tmpOut = new BufferedWriter(new OutputStreamWriter(out, Charset.defaultCharset()), 8 * 1024);
+            throws IOException, BadLocationException
+    {
+        // this method closes OutputStream
+        if (doc instanceof SwingBoxDocument)
+        {
+            Writer tmpOut = new BufferedWriter(new OutputStreamWriter(out,
+                    Charset.defaultCharset()), 8 * 1024);
 
-	    writeImpl(tmpOut, (SwingBoxDocument) doc, pos, len);
+            writeImpl(tmpOut, (SwingBoxDocument) doc, pos, len);
 
-	    tmpOut.flush();
-	    tmpOut.close();
-	} else {
-	    super.write(out, doc, pos, len);
-	}
+            tmpOut.flush();
+            tmpOut.close();
+        }
+        else
+        {
+            super.write(out, doc, pos, len);
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void write(Writer out, Document doc, int pos, int len)
-    throws IOException, BadLocationException {
-	// this method closes OutputStream
-	if (doc instanceof SwingBoxDocument) {
-	    Writer tmpOut = new BufferedWriter(out, 8 * 1024);
+            throws IOException, BadLocationException
+    {
+        // this method closes OutputStream
+        if (doc instanceof SwingBoxDocument)
+        {
+            Writer tmpOut = new BufferedWriter(out, 8 * 1024);
 
-	    writeImpl(tmpOut, (SwingBoxDocument) doc, pos, len);
+            writeImpl(tmpOut, (SwingBoxDocument) doc, pos, len);
 
-	    tmpOut.flush();
-	    tmpOut.close();
-	} else {
-	    super.write(out, doc, pos, len);
-	}
+            tmpOut.flush();
+            tmpOut.close();
+        }
+        else
+        {
+            super.write(out, doc, pos, len);
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void read(InputStream in, Document doc, int pos) throws IOException,
-    BadLocationException {
+            BadLocationException
+    {
 
-	if (doc instanceof org.fit.cssbox.swingbox.SwingBoxDocument) {
-	    readImpl(new InputSource(in), (org.fit.cssbox.swingbox.SwingBoxDocument) doc, pos);
-	} else {
-	    super.read(in, doc, pos);
-	}
+        if (doc instanceof org.fit.cssbox.swingbox.SwingBoxDocument)
+        {
+            readImpl(new InputSource(in),
+                    (org.fit.cssbox.swingbox.SwingBoxDocument) doc, pos);
+        }
+        else
+        {
+            super.read(in, doc, pos);
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void read(Reader in, Document doc, int pos) throws IOException,
-    BadLocationException {
+            BadLocationException
+    {
 
-	if (doc instanceof org.fit.cssbox.swingbox.SwingBoxDocument) {
-	    readImpl(new InputSource(in), (org.fit.cssbox.swingbox.SwingBoxDocument) doc, pos);
-	} else {
-	    super.read(in, doc, pos);
-	}
+        if (doc instanceof org.fit.cssbox.swingbox.SwingBoxDocument)
+        {
+            readImpl(new InputSource(in),
+                    (org.fit.cssbox.swingbox.SwingBoxDocument) doc, pos);
+        }
+        else
+        {
+            super.read(in, doc, pos);
+        }
     }
 
     /**
      * Updates layout, using new dimensions.
-     *
+     * 
      * @param doc
      *            the document
      * @param root
@@ -238,185 +250,218 @@ public class SwingBoxEditorKit extends  StyledEditorKit{
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    public void update(SwingBoxDocument doc, ElementBox root, Dimension dim) throws IOException {
-	ContentReader rdr = new ContentReader();
-	List<ElementSpec> elements = rdr.update(root, dim, getCSSBoxAnalyzer());
-	ElementSpec elementsArray[] = elements.toArray(new ElementSpec[0]);
-	doc.create(elementsArray);
+    public void update(SwingBoxDocument doc, ElementBox root, Dimension dim)
+            throws IOException
+    {
+        ContentReader rdr = new ContentReader();
+        List<ElementSpec> elements = rdr.update(root, dim, getCSSBoxAnalyzer());
+        ElementSpec elementsArray[] = elements.toArray(new ElementSpec[0]);
+        doc.create(elementsArray);
     }
 
     /**
      * Allows to set custom CSSBoxAnalyzer
-     *
+     * 
      * @param cba
      *            the instance of CSSBoxAnalyzer
      * @see CSSBoxAnalyzer
      */
-    public void setCSSBoxAnalyzer(CSSBoxAnalyzer cba) {
-	this.cbanalyzer = cba;
+    public void setCSSBoxAnalyzer(CSSBoxAnalyzer cba)
+    {
+        this.cbanalyzer = cba;
     }
-
 
     /**
      * Gets current instance of {@link CSSBoxAnalyzer}
-     *
+     * 
      * @return the instance of {@link CSSBoxAnalyzer}
      */
-    public CSSBoxAnalyzer getCSSBoxAnalyzer() {
-	if (cbanalyzer == null ) {
-	    cbanalyzer = getDefaultAnalyzer();
-	}
+    public CSSBoxAnalyzer getCSSBoxAnalyzer()
+    {
+        if (cbanalyzer == null)
+        {
+            cbanalyzer = getDefaultAnalyzer();
+        }
 
-	return cbanalyzer;
+        return cbanalyzer;
     }
 
     @SuppressWarnings("rawtypes")
-    protected CSSBoxAnalyzer getDefaultAnalyzer() {
-	// possible to provide custom implementation
-	CSSBoxAnalyzer cba;
-	String cname  = System.getProperty(Constants.DEFAULT_ANALYZER_PROPERTY, Constants.PROPERTY_NOT_SET);
+    protected CSSBoxAnalyzer getDefaultAnalyzer()
+    {
+        // possible to provide custom implementation
+        CSSBoxAnalyzer cba;
+        String cname = System.getProperty(Constants.DEFAULT_ANALYZER_PROPERTY,
+                Constants.PROPERTY_NOT_SET);
 
-	if (Constants.PROPERTY_NOT_SET == cname) {
-	    cba = null;
-	} else {
-	    try {
-		Class c;
-		ClassLoader loader = getClass().getClassLoader();
-		if (loader != null) {
-		    c = loader.loadClass(cname);
-		} else {
-		    c = Class.forName(cname);
-		}
+        if (Constants.PROPERTY_NOT_SET == cname)
+        {
+            cba = null;
+        }
+        else
+        {
+            try
+            {
+                Class c;
+                ClassLoader loader = getClass().getClassLoader();
+                if (loader != null)
+                {
+                    c = loader.loadClass(cname);
+                }
+                else
+                {
+                    c = Class.forName(cname);
+                }
 
-		Object o = c.newInstance();
-		if (o instanceof CSSBoxAnalyzer) {
-		    cba = (CSSBoxAnalyzer) o;
-		} else {
-		    cba = null;
-		}
-	    } catch (Exception e) {
-		cba = null;
-	    }
-	}
+                Object o = c.newInstance();
+                if (o instanceof CSSBoxAnalyzer)
+                {
+                    cba = (CSSBoxAnalyzer) o;
+                }
+                else
+                {
+                    cba = null;
+                }
+            } catch (Exception e)
+            {
+                cba = null;
+            }
+        }
 
-	return cba;
+        return cba;
     }
 
+    private void readImpl(InputSource is, SwingBoxDocument doc, int pos)
+            throws IOException, BadLocationException
+    {
 
-    private void readImpl(InputSource is, SwingBoxDocument doc, int pos)  throws IOException,
-    BadLocationException {
+        if (component == null)
+            throw new IllegalStateException(
+                    "Component is null, editor kit is probably deinstalled from a JEditorPane.");
+        if (pos > doc.getLength() || pos < 0)
+        {
+            BadLocationException e = new BadLocationException(
+                    "Invalid location", pos);
+            readError(null, e);
+            throw e;
+        }
 
-	if (component == null)
-	    throw new IllegalStateException("Component is null, editor kit is probably deinstalled from a JEditorPane.");
-	if (pos > doc.getLength() || pos < 0) {
-	    BadLocationException e = new BadLocationException("Invalid location", pos);
-	    readError(null, e);
-	    throw e;
-	}
+        ContentReader rdr = new ContentReader();
+        URL url = (URL) doc.getProperty(Document.StreamDescriptionProperty);
+        CSSBoxAnalyzer analyzer = getCSSBoxAnalyzer();
 
+        Container parent = component.getParent();
+        Dimension dim;
+        if (parent != null && parent instanceof JViewport)
+        {
+            dim = ((JViewport) parent).getExtentSize();
+        }
+        else
+        {
+            dim = component.getBounds().getSize();
+        }
 
-	ContentReader rdr = new ContentReader();
-	URL url = (URL) doc.getProperty(Document.StreamDescriptionProperty);
-	CSSBoxAnalyzer analyzer = getCSSBoxAnalyzer();
+        if (dim.width <= 10)
+        {
+            // component might not be initialized, use screen size :)
+            Dimension tmp = Toolkit.getDefaultToolkit().getScreenSize();
+            dim.setSize(tmp.width / 2.5, tmp.height / 2.5);
+        }
 
+        // long time = System.currentTimeMillis();
 
-	Container parent = component.getParent();
-	Dimension dim;
-	if (parent != null && parent instanceof JViewport) {
-	    dim = ((JViewport) parent).getExtentSize();
-	} else {
-	    dim = component.getBounds().getSize();
-	}
+        List<ElementSpec> elements;
+        try
+        {
+            // TODO zadat encoding
+            Charset charset = null;
+            // charset\s*=[\s'"]*([\-_a-zA-Z0-9]+)[\s'",;]*
+            Object obj = doc.getProperty("Content-Type");
 
-	if (dim.width <= 10) {
-	    //component might not be initialized, use screen size :)
-	    Dimension tmp = Toolkit.getDefaultToolkit().getScreenSize();
-	    dim.setSize(tmp.width/2.5, tmp.height/2.5);
-	}
+            if (obj != null)
+            {
+                String ct;
 
-	//long time = System.currentTimeMillis();
+                if (obj instanceof List)
+                    ct = (String) ((List) obj).get(0);
+                else
+                    ct = obj.toString();
 
-	List<ElementSpec> elements;
-	try {
-	    //TODO zadat encoding
-	    Charset charset = null;
-	    //charset\s*=[\s'"]*([\-_a-zA-Z0-9]+)[\s'",;]*
-	    Object obj = doc.getProperty("Content-Type");
+                Matcher charsetMatcher = charsetPattern.matcher(ct);
+                if (charsetMatcher.find())
+                {
+                    try
+                    {
+                        charset = Charset.forName(charsetMatcher.group(1));
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace(); // XXX removethis line !!!
+                        charset = null;
+                    }
+                }
+            }
 
-	    if (obj != null) {
-		String ct;
+            elements = rdr.read(is, url, analyzer, dim, charset);
+        } catch (IOException e)
+        {
+            readError(url, e);
+            throw e;
+        }
 
-		if (obj instanceof List)
-		    ct = (String) ((List)obj).get(0);
-		else
-		    ct = obj.toString();
+        // System.out.println(System.currentTimeMillis() - time + " ms");
 
-		Matcher charsetMatcher = charsetPattern.matcher(ct);
-		if (charsetMatcher.find()) {
-		    try {
-			charset = Charset.forName(charsetMatcher.group(1));
-		    } catch (Exception e) {
-			e.printStackTrace(); //XXX removethis line !!!
-			charset = null;
-		    }
-		}
-	    }
+        ElementSpec elementsArray[] = elements.toArray(new ElementSpec[0]);
+        doc.create(elementsArray);
+        // component.revalidate();
+        // component.repaint();
 
+        // System.out.println(System.currentTimeMillis() - time + " ms");
 
-	    elements = rdr.read(is, url, analyzer, dim, charset);
-	} catch (IOException e) {
-	    readError(url, e);
-	    throw e;
-	}
+        // Dictionary<Object, Object> dic = doc.getDocumentProperties();
+        // Enumeration<Object> en = dic.keys();
+        // while( en.hasMoreElements()) {
+        // Object k = en.nextElement();
+        // System.out.println(k + "  " + dic.get(k));
+        // }
 
-	//System.out.println(System.currentTimeMillis() - time + " ms");
-
-	ElementSpec elementsArray[] = elements.toArray(new ElementSpec[0]);
-	doc.create(elementsArray);
-	//	component.revalidate();
-	//	component.repaint();
-
-	//System.out.println(System.currentTimeMillis() - time + " ms");
-
-
-	//	Dictionary<Object, Object> dic = doc.getDocumentProperties();
-	//	Enumeration<Object> en = dic.keys();
-	//	while( en.hasMoreElements()) {
-	//	    Object k = en.nextElement();
-	//	    System.out.println(k + "  " + dic.get(k));
-	//	}
-
-	readFinish(url);
+        readFinish(url);
 
     }
 
-    private void readError(URL url, Exception e) {
-	if (component instanceof BrowserPane) {
-	    ((BrowserPane)component).fireGeneralEvent(new GeneralEvent(this, EventType.page_loading_error, url, e));
-	    //NodeList nodes = analyzer.getDocument().getElementsByTagName("meta");
-	}
+    private void readError(URL url, Exception e)
+    {
+        if (component instanceof BrowserPane)
+        {
+            ((BrowserPane) component).fireGeneralEvent(new GeneralEvent(this,
+                    EventType.page_loading_error, url, e));
+            // NodeList nodes =
+            // analyzer.getDocument().getElementsByTagName("meta");
+        }
     }
 
-
-    private void readFinish(URL url) {
-	if (component instanceof BrowserPane) {
-	    ((BrowserPane)component).fireGeneralEvent(new GeneralEvent(this, EventType.page_loading_end, url, null));
-	    //NodeList nodes = analyzer.getDocument().getElementsByTagName("meta");
-	}
+    private void readFinish(URL url)
+    {
+        if (component instanceof BrowserPane)
+        {
+            ((BrowserPane) component).fireGeneralEvent(new GeneralEvent(this,
+                    EventType.page_loading_end, url, null));
+            // NodeList nodes =
+            // analyzer.getDocument().getElementsByTagName("meta");
+        }
     }
 
+    private void writeImpl(Writer out, SwingBoxDocument doc, int pos, int len)
+            throws BadLocationException, IOException
+    {
 
-    private void writeImpl(Writer out, SwingBoxDocument doc, int pos, int len) throws BadLocationException, IOException {
+        if (pos > doc.getLength() || pos < 0) { throw new BadLocationException(
+                "Invalid location", pos); }
+        if (len < 0) len = 0;
 
-	if (pos > doc.getLength() || pos < 0) {
-	    throw new BadLocationException("Invalid location", pos);
-	}
-	if (len < 0 ) len = 0;
-
-	ContentWriter wrt = new ContentWriter();
-	StringBuilder sb = wrt.write(getCSSBoxAnalyzer().getDocument());
-	out.write(sb.toString());
-	out.flush();
+        ContentWriter wrt = new ContentWriter();
+        StringBuilder sb = wrt.write(getCSSBoxAnalyzer().getDocument());
+        out.write(sb.toString());
+        out.flush();
 
     }
 
