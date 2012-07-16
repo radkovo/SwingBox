@@ -58,7 +58,7 @@ public class DemoBrowser extends JFrame
     BrowserPane swingbox = new BrowserPane();
     JPanel cssbox = new JPanel();
     JEditorPane editorkit = new JEditorPane();
-    JTextField txt = new JTextField("http://www.phoronix.com", 60);
+    JTextField txt = new JTextField("http://www.idnes.cz", 60);
     JScrollPane contentScroll = new JScrollPane();
 
     /**
@@ -145,16 +145,14 @@ public class DemoBrowser extends JFrame
         });
 
         contentScroll.setViewportView(cssbox);
-        contentScroll
-                .addComponentListener(new java.awt.event.ComponentAdapter()
+        contentScroll.addComponentListener(new java.awt.event.ComponentAdapter()
                 {
                     @Override
                     public void componentResized(java.awt.event.ComponentEvent e)
                     {
                         if (cssbox != null && cssbox instanceof BrowserCanvas)
                         {
-                            ((BrowserCanvas) cssbox).createLayout(contentScroll
-                                    .getSize());// vytvaranie
+                            ((BrowserCanvas) cssbox).createLayout(contentScroll.getSize());// vytvaranie
                             contentScroll.repaint();
 
                         }
@@ -163,7 +161,7 @@ public class DemoBrowser extends JFrame
 
         setResizable(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(800, 600));
+        setPreferredSize(new Dimension(1200, 1000));
         setTitle("Demo");
         pack();
         setLocationRelativeTo(null);
@@ -204,18 +202,12 @@ public class DemoBrowser extends JFrame
         {
             URL url = new URL(adr);
             URLConnection con = url.openConnection();
-            con.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (compatible; BoxBrowserTest/2.x; Linux) CSSBox/2.x (like Gecko)");
+            con.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; BoxBrowserTest/4.x; Linux) CSSBox/4.x (like Gecko)");
             is = con.getInputStream();
 
             DOMSource parser = new DOMSource(is);
-            parser.setContentType(con.getHeaderField("Content-Type")); // use
-                                                                       // the
-                                                                       // default
-                                                                       // encoding
-                                                                       // provided
-                                                                       // via
-                                                                       // HTTP
+            parser.setContentType(con.getHeaderField("Content-Type")); // use the default encoding provided via HTTP
+            
             Document doc = parser.parse();
 
             DOMAnalyzer da = new DOMAnalyzer(doc, url);
