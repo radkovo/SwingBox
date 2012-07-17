@@ -141,7 +141,7 @@ public class TextBoxView extends View implements CSSBoxView
                     // share elemntAttributes
                     anchor.setActive(true);
                     anchor.getProperties().putAll(parentAnchor.getProperties());
-                    System.err.println("## Parent is Anchor : " +tmp+ " me: " + this /*+ " attr: "+ elementAttributes*/);
+                    System.err.println("## Parent is Anchor : " +tmp+ " me: " + this + " attr: "+ anchor.getProperties());
                 }
             }
         }
@@ -314,7 +314,7 @@ public class TextBoxView extends View implements CSSBoxView
             return "".equals(val) ? null : "<html>" + val + "</html>";
         }
 
-        return null;
+        return "NotLink: " + this;
     }
 
     @Override
