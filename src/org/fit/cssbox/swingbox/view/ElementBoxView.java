@@ -23,6 +23,7 @@ import org.fit.cssbox.layout.Box;
 import org.fit.cssbox.layout.ElementBox;
 import org.fit.cssbox.swingbox.util.Anchor;
 import org.fit.cssbox.swingbox.util.Constants;
+import org.w3c.dom.Node;
 
 /**
  * @author Peter Bielik
@@ -74,8 +75,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         }
         else
         {
-            throw new IllegalArgumentException(
-                    "Box reference is null or not an instance of ElementBox");
+            throw new IllegalArgumentException("Box reference is null or not an instance of ElementBox");
         }
 
         obj = tmpAttr.getAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE);
@@ -85,8 +85,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         }
         else
         {
-            throw new IllegalArgumentException(
-                    "Anchor reference is null or not an instance of Anchor");
+            throw new IllegalArgumentException("Anchor reference is null or not an instance of Anchor");
         }
 
         oldDimension = new Dimension();
@@ -97,37 +96,44 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
 
     private void loadElementAttributes()
     {
-        // http://www.w3.org/TR/html401/struct/links.html
-        // http://www.w3schools.com/TAGS/tag_a.asp
-        // http://www.w3schools.com/HTML/html_links.asp
-        org.w3c.dom.Element elem = box.getElement();
-        anchor.setActivity("a".equalsIgnoreCase(elem.getTagName().trim()));
+        org.w3c.dom.Element elem = findAnchorElement(box.getElement());
         Map<String, String> elementAttributes = anchor.getProperties();
-        String tmp;
 
-        if (anchor.isActive())
+        if (elem != null)
         {
-            elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_HREF,
-                    elem.getAttribute("href"));
-            elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_NAME,
-                    elem.getAttribute("name"));
-            elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_TITLE,
-                    elem.getAttribute("title"));
-            tmp = elem.getAttribute("target");
-            if ("".equals(tmp))
+            anchor.setActive(true);
+            elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_HREF, elem.getAttribute("href"));
+            elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_NAME, elem.getAttribute("name"));
+            elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_TITLE, elem.getAttribute("title"));
+            String target = elem.getAttribute("target");
+            if ("".equals(target))
             {
-                tmp = "_self";
+                target = "_self";
             }
-            elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_TARGET, tmp);
+            elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_TARGET, target);
             // System.err.println("## Anchor at : " + this + " attr: "+
             // elementAttributes);
-
         }
         else
         {
+            anchor.setActive(false);
             elementAttributes.clear();
         }
-
+    }
+    
+    /**
+     * Examines the given element and all its parent elements in order to find the "a" element.
+     * @param e the child element to start with
+     * @return the "a" element found or null if it is not present
+     */
+    private org.w3c.dom.Element findAnchorElement(org.w3c.dom.Element e)
+    {
+        if ("a".equalsIgnoreCase(e.getTagName().trim()))
+            return e;
+        else if (e.getParentNode() != null && e.getParentNode().getNodeType() == Node.ELEMENT_NODE)
+            return findAnchorElement((org.w3c.dom.Element) e.getParentNode());
+        else
+            return null;
     }
 
     /**
@@ -237,7 +243,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
             setPropertiesFromAttributes(getElement().getAttributes());
             refreshAttributes = true;
             refreshProperties = false;
-
         }
         else
         {
@@ -267,21 +272,21 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         // so remember that !!
         // also, parent may be null...
 
-        if (parent != null && parent instanceof ElementBoxView)
+        /*if (parent != null && parent instanceof ElementBoxView)
         {
             // avoid a RootView or any other non-SwingBox views
             Anchor parentAnchor = ((ElementBoxView) parent).getAnchor();
             if (parentAnchor.isActive())
             {
                 // share elemntAttributes
-                anchor.setActivity(true);
+                anchor.setActive(true);
                 anchor.getProperties().putAll(parentAnchor.getProperties());
                 // System.err.println("## Parent is Anchor : " +tmp+ " me: " +
                 // this + " attr: "+ elementAttributes);
             }
             // hint: previously, we could inherit a link,
             // now we may not be a link, reload it !
-        }
+        }*/
     }
 
     protected Anchor getAnchor()
@@ -497,9 +502,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         v.paint(g, rect);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Shape getChildAllocation(int index, Shape a)
     {
@@ -516,9 +518,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void childAllocation(int index, Rectangle alloc)
     {
@@ -526,9 +525,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         alloc.setBounds(getBox(getView(index)).getAbsoluteBounds());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public float getPreferredSpan(int axis)
     {
@@ -546,9 +542,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public float getMinimumSpan(int axis)
     {
@@ -565,9 +558,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public float getMaximumSpan(int axis)
     {
@@ -652,9 +642,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected View getViewAtPoint(int x, int y, Rectangle alloc)
     {
@@ -683,9 +670,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         return v;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setSize(float width, float height)
     {

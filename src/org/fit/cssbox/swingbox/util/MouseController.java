@@ -46,42 +46,31 @@ public class MouseController extends MouseAdapter
             // System.err.println("found position : " + pos);
             if (pos >= 0)
             {
-                Element el = ((SwingBoxDocument) editor.getDocument())
-                        .getCharacterElement(pos);
+                Element el = ((SwingBoxDocument) editor.getDocument()).getCharacterElement(pos);
                 AttributeSet attr = el.getAttributes();
-                Anchor anchor = (Anchor) attr
-                        .getAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE);
+                Anchor anchor = (Anchor) attr.getAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE);
 
                 if (anchor != null && anchor.isActive())
-                    createHyperLinkEvent(editor, el, anchor,
-                            EventType.ACTIVATED);
+                    createHyperLinkEvent(editor, el, anchor, EventType.ACTIVATED);
             }
-
         }
 
     }
 
-    private void createHyperLinkEvent(JEditorPane editor, Element elem,
-            Anchor anchor, EventType type)
+    private void createHyperLinkEvent(JEditorPane editor, Element elem, Anchor anchor, EventType type)
     {
         HyperlinkEvent linkEvent;
-        String href = (String) anchor.getProperties().get(
-                Constants.ELEMENT_A_ATTRIBUTE_HREF);
-        String target = (String) anchor.getProperties().get(
-                Constants.ELEMENT_A_ATTRIBUTE_TARGET);
+        String href = (String) anchor.getProperties().get(Constants.ELEMENT_A_ATTRIBUTE_HREF);
+        String target = (String) anchor.getProperties().get(Constants.ELEMENT_A_ATTRIBUTE_TARGET);
         URL url;
-        URL base = (URL) editor.getDocument().getProperty(
-                DefaultStyledDocument.StreamDescriptionProperty);
-        try
-        {
+        URL base = (URL) editor.getDocument().getProperty(DefaultStyledDocument.StreamDescriptionProperty);
+        try {
             url = new URL(base, href);
-        } catch (MalformedURLException ignored)
-        {
+        } catch (MalformedURLException ignored) {
             url = null;
         }
 
-        linkEvent = new HTMLFrameHyperlinkEvent(editor, type, url, href, elem,
-                target);
+        linkEvent = new HTMLFrameHyperlinkEvent(editor, type, url, href, elem, target);
         editor.fireHyperlinkUpdate(linkEvent);
 
     }
@@ -101,10 +90,8 @@ public class MouseController extends MouseAdapter
 
             if (pos >= 0 && (editor.getDocument() instanceof StyledDocument))
             {
-                Element elem = ((StyledDocument) editor.getDocument())
-                        .getCharacterElement(pos);
-                Anchor anchor = (Anchor) elem.getAttributes().getAttribute(
-                        Constants.ATTRIBUTE_ANCHOR_REFERENCE);
+                Element elem = ((StyledDocument) editor.getDocument()).getCharacterElement(pos);
+                Anchor anchor = (Anchor) elem.getAttributes().getAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE);
 
                 if (anchor != null)
                 {
@@ -112,26 +99,22 @@ public class MouseController extends MouseAdapter
                     {
                         if (anchor.isActive())
                         {
-                            createHyperLinkEvent(editor, elem, anchor,
-                                    EventType.ENTERED);
+                            createHyperLinkEvent(editor, elem, anchor, EventType.ENTERED);
                         }
                         prevElem = elem;
                         prevAnchor = anchor;
 
                     }
-                    else if (!prevAnchor
-                            .equalProperties(anchor.getProperties()))
+                    else if (!prevAnchor.equalProperties(anchor.getProperties()))
                     {
                         if (prevAnchor.isActive())
                         {
-                            createHyperLinkEvent(editor, prevElem, prevAnchor,
-                                    EventType.EXITED);
+                            createHyperLinkEvent(editor, prevElem, prevAnchor, EventType.EXITED);
                         }
 
                         if (anchor.isActive())
                         {
-                            createHyperLinkEvent(editor, elem, anchor,
-                                    EventType.ENTERED);
+                            createHyperLinkEvent(editor, elem, anchor, EventType.ENTERED);
                         }
                         prevElem = elem;
                         prevAnchor = anchor;

@@ -49,7 +49,7 @@ public class DemoBrowser extends JFrame
     BrowserPane swingbox = new BrowserPane();
     JPanel cssbox = new JPanel();
     JEditorPane editorkit = new JEditorPane();
-    JTextField txt = new JTextField("http://www.idnes.cz", 60);
+    JTextField txt = new JTextField("http://www.aktualne.cz", 60);
     JScrollPane contentScroll = new JScrollPane();
 
     /**

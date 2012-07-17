@@ -139,10 +139,9 @@ public class TextBoxView extends View implements CSSBoxView
                 if (parentAnchor.isActive())
                 {
                     // share elemntAttributes
-                    anchor.setActivity(true);
+                    anchor.setActive(true);
                     anchor.getProperties().putAll(parentAnchor.getProperties());
-                    // System.err.println("## Parent is Anchor : " +tmp+ " me: "
-                    // + this + " attr: "+ elementAttributes);
+                    System.err.println("## Parent is Anchor : " +tmp+ " me: " + this /*+ " attr: "+ elementAttributes*/);
                 }
             }
         }
@@ -176,9 +175,7 @@ public class TextBoxView extends View implements CSSBoxView
     @Override
     public float getMaximumSpan(int axis)
     {
-        // currently we do not support dynamic sizing,
-        // we are pre-computed by CSSBox !
-        // TODO use getMaximumWidth available from CSSBox?
+        // currently we do not support dynamic sizing, we are pre-computed by CSSBox!
         return getPreferredSpan(axis);
     }
 
@@ -201,9 +198,7 @@ public class TextBoxView extends View implements CSSBoxView
     @Override
     public float getMinimumSpan(int axis)
     {
-        // currently we do not support dynamic sizing,
-        // we are pre-computed by CSSBox !
-        // TODO use getMinimumWidth available from CSSBox?
+        // currently we do not support dynamic sizing, we are pre-computed by CSSBox!
         return getPreferredSpan(axis);
     }
 
@@ -484,8 +479,7 @@ public class TextBoxView extends View implements CSSBoxView
         int x = absoluteBounds.x;
         int y = absoluteBounds.y;
 
-        // in this class we will not delegete call do update graphics in
-        // VisualContext
+        // in this class we will not delegete call do update graphics in VisualContext
         // we will do it manually...
 
         Shape oldclip = g.getClip();
@@ -502,11 +496,9 @@ public class TextBoxView extends View implements CSSBoxView
 
         // set all graphics config
         // turn off AntiAliasing for graphics
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_OFF);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         // but turn it on for text
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
         g.setFont(getFont());
         g.setColor(fg);
 
@@ -518,10 +510,8 @@ public class TextBoxView extends View implements CSSBoxView
             {
                 // TextLayout can't render only part of it's range, so if a
                 // partial range is required, add a clip region.
-                Shape s = modelToView(p0, Position.Bias.Forward, p1,
-                        Position.Bias.Backward, a);
-                absoluteContentBounds = absoluteContentBounds
-                        .intersection(toRect(s));
+                Shape s = modelToView(p0, Position.Bias.Forward, p1, Position.Bias.Backward, a);
+                absoluteContentBounds = absoluteContentBounds.intersection(toRect(s));
             } catch (BadLocationException ignored)
             {
             }
@@ -553,16 +543,13 @@ public class TextBoxView extends View implements CSSBoxView
             }
             if (underline)
             {
-                int yy = y + absoluteContentBounds.height
-                        - (int) layout.getDescent();
+                int yy = y + absoluteContentBounds.height - (int) layout.getDescent();
                 g.drawLine(absoluteContentBounds.x, yy, xx, yy);
             }
             if (strike)
             {
-                // strike-through
                 int yy = y + (int) (absoluteContentBounds.height / 2);
                 g.drawLine(absoluteContentBounds.x, yy, xx, yy);
-
             }
         }
 
@@ -654,7 +641,6 @@ public class TextBoxView extends View implements CSSBoxView
     {
         if (attr != null)
         {
-
             Font newFont = (Font) attr.getAttribute(Constants.ATTRIBUTE_FONT);
             if (newFont != null)
             {
@@ -666,14 +652,12 @@ public class TextBoxView extends View implements CSSBoxView
                 throw new IllegalStateException("Font can not be null !");
             }
 
-            setForeground((Color) attr
-                    .getAttribute(Constants.ATTRIBUTE_FOREGROUND));
-            setFontVariant((String) attr
-                    .getAttribute(Constants.ATTRIBUTE_FONT_VARIANT));
+            setForeground((Color) attr.getAttribute(Constants.ATTRIBUTE_FOREGROUND));
+            setFontVariant((String) attr.getAttribute(Constants.ATTRIBUTE_FONT_VARIANT));
 
-            setTextDecoration((List<TextDecoration>) attr
-                    .getAttribute(Constants.ATTRIBUTE_TEXT_DECORATION));
-
+            @SuppressWarnings("unchecked")
+            List<TextDecoration> attribute = (List<TextDecoration>) attr.getAttribute(Constants.ATTRIBUTE_TEXT_DECORATION);
+            setTextDecoration(attribute);
         }
     }
 
