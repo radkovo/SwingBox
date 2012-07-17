@@ -65,11 +65,17 @@ public class DefaultAnalyzer implements CSSBoxAnalyzer
         return w3cdoc;
     }
 
+    /**
+     * Parses a document from input source. This may be overriden when custom parsing implementation is needed.
+     * @param is The input stream containing the source document.
+     * @param charset Input charset, <code>null</code> for autodetection.
+     * @return The resulting document.
+     * @throws SAXException
+     * @throws IOException
+     */
     protected org.w3c.dom.Document parseDocument(org.xml.sax.InputSource is,
             Charset charset) throws SAXException, IOException
     {
-        // if custom implemetation is needed, override this method
-
         DOMParser parser = new DOMParser(new HTMLConfiguration());
         parser.setProperty("http://cyberneko.org/html/properties/names/elems", "lower");
         if (charset != null)

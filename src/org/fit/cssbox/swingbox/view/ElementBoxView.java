@@ -5,20 +5,14 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.Toolkit;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
 
 import javax.swing.SizeRequirements;
-import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.CompositeView;
-import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.View;
@@ -29,19 +23,13 @@ import org.fit.cssbox.layout.Box;
 import org.fit.cssbox.layout.ElementBox;
 import org.fit.cssbox.swingbox.util.Anchor;
 import org.fit.cssbox.swingbox.util.Constants;
-import org.fit.cssbox.swingbox.util.ImageLoader;
-import org.fit.cssbox.swingbox.util.ImageLoader.ImageLoaderCallback;
-
-import cz.vutbr.web.css.CSSProperty;
-import cz.vutbr.web.css.TermURI;
 
 /**
  * @author Peter Bielik
  * @version 1.0
  * @since 1.0 - 10.2.2011
  */
-public class ElementBoxView extends CompositeView implements CSSBoxView,
-        ImageLoaderCallback
+public class ElementBoxView extends CompositeView implements CSSBoxView
 {
     protected ElementBox box;
     protected Rectangle tmpRect;
@@ -53,8 +41,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView,
     private boolean refreshAttributes;
     private boolean refreshProperties;
     private Dimension oldDimension;
-    private Image bgimg;
-    private boolean bgimage_loaded;
 
     private int majorAxis;
     private boolean majorAllocValid;
@@ -107,8 +93,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView,
         tmpRect = new Rectangle();
 
         loadElementAttributes();
-        // loadBackgroundImage();
-
     }
 
     private void loadElementAttributes()
@@ -144,74 +128,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView,
             elementAttributes.clear();
         }
 
-    }
-
-    private void loadBackgroundImage()
-    {
-        // this method should not be called, because of problems with URL...
-        // CSSProperty.BackgroundImage backImage;
-        // backImage = box.getStyle().getProperty("background-image");
-        // if (backImage == null) backImage = BackgroundImage.NONE;
-        // else System.err.println("@@@background is set: " +
-        // box.getStyle().getValue(Term.class, "background-image", true));
-        Runnable task = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                // cz.vutbr.web.csskit.SelectorImpl$ElementDOMImpl
-                URL url = null;
-                Image img;
-                Toolkit kit = Toolkit.getDefaultToolkit();
-                Object property = box.getStyle()
-                        .getProperty("background-image");
-
-                // hint: inherit ??
-                if (property != null
-                        && property == CSSProperty.BackgroundImage.uri)
-                {
-                    String bgimg = box.getStyle()
-                            .getValue(TermURI.class, "background-image", true)
-                            .getValue();
-
-                    try
-                    {
-                        // !! incorrect
-                        // http://www.phoronix.com/phoronix-header.png
-                        url = new URL(getBaseUrl(), bgimg);
-                    } catch (MalformedURLException e)
-                    {
-                        e.printStackTrace();
-                    }
-
-                    if (url != null)
-                    {
-                        img = kit.getImage(url);
-                        kit.prepareImage(img, -1, -1, ImageLoader.getInstance()
-                                .add(img, ElementBoxView.this));
-                    }
-                }
-            }
-        };
-
-        SwingUtilities.invokeLater(task);
-    }
-
-    private URL getBaseUrl()
-    {
-        URL u;
-
-        try
-        {
-            u = (URL) getDocument().getProperty(
-                    DefaultStyledDocument.StreamDescriptionProperty);
-        } catch (Exception e)
-        {
-            u = null;
-            e.printStackTrace();
-        }
-
-        return u;
     }
 
     /**
@@ -373,9 +289,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView,
         return this.anchor;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void replace(int offset, int length, View[] views)
     {
@@ -389,9 +302,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView,
         minorAllocValid = false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void forwardUpdate(DocumentEvent.ElementChange ec,
             DocumentEvent e, Shape a, ViewFactory f)
@@ -414,9 +324,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView,
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void preferenceChanged(View child, boolean width, boolean height)
     {
@@ -435,9 +342,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView,
         super.preferenceChanged(child, width, height);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getResizeWeight(int axis)
     {
@@ -455,9 +359,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView,
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AttributeSet getAttributes()
     {
@@ -854,16 +755,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView,
             minorRequest = getRequirements(axis, minorRequest);
             minorReqValid = true;
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void imageComplete(boolean success, Image img)
-    {
-        bgimage_loaded = success;
-        preferenceChanged(this, true, true);
     }
 
     /**

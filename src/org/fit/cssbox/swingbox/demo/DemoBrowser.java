@@ -4,18 +4,13 @@ package org.fit.cssbox.swingbox.demo;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -26,8 +21,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.text.View;
-import javax.swing.text.ViewFactory;
 import javax.swing.text.html.HTMLEditorKit;
 
 import org.fit.cssbox.css.CSSNorm;
@@ -36,8 +29,6 @@ import org.fit.cssbox.css.DOMAnalyzer.Origin;
 import org.fit.cssbox.demo.DOMSource;
 import org.fit.cssbox.layout.BrowserCanvas;
 import org.fit.cssbox.swingbox.BrowserPane;
-import org.fit.cssbox.swingbox.SwingBoxViewFactory;
-import org.fit.cssbox.swingbox.util.DefaultHyperlinkHandler;
 import org.fit.cssbox.swingbox.util.GeneralEvent;
 import org.fit.cssbox.swingbox.util.GeneralEvent.EventType;
 import org.fit.cssbox.swingbox.util.GeneralEventListener;
@@ -67,6 +58,7 @@ public class DemoBrowser extends JFrame
     public DemoBrowser()
     {
         init();
+        loadPage(txt.getText());
     }
 
     private void init()
@@ -79,17 +71,30 @@ public class DemoBrowser extends JFrame
 
         btn.addActionListener(new ActionListener()
         {
-
             @Override
             public void actionPerformed(ActionEvent e)
             {
                 Thread t = new Thread(new Runnable()
                 {
-
                     @Override
                     public void run()
                     {
-                        // fire loading !
+                        loadPage(txt.getText());
+                    }
+                });
+                t.start();
+            }
+        });
+        txt.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                Thread t = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
                         loadPage(txt.getText());
                     }
                 });
@@ -98,15 +103,15 @@ public class DemoBrowser extends JFrame
         });
 
         JTabbedPane tab = new JTabbedPane(JTabbedPane.TOP);
-        tab.addTab("JEditorPane + HTMLEditorKit", new JScrollPane(editorkit));
-        tab.addTab("CSSBox", contentScroll);
         tab.addTab("SwingBox", new JScrollPane(swingbox));
+        tab.addTab("CSSBox", contentScroll);
+        tab.addTab("JEditorPane + HTMLEditorKit", new JScrollPane(editorkit));
 
         panel.add(tmp, BorderLayout.NORTH);
         panel.add(tab, BorderLayout.CENTER);
         setContentPane(panel);
 
-        swingbox.addHyperlinkListener(new DefaultHyperlinkHandler());
+        swingbox.addHyperlinkListener(new DemoHyperlinkHandler(this));
         swingbox.addGeneralEventListener(new GeneralEventListener()
         {
             private long time;
@@ -130,17 +135,11 @@ public class DemoBrowser extends JFrame
         editorkit.setEditable(false);
         editorkit.addHyperlinkListener(new HyperlinkListener()
         {
-
             @Override
             public void hyperlinkUpdate(HyperlinkEvent e)
             {
-                if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) try
-                {
-                    editorkit.setPage(e.getURL());
-                } catch (IOException e1)
-                {
-                    e1.printStackTrace();
-                }
+                /*txt.setText(e.getURL().toString());
+                loadPage(txt.getText());*/
             }
         });
 
@@ -152,9 +151,8 @@ public class DemoBrowser extends JFrame
                     {
                         if (cssbox != null && cssbox instanceof BrowserCanvas)
                         {
-                            ((BrowserCanvas) cssbox).createLayout(contentScroll.getSize());// vytvaranie
+                            ((BrowserCanvas) cssbox).createLayout(contentScroll.getSize());
                             contentScroll.repaint();
-
                         }
                     }
                 });
@@ -168,7 +166,7 @@ public class DemoBrowser extends JFrame
         setVisible(true);
     }
 
-    private void loadPage(String page)
+    public void loadPage(String page)
     {
         if (!page.startsWith("http:") && !page.startsWith("ftp:")
                 && !page.startsWith("file:"))
@@ -176,6 +174,7 @@ public class DemoBrowser extends JFrame
             page = "http://" + page;
         }
 
+        txt.setText(page);
         loadPage_editorkit(page);
         loadPage_cssbox(page);
         loadPage_swingbox(page);
@@ -190,8 +189,6 @@ public class DemoBrowser extends JFrame
         {
             e.printStackTrace();
         }
-
-        // renderImage();
     }
 
     private void loadPage_cssbox(String adr)
@@ -216,14 +213,11 @@ public class DemoBrowser extends JFrame
             da.addStyleSheet(null, CSSNorm.userStyleSheet(), Origin.AGENT);
             da.getStyleSheets();
 
-            cssbox = new BrowserCanvas(da.getRoot(), da,
-                    contentScroll.getSize(), url);
+            cssbox = new BrowserCanvas(da.getRoot(), da, contentScroll.getSize(), url);
             contentScroll.setViewportView(cssbox);
-        } catch (Exception e)
-        {
+        } catch (Exception e)        {
             e.printStackTrace();
-        } finally
-        {
+        } finally {
             if (is != null)
             {
                 try
@@ -239,11 +233,9 @@ public class DemoBrowser extends JFrame
 
     private void loadPage_editorkit(String url)
     {
-        try
-        {
+        try {
             editorkit.setPage(new URL(url));
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -265,43 +257,6 @@ public class DemoBrowser extends JFrame
                 new DemoBrowser();
             }
         });
-    }
-
-    void renderImage()
-    {
-
-        View view = null;
-        ViewFactory factory = swingbox.getEditorKit().getViewFactory();
-        if (factory instanceof SwingBoxViewFactory)
-        {
-            view = ((SwingBoxViewFactory) factory).getViewport();
-        }
-
-        if (view != null)
-        {
-            int w = (int) view.getPreferredSpan(View.X_AXIS);
-            int h = (int) view.getPreferredSpan(View.Y_AXIS);
-
-            Rectangle rec = new Rectangle(w, h);
-
-            BufferedImage img = new BufferedImage(w, h,
-                    BufferedImage.TYPE_INT_RGB);
-            Graphics2D g = img.createGraphics();
-            g.setClip(rec);
-            view.paint(g, rec);
-
-            FileOutputStream fos;
-
-            try
-            {
-                fos = new FileOutputStream("image.png");
-                ImageIO.write(img, "png", fos);
-                fos.close();
-            } catch (Exception ignored)
-            {
-            }
-
-        }
     }
 
 }
