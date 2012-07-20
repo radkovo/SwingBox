@@ -44,16 +44,13 @@ public class SwingBoxViewFactory implements ViewFactory
 {
     private ViewportView viewport;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public View create(Element elem)
     {
         AttributeSet attr = elem.getAttributes();
-        String name = (String) attr
-                .getAttribute(AbstractDocument.ElementNameAttribute);
-        if (name == null) name = elem.getName();
+        String name = (String) attr.getAttribute(AbstractDocument.ElementNameAttribute);
+        if (name == null)
+            name = elem.getName();
 
         if (name != null)
         {
@@ -121,9 +118,8 @@ public class SwingBoxViewFactory implements ViewFactory
             else if (name.equals(Constants.DELEGATE))
             {
                 return new DelegateView(elem);
-
-                // -- javax.swing.text views --------------------------------
             }
+            // -- javax.swing.text views --------------------------------
             else if (name.equals(AbstractDocument.SectionElementName))
             {
                 return new BoxView(elem, View.Y_AXIS);
@@ -132,8 +128,10 @@ public class SwingBoxViewFactory implements ViewFactory
             {
                 return new ComponentView(elem);
             }
-            else if (name.equals(StyleConstants.IconElementName)) { return new IconView(
-                    elem); }
+            else if (name.equals(StyleConstants.IconElementName))
+            {
+                return new IconView(elem);
+            }
 
         }
 

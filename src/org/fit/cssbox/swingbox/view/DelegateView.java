@@ -511,8 +511,15 @@ public class DelegateView extends CompositeView
         }
     }
 
-    // ////////////////remove//////////////////
-
+    @Override
+    public String getToolTipText(float x, float y, Shape allocation)
+    {
+        if (view != null)
+            return view.getToolTipText(x, y, allocation);
+        else
+            return super.getToolTipText(x, y, allocation);
+    }   
+    
     @Override
     protected boolean isBefore(int x, int y, Rectangle alloc)
     {
@@ -534,7 +541,7 @@ public class DelegateView extends CompositeView
     @Override
     protected void childAllocation(int index, Rectangle a)
     {
-        // nothing
+        //nothing
     }
-
+    
 }

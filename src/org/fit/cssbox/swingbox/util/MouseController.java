@@ -1,6 +1,7 @@
 
 package org.fit.cssbox.swingbox.util;
 
+import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -19,6 +20,7 @@ import javax.swing.text.Position.Bias;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 
+import org.fit.cssbox.layout.TextBox;
 import org.fit.cssbox.swingbox.SwingBoxDocument;
 
 /**
@@ -31,6 +33,9 @@ import org.fit.cssbox.swingbox.SwingBoxDocument;
  */
 public class MouseController extends MouseAdapter
 {
+    private static final Cursor defaultCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+    private static final Cursor textCursor = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
+    
     private Element prevElem;
     private Anchor prevAnchor;
 
@@ -57,24 +62,6 @@ public class MouseController extends MouseAdapter
 
     }
 
-    private void createHyperLinkEvent(JEditorPane editor, Element elem, Anchor anchor, EventType type)
-    {
-        HyperlinkEvent linkEvent;
-        String href = (String) anchor.getProperties().get(Constants.ELEMENT_A_ATTRIBUTE_HREF);
-        String target = (String) anchor.getProperties().get(Constants.ELEMENT_A_ATTRIBUTE_TARGET);
-        URL url;
-        URL base = (URL) editor.getDocument().getProperty(DefaultStyledDocument.StreamDescriptionProperty);
-        try {
-            url = new URL(base, href);
-        } catch (MalformedURLException ignored) {
-            url = null;
-        }
-
-        linkEvent = new HTMLFrameHyperlinkEvent(editor, type, url, href, elem, target);
-        editor.fireHyperlinkUpdate(linkEvent);
-
-    }
-
     @Override
     public void mouseMoved(MouseEvent e)
     {
@@ -91,10 +78,19 @@ public class MouseController extends MouseAdapter
             if (pos >= 0 && (editor.getDocument() instanceof StyledDocument))
             {
                 Element elem = ((StyledDocument) editor.getDocument()).getCharacterElement(pos);
-                System.out.println("Elem: " + elem.getAttributes().getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE));
+                Object bb = elem.getAttributes().getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
                 Anchor anchor = (Anchor) elem.getAttributes().getAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE);
+                //System.out.println("Elem: " + elem.getAttributes().getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE));
+                //System.out.println("Anchor: " + anchor);
 
-                if (anchor != null)
+                if (elem != prevElem)
+                {
+                    prevElem = elem;
+                    if (bb != null && bb instanceof TextBox)
+                        setCursor(editor, textCursor);
+                }
+                
+                if (anchor != prevAnchor)
                 {
                     if (prevAnchor == null)
                     {
@@ -102,7 +98,6 @@ public class MouseController extends MouseAdapter
                         {
                             createHyperLinkEvent(editor, elem, anchor, EventType.ENTERED);
                         }
-                        prevElem = elem;
                         prevAnchor = anchor;
 
                     }
@@ -117,12 +112,47 @@ public class MouseController extends MouseAdapter
                         {
                             createHyperLinkEvent(editor, elem, anchor, EventType.ENTERED);
                         }
-                        prevElem = elem;
                         prevAnchor = anchor;
                     }
 
                 }
             }
+            else //nothing found
+            {
+                prevElem = null;
+                if (prevAnchor != null && prevAnchor.isActive())
+                {
+                    createHyperLinkEvent(editor, prevElem, prevAnchor, EventType.EXITED);
+                    prevAnchor = null;
+                }   
+                setCursor(editor, defaultCursor);
+            }
         }
     }
+    
+    private void createHyperLinkEvent(JEditorPane editor, Element elem, Anchor anchor, EventType type)
+    {
+        HyperlinkEvent linkEvent;
+        String href = (String) anchor.getProperties().get(Constants.ELEMENT_A_ATTRIBUTE_HREF);
+        String target = (String) anchor.getProperties().get(Constants.ELEMENT_A_ATTRIBUTE_TARGET);
+        URL url;
+        URL base = (URL) editor.getDocument().getProperty(DefaultStyledDocument.StreamDescriptionProperty);
+        try {
+            url = new URL(base, href);
+        } catch (MalformedURLException ignored) {
+            url = null;
+        }
+
+        linkEvent = new HTMLFrameHyperlinkEvent(editor, type, url, href, elem, target);
+        editor.fireHyperlinkUpdate(linkEvent);
+    }
+    
+    protected void setCursor(JEditorPane editor, Cursor cursor)
+    {
+        if (editor.getCursor() != cursor)
+        {
+            editor.setCursor(cursor);
+        }
+    }
+    
 }

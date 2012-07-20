@@ -134,14 +134,12 @@ public class TextBoxView extends View implements CSSBoxView
             if (parent instanceof ElementBoxView)
             {
                 // avoid a RootView or any other non-SwingBox views
-                ElementBoxView tmp = (ElementBoxView) parent;
                 Anchor parentAnchor = ((ElementBoxView) parent).getAnchor();
                 if (parentAnchor.isActive())
                 {
                     // share elemntAttributes
                     anchor.setActive(true);
                     anchor.getProperties().putAll(parentAnchor.getProperties());
-                    System.err.println("## Parent is Anchor : " +tmp+ " me: " + this + " attr: "+ anchor.getProperties());
                 }
             }
         }
@@ -186,9 +184,9 @@ public class TextBoxView extends View implements CSSBoxView
         switch (axis)
         {
             case View.X_AXIS:
-                return box.getWidth();
+                return 10f; //box.getWidth();
             case View.Y_AXIS:
-                return box.getHeight();
+                return 10f; //box.getHeight();
             default:
                 throw new IllegalArgumentException("Invalid axis: " + axis);
         }
@@ -284,19 +282,6 @@ public class TextBoxView extends View implements CSSBoxView
         return res;
     }
 
-    private void initSelections(int p0, int p1)
-    {
-        // init of selection
-        int viewPosCount = p1 - p0 + 1;
-        if (selections == null || viewPosCount > selections.length)
-        {
-            selections = new byte[viewPosCount];
-            return;
-        }
-        for (int i = 0; i < viewPosCount; selections[i++] = 0)
-            ;
-    }
-
     @Override
     public String getToolTipText(float x, float y, Shape allocation)
     {
@@ -364,85 +349,9 @@ public class TextBoxView extends View implements CSSBoxView
             Highlighter highLighter = tc.getHighlighter();
             if (highLighter instanceof LayeredHighlighter)
             {
-                ((LayeredHighlighter) highLighter).paintLayeredHighlights(g,
-                        p0, p1, box.getAbsoluteBounds(), tc, this);
+                ((LayeredHighlighter) highLighter).paintLayeredHighlights(g, p0, p1, box.getAbsoluteContentBounds(), tc, this);
                 // (g, p0, p1, a, tc, this);
             }
-
-            // Color selFG = tc.getSelectedTextColor();
-            //
-            // // layout = getTextLayout();
-            // // layout.getLogical
-            // // System.err.println();
-            //
-            // if (
-            // (highLighter != null) &&
-            // // selected text color is different from regular foreground
-            // (selFG != null) && !selFG.equals(fg)) {
-            //
-            // Highlighter.Highlight[] h = highLighter.getHighlights();
-            // if(h.length != 0) {
-            // boolean initialized = false;
-            // int viewSelectionCount = 0;
-            //
-            // for (int i = 0; i < h.length; i++) {
-            // Highlighter.Highlight highlight = h[i];
-            // int hStart = highlight.getStartOffset();
-            // int hEnd = highlight.getEndOffset();
-            //
-            // if (hStart > p1 || hEnd < p0) {
-            // // ----- the selection is out of this view ----
-            // continue;
-            // }
-            //
-            // if (hStart <= p0 && hEnd >= p1){
-            // // ----- the whole view is selected -----------
-            // renderContent(g, a, selFG, p0, p1);
-            // return ;
-            // }
-            //
-            // // ------------ View is partially selected I ---------
-            // // the array is lazily created only when the view
-            // // is partially selected
-            // if (!initialized) {
-            // initSelections(p0, p1);
-            // initialized = true;
-            // }
-            // hStart = Math.max(p0, hStart);
-            // hEnd = Math.min(p1, hEnd);
-            // renderContent(g,a,selFG, hStart, hEnd);
-            // // the array represents view positions [0, p1-p0+1]
-            // // later will iterate this array and sum its
-            // // elements. Positions with sum == 0 are not selected.
-            // selections[hStart-p0]++;
-            // selections[hEnd-p0]--;
-            //
-            // viewSelectionCount++;
-            // }
-            //
-            // if (viewSelectionCount > 0) {
-            // // ----- the view is partially selected II --------
-            // int curPos = -1;
-            // int startPos = 0;
-            // int viewLen = p1 - p0;
-            // while (curPos++ < viewLen) {
-            // // searching for the next selection start
-            // while(curPos < viewLen &&
-            // selections[curPos] == 0) curPos++;
-            // if (startPos != curPos) {
-            // // paint unselected text
-            // renderContent(g, a, fg, p0 + startPos, p0 + curPos);
-            // }
-            // int checkSum = 0;
-            // // searching for next start position of unselected text
-            // while (curPos < viewLen &&
-            // (checkSum += selections[curPos]) != 0) curPos++;
-            // startPos = curPos;
-            // }
-            // return; // -- we have finished
-            // }
-            // } // -- highLighter
-            // }
         }
         // nothing is selected
         renderContent(g, a, fg, p0, p1);

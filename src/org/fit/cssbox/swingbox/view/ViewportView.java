@@ -255,5 +255,5 @@ public class ViewportView extends BlockBoxView implements ComponentListener
 
         return false;
     }
-
+    
 }
