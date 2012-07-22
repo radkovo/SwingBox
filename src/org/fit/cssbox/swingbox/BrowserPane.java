@@ -27,7 +27,9 @@ import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Caret;
 import javax.swing.text.ChangedCharSetException;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 import javax.swing.text.Element;
@@ -86,6 +88,9 @@ public class BrowserPane extends JEditorPane
 
         activateTooltip(true);
 
+        Caret caret = getCaret();
+        if (caret instanceof DefaultCaret)
+        	((DefaultCaret) caret).setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
     }
 
     /**
@@ -501,23 +506,8 @@ public class BrowserPane extends JEditorPane
             setDocument(doc);
 
             final String reference = newPage.getRef();
-            if (reference == null)
+            if (reference != null)
             {
-                // new page is different from current & has no ref.
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        scrollRectToVisible(new Rectangle(0, 0, 1, 1)); // XXX
-                                                                        // test_encoding-iso8859-2.html
-                    }
-                });
-
-            }
-            else
-            {
-
                 // Have to scroll after painted.
                 SwingUtilities.invokeLater(new Runnable()
                 {
