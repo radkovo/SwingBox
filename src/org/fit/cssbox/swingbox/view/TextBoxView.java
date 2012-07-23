@@ -299,7 +299,8 @@ public class TextBoxView extends View implements CSSBoxView
             return "".equals(val) ? null : "<html>" + val + "</html>";
         }
 
-        return "NotLink: " + this;
+        //return "NotLink: " + this;
+        return null;
     }
 
     @Override

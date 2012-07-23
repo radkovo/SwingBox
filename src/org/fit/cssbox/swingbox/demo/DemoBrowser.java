@@ -4,8 +4,11 @@ package org.fit.cssbox.swingbox.demo;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -27,7 +30,9 @@ import org.fit.cssbox.css.CSSNorm;
 import org.fit.cssbox.css.DOMAnalyzer;
 import org.fit.cssbox.css.DOMAnalyzer.Origin;
 import org.fit.cssbox.demo.DOMSource;
+import org.fit.cssbox.layout.Box;
 import org.fit.cssbox.layout.BrowserCanvas;
+import org.fit.cssbox.layout.ElementBox;
 import org.fit.cssbox.swingbox.BrowserPane;
 import org.fit.cssbox.swingbox.util.GeneralEvent;
 import org.fit.cssbox.swingbox.util.GeneralEvent.EventType;
@@ -214,7 +219,22 @@ public class DemoBrowser extends JFrame
             da.getStyleSheets();
 
             cssbox = new BrowserCanvas(da.getRoot(), da, contentScroll.getSize(), url);
+            cssbox.addMouseListener(new MouseListener() {
+                public void mouseClicked(MouseEvent e)
+                {
+                    System.out.println("Click: " + e.getX() + ":" + e.getY());
+                    //canvasClick(e.getX(), e.getY());
+                    Box node = locateBox(((BrowserCanvas)cssbox).getRootBox(), e.getX(), e.getY());
+                    System.out.println("Box: " + node);
+                    
+                }
+                public void mousePressed(MouseEvent e) { }
+                public void mouseReleased(MouseEvent e) { }
+                public void mouseEntered(MouseEvent e) { }
+                public void mouseExited(MouseEvent e) { }
+            });            
             contentScroll.setViewportView(cssbox);
+            
         } catch (Exception e)        {
             e.printStackTrace();
         } finally {
@@ -238,6 +258,43 @@ public class DemoBrowser extends JFrame
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Locates a box from its position
+     */
+    private Box locateBox(Box root, int x, int y)
+    {
+        if (root.isVisible())
+        {
+            Box found = null;
+            Rectangle bounds = root.getAbsoluteContentBounds().intersection(root.getClipBlock().getAbsoluteContentBounds());
+            if (bounds.contains(x, y))
+                found = root;
+            
+            //find if there is something smallest that fits among the child boxes
+            if (root instanceof ElementBox)
+            {
+                ElementBox eb = (ElementBox) root;
+                for (int i = eb.getStartChild(); i < eb.getEndChild(); i++)
+                {
+                    Box inside = locateBox(((ElementBox) root).getSubBox(i), x, y);
+                    if (inside != null)
+                    {
+                        if (found == null)
+                            found = inside;
+                        else
+                        {
+                            if (inside.getAbsoluteBounds().width * inside.getAbsoluteBounds().height < found.getAbsoluteBounds().width * found.getAbsoluteBounds().height)
+                                found = inside;
+                        }
+                    }
+                }
+            }
+            return found;
+        }
+        else
+            return null;
     }
 
     /**
