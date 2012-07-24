@@ -17,9 +17,9 @@ import org.fit.cssbox.swingbox.util.DefaultHyperlinkHandler;
  */
 public class DemoHyperlinkHandler extends DefaultHyperlinkHandler
 {
-    private DemoBrowser browser;
+    private BrowserComparison browser;
     
-    public DemoHyperlinkHandler(DemoBrowser browser)
+    public DemoHyperlinkHandler(BrowserComparison browser)
     {
         this.browser = browser;
     }

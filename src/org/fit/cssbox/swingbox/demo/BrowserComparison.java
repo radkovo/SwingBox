@@ -40,19 +40,18 @@ import org.fit.cssbox.swingbox.util.GeneralEventListener;
 import org.w3c.dom.Document;
 
 /**
- * The Class DemoBrowser. This demo provides 3 result of same location by 3
- * renderrers. You will see CSSBox, SwingBox and JEditorPane + HTMLEditorKit.
+ * This demo provides 3 result of same location by 3 renderrers. You will see CSSBox, SwingBox and JEditorPane + HTMLEditorKit.
  * Use the "GO!" button to start action.
  * 
  * @author Peter Bielik
  * @version 1.0
  * @since 1.0 - 22.4.2011
  */
-public class DemoBrowser extends JFrame
+public class BrowserComparison extends JFrame
 {
     private static final long serialVersionUID = 3078719188136612454L;
     BrowserPane swingbox = new BrowserPane();
-    JPanel cssbox = new JPanel();
+    BrowserCanvas cssbox = null;
     JEditorPane editorkit = new JEditorPane();
     JTextField txt = new JTextField("http://www.aktualne.cz", 60);
     JScrollPane contentScroll = new JScrollPane();
@@ -60,7 +59,7 @@ public class DemoBrowser extends JFrame
     /**
      * Creates new instance of this demo application.
      */
-    public DemoBrowser()
+    public BrowserComparison()
     {
         init();
         loadPage(txt.getText());
@@ -143,8 +142,8 @@ public class DemoBrowser extends JFrame
             @Override
             public void hyperlinkUpdate(HyperlinkEvent e)
             {
-                /*txt.setText(e.getURL().toString());
-                loadPage(txt.getText());*/
+                //txt.setText(e.getURL().toString());
+                //loadPage(txt.getText());
             }
         });
 
@@ -218,15 +217,23 @@ public class DemoBrowser extends JFrame
             da.addStyleSheet(null, CSSNorm.userStyleSheet(), Origin.AGENT);
             da.getStyleSheets();
 
-            cssbox = new BrowserCanvas(da.getRoot(), da, contentScroll.getSize(), url);
+            cssbox = new BrowserCanvas(da.getRoot(), da, url);
+            cssbox.getConfig().setLoadBackgroundImages(true);
+            cssbox.getConfig().setLoadImages(true);
+            cssbox.createLayout(contentScroll.getSize());
+            
             cssbox.addMouseListener(new MouseListener() {
                 public void mouseClicked(MouseEvent e)
                 {
                     System.out.println("Click: " + e.getX() + ":" + e.getY());
                     //canvasClick(e.getX(), e.getY());
-                    Box node = locateBox(((BrowserCanvas)cssbox).getRootBox(), e.getX(), e.getY());
+                    Box node = locateBox(cssbox.getViewport(), e.getX(), e.getY());
                     System.out.println("Box: " + node);
-                    
+                    if (node != null)
+                    {
+                        node.drawExtent(cssbox.getImageGraphics());
+                        cssbox.repaint();
+                    }
                 }
                 public void mousePressed(MouseEvent e) { }
                 public void mouseReleased(MouseEvent e) { }
@@ -268,9 +275,14 @@ public class DemoBrowser extends JFrame
         if (root.isVisible())
         {
             Box found = null;
-            Rectangle bounds = root.getAbsoluteContentBounds().intersection(root.getClipBlock().getAbsoluteContentBounds());
+            //Rectangle bounds = root.getAbsoluteContentBounds().intersection(root.getClipBlock().getAbsoluteContentBounds());
+            Rectangle bounds = root.getAbsoluteBounds();
             if (bounds.contains(x, y))
+            {
                 found = root;
+                System.out.println("Fnd: " + found);
+                found.drawExtent(((BrowserCanvas)cssbox).getImageGraphics());
+            }
             
             //find if there is something smallest that fits among the child boxes
             if (root instanceof ElementBox)
@@ -311,7 +323,7 @@ public class DemoBrowser extends JFrame
             @Override
             public void run()
             {
-                new DemoBrowser();
+                new BrowserComparison();
             }
         });
     }
