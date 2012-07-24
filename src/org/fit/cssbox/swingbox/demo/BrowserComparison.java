@@ -115,7 +115,7 @@ public class BrowserComparison extends JFrame
         panel.add(tab, BorderLayout.CENTER);
         setContentPane(panel);
 
-        swingbox.addHyperlinkListener(new DemoHyperlinkHandler(this));
+        swingbox.addHyperlinkListener(new BrowserComparisonHyperlinkHandler(this));
         swingbox.addGeneralEventListener(new GeneralEventListener()
         {
             private long time;

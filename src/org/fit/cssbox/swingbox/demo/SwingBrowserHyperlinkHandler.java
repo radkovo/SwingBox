@@ -15,11 +15,11 @@ import org.fit.cssbox.swingbox.util.DefaultHyperlinkHandler;
  * The default behaviour is to open the link in all the tabs.
  * @author burgetr
  */
-public class DemoHyperlinkHandler extends DefaultHyperlinkHandler
+public class SwingBrowserHyperlinkHandler extends DefaultHyperlinkHandler
 {
-    private BrowserComparison browser;
+    private SwingBrowser browser;
     
-    public DemoHyperlinkHandler(BrowserComparison browser)
+    public SwingBrowserHyperlinkHandler(SwingBrowser browser)
     {
         this.browser = browser;
     }
@@ -27,7 +27,7 @@ public class DemoHyperlinkHandler extends DefaultHyperlinkHandler
     @Override
     protected void loadPage(JEditorPane pane, HyperlinkEvent evt)
     {
-        browser.loadPage(evt.getURL().toString());
+        browser.displayURL(evt.getURL().toString());
     }
 
 }
