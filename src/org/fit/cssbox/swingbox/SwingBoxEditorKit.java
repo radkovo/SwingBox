@@ -336,12 +336,10 @@ public class SwingBoxEditorKit extends StyledEditorKit
     {
 
         if (component == null)
-            throw new IllegalStateException(
-                    "Component is null, editor kit is probably deinstalled from a JEditorPane.");
+            throw new IllegalStateException("Component is null, editor kit is probably deinstalled from a JEditorPane.");
         if (pos > doc.getLength() || pos < 0)
         {
-            BadLocationException e = new BadLocationException(
-                    "Invalid location", pos);
+            BadLocationException e = new BadLocationException("Invalid location", pos);
             readError(null, e);
             throw e;
         }
@@ -402,6 +400,10 @@ public class SwingBoxEditorKit extends StyledEditorKit
             }
 
             elements = rdr.read(is, url, analyzer, dim, charset);
+            String title = analyzer.getDocumentTitle();
+            if (title == null)
+                title = "No title";
+            doc.putProperty(Document.TitleProperty, title);
         } catch (IOException e)
         {
             readError(url, e);
@@ -432,8 +434,7 @@ public class SwingBoxEditorKit extends StyledEditorKit
     {
         if (component instanceof BrowserPane)
         {
-            ((BrowserPane) component).fireGeneralEvent(new GeneralEvent(this,
-                    EventType.page_loading_error, url, e));
+            ((BrowserPane) component).fireGeneralEvent(new GeneralEvent(this, EventType.page_loading_error, url, e));
             // NodeList nodes =
             // analyzer.getDocument().getElementsByTagName("meta");
         }

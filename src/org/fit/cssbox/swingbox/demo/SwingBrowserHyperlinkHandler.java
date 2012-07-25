@@ -12,7 +12,6 @@ import org.fit.cssbox.swingbox.util.DefaultHyperlinkHandler;
 
 /**
  * This hyperlink handler implements the demo browser behaviour when a link is clicked.
- * The default behaviour is to open the link in all the tabs.
  * @author burgetr
  */
 public class SwingBrowserHyperlinkHandler extends DefaultHyperlinkHandler

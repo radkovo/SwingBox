@@ -35,6 +35,7 @@ import org.w3c.dom.NodeList;
 import java.awt.GridBagConstraints;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.text.Document;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import java.awt.Rectangle;
@@ -219,7 +220,7 @@ public class SwingBrowser
             gridBagConstraints1.gridx = 1;
             GridBagConstraints gridBagConstraints7 = new GridBagConstraints();
             gridBagConstraints7.gridx = 3;
-            gridBagConstraints7.insets = new Insets(4, 0, 0, 7);
+            gridBagConstraints7.insets = new Insets(0, 0, 0, 7);
             gridBagConstraints7.gridy = 0;
             GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
             gridBagConstraints6.gridx = 2;
@@ -350,6 +351,10 @@ public class SwingBrowser
                 }
                 else if (e.event_type == EventType.page_loading_end)
                 {
+                    Object title = swingbox.getDocument().getProperty(Document.TitleProperty);
+                    if (title != null)
+                        tabs.setTitleAt(0, title.toString());
+                    
                     System.out.println("SwingBox: page loaded in: "
                             + (System.currentTimeMillis() - time) + " ms");
                 }

@@ -60,4 +60,7 @@ public interface CSSBoxAnalyzer
      * @see CSSBoxAnalyzer#analyze(InputSource, URL, Dimension, Charset)
      */
     public org.w3c.dom.Document getDocument();
+    
+    public String getDocumentTitle();
+    
 }

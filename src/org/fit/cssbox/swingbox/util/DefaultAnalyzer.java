@@ -13,6 +13,7 @@ import org.fit.cssbox.css.CSSNorm;
 import org.fit.cssbox.css.DOMAnalyzer;
 import org.fit.cssbox.layout.BrowserCanvas;
 import org.fit.cssbox.layout.ElementBox;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -63,6 +64,16 @@ public class DefaultAnalyzer implements CSSBoxAnalyzer
     public org.w3c.dom.Document getDocument()
     {
         return w3cdoc;
+    }
+    
+    @Override
+    public String getDocumentTitle()
+    {
+        NodeList titles = w3cdoc.getElementsByTagName("title");
+        if (titles.getLength() > 0)
+            return titles.item(0).getTextContent();
+        else
+            return null;
     }
 
     /**

@@ -56,6 +56,7 @@ public class BrowserPane extends JEditorPane
     private static final long serialVersionUID = 7303652028812084960L;
     private InputStream loadingStream;
     private Hashtable<String, Object> pageProperties;
+    private Document document;
 
     // "org.fit.cssbox.swingbox.SwingBoxEditorKit"
     protected String HtmlEditorKitClass = "org.fit.cssbox.swingbox.SwingBoxEditorKit";
@@ -93,6 +94,19 @@ public class BrowserPane extends JEditorPane
         	((DefaultCaret) caret).setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
     }
 
+    @Override
+    public Document getDocument()
+    {
+        return document;
+    }
+    
+    @Override
+    public void setDocument(Document document)
+    {
+        this.document = document;
+        super.setDocument(document);
+    }
+    
     /**
      * Activates tooltips.
      * 
@@ -343,8 +357,7 @@ public class BrowserPane extends JEditorPane
     @Override
     protected InputStream getStream(URL page) throws IOException
     {
-        final URLConnection conn = setConnectionProperties(page
-                .openConnection());
+        final URLConnection conn = setConnectionProperties(page.openConnection());
         // http://stackoverflow.com/questions/875467/java-client-certificates-over-https-ssl
 
         if (conn instanceof HttpsURLConnection)
@@ -426,15 +439,6 @@ public class BrowserPane extends JEditorPane
         final URL oldPage = getPage();
         Object postData = getPostData();
 
-        // // reset scrollbar
-        // //!!! toto je zrejme zdroj toho posuva stranku niekde na koniec
-        // //mozno dat az niekde na koniec metody
-        // if (!newPage.equals(oldPage) && newPage.getRef() == null) {
-        // //new page is different from current & has no ref.
-        // //if ref is set, than later is viewport scrolled to this ref
-        // scrollRectToVisible(new Rectangle(0,0,1,1));
-        // }
-
         if ((oldPage == null) || !oldPage.sameFile(newPage)
                 || (postData != null))
         {
@@ -450,26 +454,24 @@ public class BrowserPane extends JEditorPane
             }
             else
             {
-                final Document doc = createDocument(kit, newPage);
+                document = createDocument(kit, newPage);
 
-                int p = getAsynchronousLoadPriority(doc);
+                int p = getAsynchronousLoadPriority(document);
 
                 if (p < 0)
                 {
                     // load synchro
-                    loadPage(newPage, oldPage, in, doc);
-
+                    loadPage(newPage, oldPage, in, document);
                 }
                 else
                 {
                     // load asynchro
                     Thread t = new Thread(new Runnable()
                     {
-
                         @Override
                         public void run()
                         {
-                            loadPage(newPage, oldPage, in, doc);
+                            loadPage(newPage, oldPage, in, document);
                         }
                     });
 
@@ -571,7 +573,6 @@ public class BrowserPane extends JEditorPane
                 Object key = e.nextElement();
                 doc.putProperty(key, pageProperties.get(key));
             }
-            pageProperties.clear();
         }
         if (doc.getProperty(Document.StreamDescriptionProperty) == null)
         {
@@ -664,7 +665,7 @@ public class BrowserPane extends JEditorPane
          */
 
         conn.setRequestProperty("User-Agent",
-                "Mozilla/5.0 (compatible; SwingBox/1.x; Linux; U) CSSBox/2.x (like Gecko)");
+                "Mozilla/5.0 (compatible; SwingBox/1.x; Linux; U) CSSBox/4.x (like Gecko)");
         conn.setRequestProperty("Accept-Charset", "utf-8");
 
         return conn;
