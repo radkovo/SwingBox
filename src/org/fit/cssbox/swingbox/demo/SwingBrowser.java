@@ -20,28 +20,26 @@ package org.fit.cssbox.swingbox.demo;
 
 import javax.swing.*;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.Vector;
 
-import org.fit.cssbox.layout.Box;
-import org.fit.cssbox.layout.BrowserConfig;
-import org.fit.cssbox.layout.ElementBox;
 import org.fit.cssbox.swingbox.BrowserPane;
 import org.fit.cssbox.swingbox.util.GeneralEvent;
 import org.fit.cssbox.swingbox.util.GeneralEventListener;
 import org.fit.cssbox.swingbox.util.GeneralEvent.EventType;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import java.awt.GridBagConstraints;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.text.Document;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import java.awt.Rectangle;
 import java.awt.GridBagLayout;
 import javax.swing.JTabbedPane;
 import java.awt.Insets;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  * This demo implements a simple Swing-based browser.
@@ -50,8 +48,8 @@ import java.awt.Insets;
  */
 public class SwingBrowser
 {
-    protected DefaultMutableTreeNode root;
-    protected BrowserConfig config;
+    protected Vector<URL> history;
+    protected int historyPos;
     public static SwingBrowser browser;
     
     protected JFrame mainWindow = null;  //  @jve:decl-index=0:visual-constraint="67,17"
@@ -70,15 +68,11 @@ public class SwingBrowser
     
     public SwingBrowser()
     {
-        this.config = new BrowserConfig();
+        history = new Vector<URL>();
+        historyPos = 0;
     }
 
-    public BrowserConfig getConfig()
-    {
-        return config;
-    }
-    
-    public void displayURLSwingBox(String urlstring)
+    public void displayURL(String urlstring)
     {
         try {
             if (!urlstring.startsWith("http:") &&
@@ -88,52 +82,27 @@ public class SwingBrowser
             
             URL url = new URL(urlstring);
             urlText.setText(url.toString());
-            
-            if (swingbox == null)
-            {
-                swingbox = createSwingbox();
-                tabs.add("New Tab", new JScrollPane(swingbox));
-            }
-            
-            swingbox.setPage(url);
+
+            while (historyPos < history.size())
+                history.remove(history.size() - 1);
+            history.add(url);
+            historyPos++;
+
+            displayURLSwingBox(url);
         } catch (Exception e) {
             System.err.println("*** Error: "+e.getMessage());
             e.printStackTrace();
         }
     }
     
-    public void displayURL(String urlstring)
+    protected void displayURLSwingBox(URL url) throws IOException
     {
-        displayURLSwingBox(urlstring);
-    }
-    
-	/**
-	 * Recursively creates a tree from the box tree
-	 */
-	protected DefaultMutableTreeNode createBoxTree(Box root)
-	{
-	    DefaultMutableTreeNode ret = new DefaultMutableTreeNode(root);
-	    if (root instanceof ElementBox)
-	    {
-	        ElementBox el = (ElementBox) root;
-	        for (int i = el.getStartChild(); i < el.getEndChild(); i++)
-	        {
-	            ret.add(createBoxTree(el.getSubBox(i)));
-	        }
-	    }
-	    return ret;
-	}
-	
-    /**
-     * Recursively creates a tree from the dom tree
-     */
-    protected DefaultMutableTreeNode createDomTree(Node root)
-    {
-        DefaultMutableTreeNode ret = new DefaultMutableTreeNode(root);
-        NodeList child = root.getChildNodes();
-        for (int i = 0; i < child.getLength(); i++)
-            ret.add(createDomTree(child.item(i)));
-        return ret;
+        if (swingbox == null)
+        {
+            swingbox = createSwingbox();
+            tabs.add("New Tab", new JScrollPane(swingbox));
+        }
+        swingbox.setPage(url);
     }
     
     //===========================================================================
@@ -383,6 +352,22 @@ public class SwingBrowser
     private JButton getBackButton() {
         if (backButton == null) {
         	backButton = new JButton("Back");
+        	backButton.addActionListener(new ActionListener() {
+        	    public void actionPerformed(ActionEvent arg0) 
+        	    {
+        	        if (historyPos > 1)
+        	        {
+        	            historyPos--;
+        	            URL url = history.elementAt(historyPos - 1);
+        	            try
+                        {
+                            displayURLSwingBox(url);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+        	        }
+        	    }
+        	});
         }
         return backButton;
     }
