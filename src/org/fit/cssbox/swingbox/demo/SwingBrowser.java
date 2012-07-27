@@ -1,19 +1,19 @@
 /**
- * SwingBrowser.java 
- * Copyright (c) 2005-2007 Radek Burget
+ * SwingBrowser.java
+ * (c) Radek Burget, 2012
  *
- * CSSBox is free software: you can redistribute it and/or modify
+ * SwingBox is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *  
- * CSSBox is distributed in the hope that it will be useful,
+ * SwingBox is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *  
  * You should have received a copy of the GNU Lesser General Public License
- * along with CSSBox. If not, see <http://www.gnu.org/licenses/>.
+ * along with SwingBox. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 package org.fit.cssbox.swingbox.demo;
@@ -332,24 +332,16 @@ public class SwingBrowser
         return swingbox;
     }
     
-    /**
-     * @param args
-     */
-    public static void main(String[] args)
+    private JTabbedPane getTabs() 
     {
-        browser = new SwingBrowser();
-        JFrame main = browser.getMainWindow();
-        main.setSize(1200,600);
-        main.setVisible(true);
-    }
-
-    private JTabbedPane getTabs() {
         if (tabs == null) {
         	tabs = new JTabbedPane(JTabbedPane.TOP);
         }
         return tabs;
     }
-    private JButton getBackButton() {
+    
+    private JButton getBackButton() 
+    {
         if (backButton == null) {
         	backButton = new JButton("Back");
         	backButton.addActionListener(new ActionListener() {
@@ -371,4 +363,17 @@ public class SwingBrowser
         }
         return backButton;
     }
+    
+    /**
+     * @param args
+     */
+    public static void main(String[] args)
+    {
+        browser = new SwingBrowser();
+        JFrame main = browser.getMainWindow();
+        main.setSize(1100, 850);
+        main.setVisible(true);
+        browser.displayURL("http://cssbox.sourceforge.net/swingbox");
+    }
+
 }

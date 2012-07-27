@@ -1,17 +1,36 @@
+/**
+ * Constants.java
+ * (c) Peter Bielik and Radek Burget, 2011-2012
+ *
+ * SwingBox is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * SwingBox is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with SwingBox. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 package org.fit.cssbox.swingbox.util;
-
-
 
 /**
  * @author Peter Bielik
  * @version 1.0
  * @since 1.0 - 5.2.2011
  */
-public final class Constants{
-    private Constants() {
-	// this is a library, private constructor
+public final class Constants
+{
+    
+    private Constants() 
+    {
+        // this is a library, private constructor
     }
-
 
     //used by environment - System.getProperty
     public static final String DOCUMENT_ASYNCHRONOUS_LOAD_PRIORITY_PROPERTY = "swingbox.document.async_load_priority";
@@ -47,15 +66,12 @@ public final class Constants{
     public static final String TABLE_COLUMN = "table_column";
     public static final String TABLE_ROW_BOX = "table_row_box";
 
-
-
     //Element attributes
     //used by Anchor, which maps these keys to some values
     public static final String ELEMENT_A_ATTRIBUTE_HREF = "a_href";
     public static final String ELEMENT_A_ATTRIBUTE_NAME = "a_name";
     public static final String ELEMENT_A_ATTRIBUTE_TITLE = "a_title";
     public static final String ELEMENT_A_ATTRIBUTE_TARGET = "a_target";
-
 
     //for posting any data, used by JEditorPane
     public static final String PostDataProperty = "javax.swing.JEditorPane.postdata";

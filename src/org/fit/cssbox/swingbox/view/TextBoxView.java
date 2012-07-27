@@ -1,3 +1,21 @@
+/**
+ * TextBoxView.java
+ * (c) Peter Bielik and Radek Burget, 2011-2012
+ *
+ * SwingBox is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * SwingBox is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with SwingBox. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
 
 package org.fit.cssbox.swingbox.view;
 
@@ -45,8 +63,7 @@ import cz.vutbr.web.css.CSSProperty.TextDecoration;
  * The Class TextBoxView. This renders a text.
  * 
  * @author Peter Bielik
- * @version 1.0
- * @since 1.0 - 8.11.2010
+ * @author Radek Burget
  */
 public class TextBoxView extends View implements CSSBoxView
 {
@@ -60,8 +77,6 @@ public class TextBoxView extends View implements CSSBoxView
     private String fontVariant;
     private TextLayout layout;
     private AffineTransform transform;
-    // private CSSProperty.TextDecoration textDecoration;
-    // private CSSProperty.FontVariant fontVariant;
 
     /** the cache of attributes */
     private AttributeSet attributes;
@@ -82,11 +97,6 @@ public class TextBoxView extends View implements CSSBoxView
     private ActionListener timerEvent;
     private Rectangle tmpRect;
 
-    /**
-     * Used by paint() to store highlighted view positions
-     */
-    private byte[] selections = null;
-    // protected Map<String, String> elementAttributes;
     private Anchor anchor;
 
     /**
@@ -225,8 +235,7 @@ public class TextBoxView extends View implements CSSBoxView
         TextLayout layout = getTextLayout();
         int offs = pos - getStartOffset(); // the start position this view is responsible for
         Rectangle alloc = toRect(a);
-        TextHitInfo hit = ((b == Position.Bias.Forward) ? TextHitInfo
-                .afterOffset(offs) : TextHitInfo.beforeOffset(offs));
+        TextHitInfo hit = ((b == Position.Bias.Forward) ? TextHitInfo.afterOffset(offs) : TextHitInfo.beforeOffset(offs));
         float[] locs = layout.getCaretInfo(hit);
 
         // hint: nie je lepsie to prepisat na setBounds, ktory berie int ?
@@ -355,7 +364,8 @@ public class TextBoxView extends View implements CSSBoxView
             }
         }
         // nothing is selected
-        renderContent(g, a, fg, p0, p1);
+        if (!box.isEmpty() && !getText().isEmpty())
+            renderContent(g, a, fg, p0, p1);
 
     }
 
@@ -782,8 +792,7 @@ public class TextBoxView extends View implements CSSBoxView
         if (refreshTextLayout)
         {
             refreshTextLayout = false;
-            layout = new TextLayout(getText(), getFont(),
-                    new FontRenderContext(transform, true, false));
+            layout = new TextLayout(getText(), getFont(), new FontRenderContext(transform, true, false));
         }
 
         return layout;

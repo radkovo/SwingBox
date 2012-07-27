@@ -1,3 +1,22 @@
+/**
+ * InlineReplacedBoxView.java
+ * (c) Peter Bielik and Radek Burget, 2011-2012
+ *
+ * SwingBox is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * SwingBox is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with SwingBox. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 package org.fit.cssbox.swingbox.view;
 
 import java.awt.Color;
@@ -25,13 +44,13 @@ import org.fit.cssbox.layout.ReplacedContent;
 import org.fit.cssbox.layout.ReplacedImage;
 import org.fit.cssbox.swingbox.util.Constants;
 
-
 /**
  * @author Peter Bielik
  * @version 1.0
  * @since 1.0 - 15.3.2011
  */
-public class InlineReplacedBoxView extends InlineBoxView {
+public class InlineReplacedBoxView extends InlineBoxView
+{
     // get some default system font..
     private static final Font DEFAULT_FONT = new Font(null, Font.PLAIN, 13);
     private Container container;
@@ -40,196 +59,223 @@ public class InlineReplacedBoxView extends InlineBoxView {
     private String alt = "";
     private String title = "";
 
-    public InlineReplacedBoxView(Element elem) {
-	super(elem);
+    public InlineReplacedBoxView(Element elem)
+    {
+        super(elem);
 
-	content = ((InlineReplacedBox)box).getContentObj();
-	if (content instanceof ReplacedImage) {
-	    repImage = (ReplacedImage) content;
-	} else {
-	    repImage = null;
-	}
+        content = ((InlineReplacedBox) box).getContentObj();
+        if (content instanceof ReplacedImage)
+        {
+            repImage = (ReplacedImage) content;
+        }
+        else
+        {
+            repImage = null;
+        }
 
-	loadElementAttributes();
+        loadElementAttributes();
     }
 
-    private void loadElementAttributes() {
-	alt = box.getElement().getAttribute("alt");
-	title = box.getElement().getAttribute("title");
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void paint(Graphics graphics, Shape allocation) {
-	Graphics2D g = (Graphics2D)graphics;
-	Rectangle alloc = toRect(allocation);
-
-	if (isVisible() && intersection(alloc, box.getAbsoluteBounds(), tmpRect)) {
-	    Shape oldAlloc = g.getClip();
-	    g.setClip(tmpRect);
-
-	    paintHighlights(g, alloc);
-	    box.getVisualContext().updateGraphics(g);
-	    box.drawBackground(g);
-
-	    if (content != null) {
-		content.draw(g, box.getContentWidth(), box.getContentHeight());
-
-		if (repImage != null && repImage.getImage() == null) {
-		    if (!"".equals(alt)) {
-			//so we have replaced image, which has no image data... :)
-
-			g.setFont(DEFAULT_FONT);
-			g.setColor(Color.BLACK);
-			tmpRect = box.getAbsoluteContentBounds();
-			// alternative picture representation (screen readers)
-			// TODO hint : java accessability !!!
-			g.drawString(alt, tmpRect.x + 2, tmpRect.y + (int)(tmpRect.height * 0.7));
-		    }else {
-			drawCross(g);
-		    }
-		}
-	    } else {
-		drawCross(g);
-	    }
-
-	    g.setClip(oldAlloc);
-	}
-
-    }
-
-    private void drawCross(Graphics2D g) {
-	tmpRect = box.getAbsoluteContentBounds();
-
-	g.setColor(Color.BLACK);
-	g.drawLine(tmpRect.x, tmpRect.y, tmpRect.x + tmpRect.width - 1, tmpRect.y + tmpRect.height - 1);
-	g.drawLine(tmpRect.x + tmpRect.width - 1, tmpRect.y, tmpRect.x, tmpRect.y + tmpRect.height - 1);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getToolTipText(float x, float y, Shape allocation) {
-	Map<String, String> elementAttributes = anchor.getProperties();
-	String val = "";
-	String tmp;
-	//image title
-	if (title != null && !"".equals(title)) val = val + "<b>" + title + "</b><br>";
-	//anchor title
-	tmp = elementAttributes.get(Constants.ELEMENT_A_ATTRIBUTE_TITLE);
-	if (tmp != null && !"".equals(tmp)) val = val + "<i>" + tmp + "</i><br>";
-	//anchor href
-	tmp = elementAttributes.get(Constants.ELEMENT_A_ATTRIBUTE_HREF);
-	if (tmp != null && !"".equals(tmp)) val = val + tmp;
-
-	return "".equals(val) ? null :  "<html>" + val + "</html>";
+    private void loadElementAttributes()
+    {
+        alt = box.getElement().getAttribute("alt");
+        title = box.getElement().getAttribute("title");
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean isVisible() {
-	return box.isDisplayed() && box.isVisible();
+    public void paint(Graphics graphics, Shape allocation)
+    {
+        Graphics2D g = (Graphics2D) graphics;
+        Rectangle alloc = toRect(allocation);
+
+        if (isVisible()
+                && intersection(alloc, box.getAbsoluteBounds(), tmpRect))
+        {
+            Shape oldAlloc = g.getClip();
+            g.setClip(tmpRect);
+
+            paintHighlights(g, alloc);
+            box.getVisualContext().updateGraphics(g);
+            box.drawBackground(g);
+
+            if (content != null)
+            {
+                content.draw(g, box.getContentWidth(), box.getContentHeight());
+
+                if (repImage != null && repImage.getImage() == null)
+                {
+                    if (!"".equals(alt))
+                    {
+                        // so we have replaced image, which has no image data...
+                        // :)
+
+                        g.setFont(DEFAULT_FONT);
+                        g.setColor(Color.BLACK);
+                        tmpRect = box.getAbsoluteContentBounds();
+                        // alternative picture representation (screen readers)
+                        // TODO hint : java accessability !!!
+                        g.drawString(alt, tmpRect.x + 2, tmpRect.y
+                                + (int) (tmpRect.height * 0.7));
+                    }
+                    else
+                    {
+                        drawCross(g);
+                    }
+                }
+            }
+            else
+            {
+                drawCross(g);
+            }
+
+            g.setClip(oldAlloc);
+        }
+
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    private void drawCross(Graphics2D g)
+    {
+        tmpRect = box.getAbsoluteContentBounds();
+
+        g.setColor(Color.BLACK);
+        g.drawLine(tmpRect.x, tmpRect.y, tmpRect.x + tmpRect.width - 1,
+                tmpRect.y + tmpRect.height - 1);
+        g.drawLine(tmpRect.x + tmpRect.width - 1, tmpRect.y, tmpRect.x,
+                tmpRect.y + tmpRect.height - 1);
+    }
+
     @Override
-    public void setParent(View parent) {
-	super.setParent(parent);
-	if (parent != null) {
-	    container = getContainer();
-	    if (repImage != null) repImage.setContainer(container);//getContainer());
-	} else {
-	    repImage = null;
-	    content = null;
-	    container = null;
-	}
+    public String getToolTipText(float x, float y, Shape allocation)
+    {
+        Map<String, String> elementAttributes = anchor.getProperties();
+        String val = "";
+        String tmp;
+        // image title
+        if (title != null && !"".equals(title))
+            val = val + "<b>" + title + "</b><br>";
+        // anchor title
+        tmp = elementAttributes.get(Constants.ELEMENT_A_ATTRIBUTE_TITLE);
+        if (tmp != null && !"".equals(tmp))
+            val = val + "<i>" + tmp + "</i><br>";
+        // anchor href
+        tmp = elementAttributes.get(Constants.ELEMENT_A_ATTRIBUTE_HREF);
+        if (tmp != null && !"".equals(tmp)) val = val + tmp;
+
+        return "".equals(val) ? null : "<html>" + val + "</html>";
     }
 
     @Override
-    protected View getViewAtPoint(int x, int y, Rectangle alloc) {
-	Rectangle rec = box.getAbsoluteBounds();
-	if (rec.contains(x, y)) {
-	    return this;
-	}
-
-	return null;
+    public boolean isVisible()
+    {
+        return box.isDisplayed() && box.isVisible();
     }
 
     @Override
-    protected void setPropertiesFromAttributes(AttributeSet attr) {
-	super.setPropertiesFromAttributes(attr);
-	if (attr != null) {
-	    //setContent((ReplacedContent) attr.getAttribute(Constants.ATTRIBUTE_REPLACED_CONTENT));
-	}
+    public void setParent(View parent)
+    {
+        super.setParent(parent);
+        if (parent != null)
+        {
+            container = getContainer();
+            if (repImage != null) repImage.setContainer(container);// getContainer());
+        }
+        else
+        {
+            repImage = null;
+            content = null;
+            container = null;
+        }
     }
 
-    protected SimpleAttributeSet createAttributes() {
-	//called from getAttributes()
-	SimpleAttributeSet res = super.createAttributes();
-	res.addAttribute(Constants.ATTRIBUTE_REPLACED_CONTENT, content);
-
-	return res;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public int viewToModel(float x, float y, Shape a, Bias[] bias) {
-	//	Rectangle alloc = a instanceof Rectangle ? (Rectangle)a : a.getBounds();
-	//	if (x < alloc.x + alloc.width) {
-	//	    bias[0] = Position.Bias.Forward;
-	//	    return getStartOffset(); // LTR
-	//	}
-	//	bias[0] = Position.Bias.Backward;
-	//	return getEndOffset(); //RTL
+    protected View getViewAtPoint(int x, int y, Rectangle alloc)
+    {
+        Rectangle rec = box.getAbsoluteBounds();
+        if (rec.contains(x, y)) { return this; }
 
-	Rectangle alloc = a instanceof Rectangle ? (Rectangle)a : a.getBounds();
-	if (x < alloc.x + (alloc.width / 2)) {
-	    bias[0] = Position.Bias.Forward;
-	    return getStartOffset();
-	}
-	bias[0] = Position.Bias.Backward;
-	return getEndOffset();
+        return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Shape modelToView(int pos, Shape a, Bias b) throws BadLocationException {
-	int p0 = getStartOffset();
-	int p1 = getEndOffset();
-	if ((pos >= p0) && (pos <= p1)) {
-	    Rectangle r = a instanceof Rectangle ? (Rectangle)a : a.getBounds();
-	    if (pos == p1) {
-		r.x += r.width;
-	    }
-	    r.width = 0;
-	    return r;
-	}
-	//	return null;
-	//	//return box.getAbsoluteBounds();
-	throw new BadLocationException(pos + " not in range " + p0 + "," + p1, pos);
+    protected void setPropertiesFromAttributes(AttributeSet attr)
+    {
+        super.setPropertiesFromAttributes(attr);
+        if (attr != null)
+        {
+            // setContent((ReplacedContent)
+            // attr.getAttribute(Constants.ATTRIBUTE_REPLACED_CONTENT));
+        }
     }
 
-    private void paintHighlights(Graphics g, Shape shape) {
-	if (container instanceof JTextComponent) {
-	    JTextComponent tc = (JTextComponent)container;
-	    Highlighter h = tc.getHighlighter();
-	    if (h instanceof LayeredHighlighter) {
-		((LayeredHighlighter)h).paintLayeredHighlights
-		(g, getStartOffset(), getEndOffset(), shape, tc, this);
-	    }
-	}
+    protected SimpleAttributeSet createAttributes()
+    {
+        // called from getAttributes()
+        SimpleAttributeSet res = super.createAttributes();
+        res.addAttribute(Constants.ATTRIBUTE_REPLACED_CONTENT, content);
+
+        return res;
+    }
+
+    @Override
+    public int viewToModel(float x, float y, Shape a, Bias[] bias)
+    {
+        // Rectangle alloc = a instanceof Rectangle ? (Rectangle)a :
+        // a.getBounds();
+        // if (x < alloc.x + alloc.width) {
+        // bias[0] = Position.Bias.Forward;
+        // return getStartOffset(); // LTR
+        // }
+        // bias[0] = Position.Bias.Backward;
+        // return getEndOffset(); //RTL
+
+        Rectangle alloc = a instanceof Rectangle ? (Rectangle) a : a
+                .getBounds();
+        if (x < alloc.x + (alloc.width / 2))
+        {
+            bias[0] = Position.Bias.Forward;
+            return getStartOffset();
+        }
+        bias[0] = Position.Bias.Backward;
+        return getEndOffset();
+    }
+
+    @Override
+    public Shape modelToView(int pos, Shape a, Bias b)
+            throws BadLocationException
+    {
+        int p0 = getStartOffset();
+        int p1 = getEndOffset();
+        if ((pos >= p0) && (pos <= p1))
+        {
+            Rectangle r = a instanceof Rectangle ? (Rectangle) a : a
+                    .getBounds();
+            if (pos == p1)
+            {
+                r.x += r.width;
+            }
+            r.width = 0;
+            return r;
+        }
+        // return null;
+        // //return box.getAbsoluteBounds();
+        throw new BadLocationException(pos + " not in range " + p0 + "," + p1,
+                pos);
+    }
+
+    private void paintHighlights(Graphics g, Shape shape)
+    {
+        if (container instanceof JTextComponent)
+        {
+            JTextComponent tc = (JTextComponent) container;
+            Highlighter h = tc.getHighlighter();
+            if (h instanceof LayeredHighlighter)
+            {
+                ((LayeredHighlighter) h).paintLayeredHighlights(g,
+                        getStartOffset(), getEndOffset(), shape, tc, this);
+            }
+        }
     }
 }

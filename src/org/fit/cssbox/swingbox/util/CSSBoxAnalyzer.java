@@ -1,3 +1,21 @@
+/**
+ * CSSBoxAnalyzer.java
+ * (c) Peter Bielik and Radek Burget, 2011-2012
+ *
+ * SwingBox is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * SwingBox is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with SwingBox. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
 
 package org.fit.cssbox.swingbox.util;
 
@@ -10,8 +28,7 @@ import org.xml.sax.InputSource;
 
 /**
  * @author Peter Bielik
- * @version 1.0
- * @since 1.0 - 29.1.2011
+ * @author Radek Burget
  */
 public interface CSSBoxAnalyzer
 {
@@ -61,6 +78,11 @@ public interface CSSBoxAnalyzer
      */
     public org.w3c.dom.Document getDocument();
     
+    /**
+     * Obtains the title from the DOM tree of the current document.
+     * The {@link CSSBoxAnalyzer#analyze(InputSource, URL, Dimension, Charset)} method must be called before calling this.
+     * @return The document title or <code>null</code> if there is not title defined.
+     */
     public String getDocumentTitle();
     
 }
