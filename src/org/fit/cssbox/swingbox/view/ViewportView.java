@@ -215,7 +215,7 @@ public class ViewportView extends BlockBoxView implements ComponentListener
     {
         if ((e.getSource() instanceof JViewport))
         {
-            checkSize(((JViewport) e.getSource()).getExtentSize());
+            //checkSize(((JViewport) e.getSource()).getExtentSize());
         }
     }
 

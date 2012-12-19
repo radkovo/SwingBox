@@ -32,8 +32,6 @@ import java.io.Writer;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.JEditorPane;
 import javax.swing.JViewport;
@@ -44,6 +42,9 @@ import javax.swing.text.Document;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.text.ViewFactory;
 
+import org.apache.commons.io.input.ReaderInputStream;
+import org.fit.cssbox.io.DocumentSource;
+import org.fit.cssbox.io.StreamDocumentSource;
 import org.fit.cssbox.layout.ElementBox;
 import org.fit.cssbox.swingbox.util.CSSBoxAnalyzer;
 import org.fit.cssbox.swingbox.util.Constants;
@@ -52,7 +53,6 @@ import org.fit.cssbox.swingbox.util.ContentWriter;
 import org.fit.cssbox.swingbox.util.GeneralEvent;
 import org.fit.cssbox.swingbox.util.GeneralEvent.EventType;
 import org.fit.cssbox.swingbox.util.MouseController;
-import org.xml.sax.InputSource;
 
 /**
  * This is custom implementation of EditoKit for (X)HTML with use of CSSBox.
@@ -64,8 +64,8 @@ import org.xml.sax.InputSource;
 public class SwingBoxEditorKit extends StyledEditorKit
 {
     private static final long serialVersionUID = -2774578978116020429L;
-    private static final Pattern charsetPattern = Pattern
-            .compile("charset\\s*=[\\s'\"]*([\\-\\.\\:_0-9a-zA-Z]+)[\\s'\\\",;]*");
+    /*private static final Pattern charsetPattern = Pattern
+            .compile("charset\\s*=[\\s'\"]*([\\-\\.\\:_0-9a-zA-Z]+)[\\s'\\\",;]*");*/
     private CSSBoxAnalyzer cbanalyzer;
     private ViewFactory vfactory;
     private JEditorPane component;
@@ -231,8 +231,7 @@ public class SwingBoxEditorKit extends StyledEditorKit
 
         if (doc instanceof org.fit.cssbox.swingbox.SwingBoxDocument)
         {
-            readImpl(new InputSource(in),
-                    (org.fit.cssbox.swingbox.SwingBoxDocument) doc, pos);
+            readImpl(in, (org.fit.cssbox.swingbox.SwingBoxDocument) doc, pos);
         }
         else
         {
@@ -247,8 +246,8 @@ public class SwingBoxEditorKit extends StyledEditorKit
 
         if (doc instanceof org.fit.cssbox.swingbox.SwingBoxDocument)
         {
-            readImpl(new InputSource(in),
-                    (org.fit.cssbox.swingbox.SwingBoxDocument) doc, pos);
+            InputStream is = new ReaderInputStream(in);
+            readImpl(is, (org.fit.cssbox.swingbox.SwingBoxDocument) doc, pos);
         }
         else
         {
@@ -349,7 +348,7 @@ public class SwingBoxEditorKit extends StyledEditorKit
         return cba;
     }
 
-    private void readImpl(InputSource is, SwingBoxDocument doc, int pos)
+    private void readImpl(InputStream in, SwingBoxDocument doc, int pos)
             throws IOException, BadLocationException
     {
 
@@ -389,35 +388,18 @@ public class SwingBoxEditorKit extends StyledEditorKit
         List<ElementSpec> elements;
         try
         {
-            // TODO zadat encoding
-            Charset charset = null;
-            // charset\s*=[\s'"]*([\-_a-zA-Z0-9]+)[\s'",;]*
-            Object obj = doc.getProperty("Content-Type");
-
-            if (obj != null)
+            String ctype = null;
+            Object ct = doc.getProperty("Content-Type");
+            if (ct != null)
             {
-                String ct;
-
-                if (obj instanceof List)
-                    ct = (String) ((List<?>) obj).get(0);
+                if (ct instanceof List)
+                    ctype = (String) ((List<?>) ct).get(0);
                 else
-                    ct = obj.toString();
-
-                Matcher charsetMatcher = charsetPattern.matcher(ct);
-                if (charsetMatcher.find())
-                {
-                    try
-                    {
-                        charset = Charset.forName(charsetMatcher.group(1));
-                    } catch (Exception e)
-                    {
-                        e.printStackTrace(); // XXX removethis line !!!
-                        charset = null;
-                    }
-                }
+                    ctype = ct.toString();
             }
 
-            elements = rdr.read(is, url, analyzer, dim, charset);
+            DocumentSource docSource = new StreamDocumentSource(in, url, ctype);
+            elements = rdr.read(docSource, analyzer, dim);
             String title = analyzer.getDocumentTitle();
             if (title == null)
                 title = "No title";
