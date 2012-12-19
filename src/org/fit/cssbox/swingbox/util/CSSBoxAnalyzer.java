@@ -23,6 +23,7 @@ import java.awt.Dimension;
 import java.net.URL;
 import java.nio.charset.Charset;
 
+import org.fit.cssbox.io.DocumentSource;
 import org.fit.cssbox.layout.ElementBox;
 import org.xml.sax.InputSource;
 
@@ -38,20 +39,14 @@ public interface CSSBoxAnalyzer
      * is further processed.
      * 
      * @param is
-     *            the InputSource object, which encapsulates InputStream or
-     *            Reader. This is the source of data.
-     * @param url
-     *            the URL where the data comes from.
+     *            the document source implementation.
      * @param dim
      *            the dimension of rendering area.
-     * @param charset
-     *            the charset used to encode the character data.
      * @return the tree of boxes.
      * @throws Exception
      *             some exception may be throwen during processing.
      */
-    public ElementBox analyze(InputSource is, URL url, Dimension dim,
-            Charset charset) throws Exception;
+    public ElementBox analyze(DocumentSource docSource, Dimension dim) throws Exception;
 
     /**
      * Updates the layout according to the new dimmension (the tree structure of

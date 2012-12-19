@@ -21,19 +21,14 @@ package org.fit.cssbox.swingbox.util;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-
-import org.apache.xerces.parsers.DOMParser;
-import org.cyberneko.html.HTMLConfiguration;
 import org.fit.cssbox.css.CSSNorm;
 import org.fit.cssbox.css.DOMAnalyzer;
+import org.fit.cssbox.io.DOMSource;
+import org.fit.cssbox.io.DefaultDOMSource;
+import org.fit.cssbox.io.DocumentSource;
 import org.fit.cssbox.layout.BrowserCanvas;
 import org.fit.cssbox.layout.ElementBox;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * This is customizable default implementation of CSSBoxAnalyzer.
@@ -47,20 +42,21 @@ public class DefaultAnalyzer implements CSSBoxAnalyzer
     protected BrowserCanvas canvas;
 
     @Override
-    public ElementBox analyze(InputSource is, URL url, Dimension dim, Charset charset)
+    public ElementBox analyze(DocumentSource docSource, Dimension dim)
             throws Exception
     {
-        w3cdoc = parseDocument(is, charset);
+        DOMSource parser = new DefaultDOMSource(docSource);
+        w3cdoc = parser.parse();
 
         // Create the CSS analyzer
-        DOMAnalyzer da = new DOMAnalyzer(w3cdoc, url);
+        DOMAnalyzer da = new DOMAnalyzer(w3cdoc, docSource.getURL());
         da.attributesToStyles();
         da.addStyleSheet(null, CSSNorm.stdStyleSheet(), DOMAnalyzer.Origin.AGENT);
         da.addStyleSheet(null, CSSNorm.userStyleSheet(), DOMAnalyzer.Origin.AGENT);
         da.getStyleSheets();
         
         BufferedImage tmpImg = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-        canvas = new BrowserCanvas(da.getRoot(), da, url);
+        canvas = new BrowserCanvas(da.getRoot(), da, docSource.getURL());
         canvas.setImage(tmpImg);
         canvas.getConfig().setLoadImages(true);
         canvas.getConfig().setLoadBackgroundImages(true);
@@ -91,25 +87,6 @@ public class DefaultAnalyzer implements CSSBoxAnalyzer
             return titles.item(0).getTextContent();
         else
             return null;
-    }
-
-    /**
-     * Parses a document from input source. This may be overriden when custom parsing implementation is needed.
-     * @param is The input stream containing the source document.
-     * @param charset Input charset, <code>null</code> for autodetection.
-     * @return The resulting document.
-     * @throws SAXException
-     * @throws IOException
-     */
-    protected org.w3c.dom.Document parseDocument(org.xml.sax.InputSource is, Charset charset)
-            throws SAXException, IOException
-    {
-        DOMParser parser = new DOMParser(new HTMLConfiguration());
-        parser.setProperty("http://cyberneko.org/html/properties/names/elems", "lower");
-        if (charset != null)
-            parser.setProperty("http://cyberneko.org/html/properties/default-encoding", charset.name());
-        parser.parse(is);
-        return parser.getDocument();
     }
 
 }

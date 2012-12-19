@@ -234,7 +234,7 @@ public class TextBoxView extends View implements CSSBoxView
     {
         TextLayout layout = getTextLayout();
         int offs = pos - getStartOffset(); // the start position this view is responsible for
-        Rectangle alloc = toRect(a);
+        Rectangle alloc = new Rectangle(toRect(a));
         TextHitInfo hit = ((b == Position.Bias.Forward) ? TextHitInfo.afterOffset(offs) : TextHitInfo.beforeOffset(offs));
         float[] locs = layout.getCaretInfo(hit);
 

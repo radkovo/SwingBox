@@ -238,7 +238,11 @@ public class ViewportView extends BlockBoxView implements ComponentListener
     {
         if (extentSize.width == 0 || extentSize.height == 0)
             return false;
-        if (!tmpDimension.equals(extentSize))
+        
+        int diffx = Math.abs(extentSize.width - tmpDimension.width);
+        int diffy = Math.abs(extentSize.height - tmpDimension.height);
+        System.out.println("Diffx="+diffx);
+        if (diffx > 20 || diffy > 20) //prevent loops caused by displaying scrollbars and too small changes.
         {
             Document doc = getDocument();
             tmpDimension.setSize(extentSize);

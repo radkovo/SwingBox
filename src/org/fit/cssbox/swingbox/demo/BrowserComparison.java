@@ -47,7 +47,10 @@ import javax.swing.text.html.HTMLEditorKit;
 import org.fit.cssbox.css.CSSNorm;
 import org.fit.cssbox.css.DOMAnalyzer;
 import org.fit.cssbox.css.DOMAnalyzer.Origin;
-import org.fit.cssbox.demo.DOMSource;
+import org.fit.cssbox.io.DOMSource;
+import org.fit.cssbox.io.DefaultDOMSource;
+import org.fit.cssbox.io.DefaultDocumentSource;
+import org.fit.cssbox.io.DocumentSource;
 import org.fit.cssbox.layout.Box;
 import org.fit.cssbox.layout.BrowserCanvas;
 import org.fit.cssbox.layout.ElementBox;
@@ -213,29 +216,25 @@ public class BrowserComparison extends JFrame
         }
     }
 
-    private void loadPage_cssbox(String adr)
+    private void loadPage_cssbox(String urlstring)
     {
         InputStream is = null;
 
         try
         {
-            URL url = new URL(adr);
-            URLConnection con = url.openConnection();
-            con.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; BoxBrowserTest/4.x; Linux) CSSBox/4.x (like Gecko)");
-            is = con.getInputStream();
-
-            DOMSource parser = new DOMSource(is);
-            parser.setContentType(con.getHeaderField("Content-Type")); // use the default encoding provided via HTTP
+            DocumentSource docSource = new DefaultDocumentSource(urlstring);
             
+            DOMSource parser = new DefaultDOMSource(docSource);
             Document doc = parser.parse();
-
-            DOMAnalyzer da = new DOMAnalyzer(doc, url);
+            
+            DOMAnalyzer da = new DOMAnalyzer(doc, docSource.getURL());
+            
             da.attributesToStyles();
             da.addStyleSheet(null, CSSNorm.stdStyleSheet(), Origin.AGENT);
             da.addStyleSheet(null, CSSNorm.userStyleSheet(), Origin.AGENT);
             da.getStyleSheets();
 
-            cssbox = new BrowserCanvas(da.getRoot(), da, url);
+            cssbox = new BrowserCanvas(da.getRoot(), da, docSource.getURL());
             cssbox.getConfig().setLoadBackgroundImages(true);
             cssbox.getConfig().setLoadImages(true);
             cssbox.createLayout(contentScroll.getSize());

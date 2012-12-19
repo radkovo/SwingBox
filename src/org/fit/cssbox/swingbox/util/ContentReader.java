@@ -21,8 +21,6 @@ package org.fit.cssbox.swingbox.util;
 
 import java.awt.Dimension;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,6 +28,7 @@ import javax.swing.text.DefaultStyledDocument.ElementSpec;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 
+import org.fit.cssbox.io.DocumentSource;
 import org.fit.cssbox.layout.BlockBox;
 import org.fit.cssbox.layout.BlockReplacedBox;
 import org.fit.cssbox.layout.BlockTableBox;
@@ -82,8 +81,7 @@ public class ContentReader
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    public List<ElementSpec> read(org.xml.sax.InputSource is, URL url,
-            CSSBoxAnalyzer cba, Dimension dim, Charset charset)
+    public List<ElementSpec> read(DocumentSource docSource, CSSBoxAnalyzer cba, Dimension dim)
             throws IOException
     {
         // ale ked sa pouzije setText() neviem nic o url, nic sa nenastavuje ,
@@ -106,7 +104,7 @@ public class ContentReader
         try
         {
             // System.err.println("analyzing...");
-            root = cba.analyze(is, url, dim, charset);
+            root = cba.analyze(docSource, dim);
             // System.err.println("analyzing finished...");
         } catch (Exception e)
         {
