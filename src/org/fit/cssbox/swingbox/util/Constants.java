@@ -40,6 +40,7 @@ public final class Constants
     // Attrinutes used by AttributeSet in elements and later in views
     public static final String ATTRIBUTE_BOX_REFERENCE = "attribute_box_reference";
     public static final String ATTRIBUTE_ANCHOR_REFERENCE = "attribute_anchor_reference";
+    public static final String ATTRIBUTE_ELEMENT_ID = "element_id";
     public static final String ATTRIBUTE_TEXT_DECORATION = "attribute_text_decoration";
     public static final String ATTRIBUTE_FONT_VARIANT = "attribute_font_variant";
     public static final String ATTRIBUTE_FONT = "attribute_font";

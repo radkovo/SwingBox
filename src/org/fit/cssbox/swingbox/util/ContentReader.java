@@ -389,6 +389,7 @@ public class ContentReader
                 elementNameValue);
         attr.addAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE, new Anchor());
         attr.addAttribute(Constants.ATTRIBUTE_BOX_REFERENCE, box);
+        attr.addAttribute(Constants.ATTRIBUTE_ELEMENT_ID, box.getElement().getAttribute("id"));
 
         elements.add(new ElementSpec(attr, ElementSpec.StartTagType));
 
