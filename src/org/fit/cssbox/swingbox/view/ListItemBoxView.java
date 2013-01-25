@@ -19,7 +19,13 @@
 
 package org.fit.cssbox.swingbox.view;
 
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+
 import javax.swing.text.Element;
+
+import org.fit.cssbox.layout.ListItemBox;
 
 /**
  * @author Peter Bielik
@@ -37,4 +43,14 @@ public class ListItemBoxView extends BlockBoxView
         super(elem);
     }
 
+    @Override
+    public void paint(Graphics g, Shape a)
+    {
+        super.paint(g, a);
+        if (isVisible() && box instanceof ListItemBox)
+            ((ListItemBox) box).drawMarker((Graphics2D) g);
+    }
+
+    
+    
 }
