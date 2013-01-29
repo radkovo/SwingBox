@@ -55,7 +55,7 @@ public class InlineBoxView extends ElementBoxView
     @Override
     public void paint(Graphics graphics, Shape allocation)
     {
-        if (isVisible())
+        if (box.isDisplayed())
         {
             Graphics2D g = (Graphics2D) graphics;
             // super.paint(g, allocation);

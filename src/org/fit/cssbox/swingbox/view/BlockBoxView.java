@@ -79,7 +79,7 @@ public class BlockBoxView extends ElementBoxView
     @Override
     public void paint(Graphics g, Shape a)
     {
-        if (isVisible())
+        if (box.isDisplayed() && box.isDeclaredVisible())
         {
             if ("visible".equals(overflow))
             {
