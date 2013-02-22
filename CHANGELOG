@@ -1,2 +1,8 @@
+Version 0.2 - Feb 22, 2013
+- Updated to current CSSBox version
+- Scrolling to anchor improved and ID attribute as anchor interpretation added (closes #5)
+- List item marker drawing fixed (closes #3, #4, #8)
+- Box visibility and painting fixes (closes #6)
+
 Version 0.1 - Jul 27, 2012
 - First public release
