@@ -72,6 +72,7 @@ public class BrowserPane extends JEditorPane
     private InputStream loadingStream;
     private Hashtable<String, Object> pageProperties;
     private Document document;
+    private static EditorKit swingBoxEditorKit = null;
 
     // "org.fit.cssbox.swingbox.SwingBoxEditorKit"
     protected String HtmlEditorKitClass = "org.fit.cssbox.swingbox.SwingBoxEditorKit";
@@ -96,8 +97,10 @@ public class BrowserPane extends JEditorPane
         java.security.Security
                 .addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 
-        // Register custom EditorKit
-        registerEditorKit();
+        // Create custom EditorKit if needed
+        if (swingBoxEditorKit == null) {
+            swingBoxEditorKit = new SwingBoxEditorKit();
+        }
 
         setEditable(false);
         setContentType("text/html");
@@ -361,20 +364,14 @@ public class BrowserPane extends JEditorPane
         return null;
     }
 
-    private void registerEditorKit()
-    {
-        ClassLoader loader = getClass().getClassLoader();
-        if (loader == null)
-        {
-            loader = Thread.currentThread().getContextClassLoader();
+    @Override
+    public EditorKit getEditorKitForContentType(String type) {
+        if (type.equalsIgnoreCase("text/html") || type.equalsIgnoreCase("application/xhtml+xml")
+                || type.equalsIgnoreCase("text/xhtml")) {
+            return swingBoxEditorKit;
+        } else {
+            return super.getEditorKitForContentType(type);
         }
-
-        registerEditorKitForContentType("text/html", HtmlEditorKitClass, loader);
-        registerEditorKitForContentType("application/xhtml+xml",
-                HtmlEditorKitClass, loader);
-        // this is not official MIME, but may be used
-        registerEditorKitForContentType("text/xhtml", HtmlEditorKitClass,
-                loader);
     }
 
     @Override
