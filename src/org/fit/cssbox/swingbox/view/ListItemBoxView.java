@@ -43,13 +43,13 @@ public class ListItemBoxView extends BlockBoxView
         super(elem);
     }
 
-    @Override
+    /*@Override
     public void paint(Graphics g, Shape a)
     {
         super.paint(g, a);
         if (isVisible() && box instanceof ListItemBox)
             ((ListItemBox) box).drawMarker((Graphics2D) g);
-    }
+    }*/
 
     
     

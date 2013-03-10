@@ -39,6 +39,7 @@ import javax.swing.text.EditorKit;
 import javax.swing.text.Element;
 import javax.swing.text.View;
 
+import org.fit.cssbox.layout.Viewport;
 import org.fit.cssbox.swingbox.SwingBoxDocument;
 import org.fit.cssbox.swingbox.SwingBoxEditorKit;
 
@@ -83,6 +84,13 @@ public class ViewportView extends BlockBoxView implements ComponentListener
 
     @Override
     public void paint(Graphics graphics, Shape allocation)
+    {
+        System.out.println("Paint Viewport in " + allocation);
+        BoxViewRenderer render = new BoxViewRenderer((Graphics2D) graphics);
+        ((Viewport) box).draw(render);
+    }
+    
+    public void paintxx(Graphics graphics, Shape allocation)
     {
 
         Graphics2D g;

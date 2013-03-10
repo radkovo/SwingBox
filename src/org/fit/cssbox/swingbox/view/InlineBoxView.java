@@ -52,7 +52,7 @@ public class InlineBoxView extends ElementBoxView
         return super.getAttributes();
     }
 
-    @Override
+    /*@Override
     public void paint(Graphics graphics, Shape allocation)
     {
         if (box.isDisplayed())
@@ -73,7 +73,7 @@ public class InlineBoxView extends ElementBoxView
             }
 
         }
-    }
+    }*/
 
     @Override
     public boolean isVisible()

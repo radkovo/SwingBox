@@ -76,7 +76,7 @@ public class BlockBoxView extends ElementBoxView
         return super.getMaximumSpan(axis);
     }
 
-    @Override
+    /*@Override
     public void paint(Graphics g, Shape a)
     {
         if (box.isDisplayed() && box.isDeclaredVisible())
@@ -96,7 +96,7 @@ public class BlockBoxView extends ElementBoxView
             super.paint(g, tmpRect);
 
         }
-    }
+    }*/
 
     @Override
     public boolean isVisible()
