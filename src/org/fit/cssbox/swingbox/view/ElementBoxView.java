@@ -437,6 +437,8 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     @Override
     public void paint(Graphics graphics, Shape allocation)
     {
+        System.out.println("Paint element: " + box + " in " + allocation);
+
         Graphics2D g = (Graphics2D) graphics;
         /*
          * alloc is a rectangle - intersection from parent with almost

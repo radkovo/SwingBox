@@ -21,22 +21,20 @@ package org.fit.cssbox.swingbox.util;
 
 import java.awt.Dimension;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.text.DefaultStyledDocument.ElementSpec;
-import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 
 import org.fit.cssbox.io.DocumentSource;
 import org.fit.cssbox.layout.BlockBox;
 import org.fit.cssbox.layout.BlockReplacedBox;
 import org.fit.cssbox.layout.BlockTableBox;
-import org.fit.cssbox.layout.Box;
 import org.fit.cssbox.layout.ElementBox;
+import org.fit.cssbox.layout.InlineBlockReplacedBox;
 import org.fit.cssbox.layout.InlineBox;
-import org.fit.cssbox.layout.InlineReplacedBox;
 import org.fit.cssbox.layout.ListItemBox;
 import org.fit.cssbox.layout.ReplacedBox;
 import org.fit.cssbox.layout.TableBodyBox;
@@ -61,15 +59,17 @@ import org.fit.cssbox.swingbox.SwingBoxDocument;
 public class ContentReader implements org.fit.cssbox.render.BoxRenderer
 {
     /** Map of opened boxes and the corresponding attribute sets */
-    private HashMap<Box, SimpleAttributeSet> boxMap;
+    //private HashMap<Box, SimpleAttributeSet> boxMap;
 
-
+    /** Resulting element list */
+    private List<ElementSpec> elements;
+    
     /**
      * Instantiates a new content reader.
      */
     public ContentReader()
     {
-        boxMap = new HashMap<Box, SimpleAttributeSet>();
+        //boxMap = new HashMap<Box, SimpleAttributeSet>();
     }
 
     /**
@@ -96,7 +96,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         if (cba == null)
             throw new IllegalArgumentException("CSSBoxAnalyzer can not be NULL !!!\nProvide your custom implementation or check instantiation of DefaultAnalyzer object...");
 
-        List<ElementSpec> elements = new LinkedList<ElementSpec>();// ArrayList<ElementSpec>(1024);
+        elements = new Vector<ElementSpec>();// ArrayList<ElementSpec>(1024);
         elements.add(new ElementSpec(SimpleAttributeSet.EMPTY, ElementSpec.EndTagType));
 
         // System.err.print("used Reader and encoding ? " +
@@ -104,26 +104,19 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         // InputStreamReader r = (InputStreamReader)is.getCharacterStream();
         // System.err.println(r.getEncoding());
 
-        ElementBox root;
+        Viewport vp;
         try
         {
             // System.err.println("analyzing...");
-            root = cba.analyze(docSource, dim);
+            vp = cba.analyze(docSource, dim);
             // System.err.println("analyzing finished...");
         } catch (Exception e)
         {
             throw new IOException(e);
         }
 
-        if (root instanceof Viewport)
-        {
-            // root should by an instance of Viewport
-            buildViewport(elements, (Viewport) root);
-        }
-        else
-        {
-            buildElements(elements, root);
-        }
+        //Use this for "drawing" the boxes. This constructs the element list.
+        vp.draw(this);
 
         // System.err.println("num. of elements : " + elements.size());
         // System.err.println("Root min width : " + root.getMinimalWidth() +
@@ -149,7 +142,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    public List<ElementSpec> update(ElementBox root, Dimension newDimension, CSSBoxAnalyzer cba) throws IOException
+    public List<ElementSpec> update(Viewport root, Dimension newDimension, CSSBoxAnalyzer cba) throws IOException
     {
         if (cba == null)
             throw new IllegalArgumentException("CSSBoxAnalyzer can not be NULL !!!\nProvide your custom implementation or check instantiation of DefaultAnalyzer object...");
@@ -157,98 +150,81 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         List<ElementSpec> elements = new LinkedList<ElementSpec>();
         elements.add(new ElementSpec(SimpleAttributeSet.EMPTY, ElementSpec.EndTagType));
 
-        ElementBox tmp;
+        Viewport vp;
         try
         {
-            tmp = cba.update(root, newDimension);
+            vp = cba.update(newDimension);
         } catch (Exception e)
         {
             throw new IOException(e);
         }
 
-        if (tmp instanceof Viewport)
-        {
-            // tmp should by an instance of Viewport
-            buildViewport(elements, (Viewport) tmp);
-        }
-        else
-        {
-            buildElements(elements, tmp);
-        }
-
+        vp.draw(this);
+        
         return elements;
     }
 
-    private void buildElement(List<ElementSpec> elements, ElementBox box)
+    private SimpleAttributeSet buildElement(ElementBox box)
     {
-        if (box instanceof InlineReplacedBox)
-        { // -- inline boxes
-            buildInlineReplacedBox(elements, (InlineReplacedBox) box);
-        }
-        else if (box instanceof InlineBox)
+        if (box instanceof InlineBox)
         {
-            buildInlineBox(elements, (InlineBox) box);
+            return buildInlineBox((InlineBox) box);
         }
         else if (box instanceof Viewport)
         { // -- the boxes
-            buildViewport(elements, (Viewport) box);
-        }
-        else if (box instanceof BlockReplacedBox)
-        {
-            buildBlockReplacedBox(elements, (BlockReplacedBox) box);
+            return buildViewport((Viewport) box);
         }
         else if (box instanceof TableBox)
         { // -- tables
-            buildTableBox(elements, (TableBox) box);
+            return buildTableBox((TableBox) box);
         }
         else if (box instanceof TableCaptionBox)
         {
-            buildTableCaptionBox(elements, (TableCaptionBox) box);
+            return buildTableCaptionBox((TableCaptionBox) box);
         }
         else if (box instanceof TableBodyBox)
         {
-            buildTableBodyBox(elements, (TableBodyBox) box);
+            return buildTableBodyBox((TableBodyBox) box);
         }
         else if (box instanceof TableRowBox)
         {
-            buildTableRowBox(elements, (TableRowBox) box);
+            return buildTableRowBox((TableRowBox) box);
         }
         else if (box instanceof TableCellBox)
         {
-            buildTableCellBox(elements, (TableCellBox) box);
+            return buildTableCellBox((TableCellBox) box);
         }
         else if (box instanceof TableColumnGroup)
         {
-            buildTableColumnGroup(elements, (TableColumnGroup) box);
+            return buildTableColumnGroup((TableColumnGroup) box);
         }
         else if (box instanceof TableColumn)
         {
-            buildTableColumn(elements, (TableColumn) box);
+            return buildTableColumn((TableColumn) box);
         }
         else if (box instanceof BlockTableBox)
         {
-            buildBlockTableBox(elements, (BlockTableBox) box);
+            return buildBlockTableBox((BlockTableBox) box);
         }
         else if (box instanceof ListItemBox)
         {
-            buildListItemBox(elements, (ListItemBox) box);
+            return buildListItemBox((ListItemBox) box);
         }
         else if (box instanceof BlockBox)
         {
-            buildBlockBox(elements, (BlockBox) box);
+            return buildBlockBox((BlockBox) box);
         }
         else
         {
-            // todo log this !
-            System.err.println("Unknowen BOX : " + box.getClass().getName());
+            System.err.println("Unknown BOX : " + box.getClass().getName());
+            return null;
         }
     }
 
-    private void buildText(List<ElementSpec> elements, TextBox box)
+    private SimpleAttributeSet buildText(TextBox box)
     {
-        String text = box.getText();
         VisualContext vc = box.getVisualContext();
-        MutableAttributeSet attr = new SimpleAttributeSet();
+        SimpleAttributeSet attr = new SimpleAttributeSet();
 
         attr.addAttribute(Constants.ATTRIBUTE_FONT_VARIANT, vc.getFontVariant());
         attr.addAttribute(Constants.ATTRIBUTE_TEXT_DECORATION, vc.getTextDecoration());
@@ -259,116 +235,86 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         attr.addAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE, new Anchor());
         attr.addAttribute(Constants.ATTRIBUTE_BOX_REFERENCE, box);
 
-        // elements.add(new ElementSpec(attr, ElementSpec.StartTagType));
-        elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
-        // elements.add(new ElementSpec(attr, ElementSpec.EndTagType));
-
+        return attr;
     }
 
-    private void buildInlineReplacedBox(List<ElementSpec> elements, InlineReplacedBox box)
+    private SimpleAttributeSet buildReplacedBox(ReplacedBox box)
     {
-        org.w3c.dom.Element elem = box.getElement();
-        String text = "";
-        // add some textual info, if picture
-        if ("img".equalsIgnoreCase(elem.getTagName()))
-        {
-            text = " [" + elem.getAttribute("alt") + " Location: "
-                    + elem.getAttribute("src") + "] ";
-        }
-
-        MutableAttributeSet attr = new SimpleAttributeSet();
-        attr.addAttribute(SwingBoxDocument.ElementNameAttribute, Constants.INLINE_REPLACED_BOX);
+        SimpleAttributeSet attr = new SimpleAttributeSet();
+        if (box instanceof BlockReplacedBox)
+            attr.addAttribute(SwingBoxDocument.ElementNameAttribute, Constants.BLOCK_REPLACED_BOX);
+        else if (box instanceof InlineBlockReplacedBox)
+            attr.addAttribute(SwingBoxDocument.ElementNameAttribute, Constants.INLINE_BLOCK_REPLACED_BOX);
+        else
+            attr.addAttribute(SwingBoxDocument.ElementNameAttribute, Constants.INLINE_REPLACED_BOX);
         attr.addAttribute(Constants.ATTRIBUTE_BOX_REFERENCE, box);
         attr.addAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE, new Anchor());
-        attr.addAttribute(Constants.ATTRIBUTE_REPLACED_CONTENT,
-                box.getContentObj());
+        attr.addAttribute(Constants.ATTRIBUTE_REPLACED_CONTENT, box.getContentObj());
 
-        elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
+        return attr;
     }
 
-    private void buildBlockReplacedBox(List<ElementSpec> elements, BlockReplacedBox box)
+    private SimpleAttributeSet buildBlockBox(BlockBox box)
     {
-        // some content
-        org.w3c.dom.Element elem = box.getElement();
-        String text = "";
-        // add some textual info, if picture
-        if ("img".equalsIgnoreCase(elem.getTagName()))
-        {
-            text = " [" + elem.getAttribute("alt") + " Location: "
-                    + elem.getAttribute("src") + "] ";
-        }
-
-        MutableAttributeSet attr = new SimpleAttributeSet();
-        attr.addAttribute(SwingBoxDocument.ElementNameAttribute, Constants.BLOCK_REPLACED_BOX);
-        attr.addAttribute(Constants.ATTRIBUTE_BOX_REFERENCE, box);
-        attr.addAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE, new Anchor());
-        attr.addAttribute(Constants.ATTRIBUTE_REPLACED_CONTENT,
-                box.getContentObj());
-
-        elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
+        return commonBuild(box, Constants.BLOCK_BOX);
     }
 
-    private void buildBlockBox(List<ElementSpec> elements, BlockBox box)
+    private SimpleAttributeSet buildInlineBox(InlineBox box)
     {
-        commonBuild(elements, box, Constants.BLOCK_BOX);
+        return commonBuild(box, Constants.INLINE_BOX);
     }
 
-    private void buildInlineBox(List<ElementSpec> elements, InlineBox box)
+    private SimpleAttributeSet buildViewport(Viewport box)
     {
-        commonBuild(elements, box, Constants.INLINE_BOX);
+        return commonBuild(box, Constants.VIEWPORT);
     }
 
-    private void buildViewport(List<ElementSpec> elements, Viewport box)
+    private SimpleAttributeSet buildBlockTableBox(BlockTableBox box)
     {
-        commonBuild(elements, box, Constants.VIEWPORT);
+        return commonBuild(box, Constants.BLOCK_TABLE_BOX);
     }
 
-    private void buildBlockTableBox(List<ElementSpec> elements, BlockTableBox box)
+    private SimpleAttributeSet buildTableBox(TableBox box)
     {
-        commonBuild(elements, box, Constants.BLOCK_TABLE_BOX);
+        return commonBuild(box, Constants.TABLE_BOX);
     }
 
-    private void buildTableBox(List<ElementSpec> elements, TableBox box)
+    private SimpleAttributeSet buildTableCaptionBox(TableCaptionBox box)
     {
-        commonBuild(elements, box, Constants.TABLE_BOX);
+        return commonBuild(box, Constants.TABLE_CAPTION_BOX);
     }
 
-    private void buildTableCaptionBox(List<ElementSpec> elements, TableCaptionBox box)
+    private SimpleAttributeSet buildTableBodyBox(TableBodyBox box)
     {
-        commonBuild(elements, box, Constants.TABLE_CAPTION_BOX);
+        return commonBuild(box, Constants.TABLE_BODY_BOX);
     }
 
-    private void buildTableBodyBox(List<ElementSpec> elements, TableBodyBox box)
+    private SimpleAttributeSet buildTableRowBox(TableRowBox box)
     {
-        commonBuild(elements, box, Constants.TABLE_BODY_BOX);
+        return commonBuild(box, Constants.TABLE_ROW_BOX);
     }
 
-    private void buildTableRowBox(List<ElementSpec> elements, TableRowBox box)
+    private SimpleAttributeSet buildTableCellBox(TableCellBox box)
     {
-        commonBuild(elements, box, Constants.TABLE_ROW_BOX);
+        return commonBuild(box, Constants.TABLE_CELL_BOX);
     }
 
-    private void buildTableCellBox(List<ElementSpec> elements, TableCellBox box)
+    private SimpleAttributeSet buildTableColumn(TableColumn box)
     {
-        commonBuild(elements, box, Constants.TABLE_CELL_BOX);
+        return commonBuild(box, Constants.TABLE_COLUMN);
     }
 
-    private void buildTableColumn(List<ElementSpec> elements, TableColumn box)
+    private SimpleAttributeSet buildTableColumnGroup(TableColumnGroup box)
     {
-        commonBuild(elements, box, Constants.TABLE_COLUMN);
+        return commonBuild(box, Constants.TABLE_COLUMN_GROUP);
     }
 
-    private void buildTableColumnGroup(List<ElementSpec> elements, TableColumnGroup box)
+    private SimpleAttributeSet buildListItemBox(ListItemBox box)
     {
-        commonBuild(elements, box, Constants.TABLE_COLUMN_GROUP);
+        return commonBuild(box, Constants.LIST_ITEM_BOX);
     }
 
-    private void buildListItemBox(List<ElementSpec> elements, ListItemBox box)
-    {
-        commonBuild(elements, box, Constants.LIST_ITEM_BOX);
-    }
-
-    private final void commonBuild(List<ElementSpec> elements, ElementBox box, Object elementNameValue)
+    private final SimpleAttributeSet commonBuild(ElementBox box, Object elementNameValue)
     {
         // when there are no special requirements to build an element, use this
         // one
@@ -378,11 +324,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         attr.addAttribute(Constants.ATTRIBUTE_BOX_REFERENCE, box);
         attr.addAttribute(Constants.ATTRIBUTE_ELEMENT_ID, box.getElement().getAttribute("id"));
 
-        elements.add(new ElementSpec(attr, ElementSpec.StartTagType));
-
-        buildElements(elements, box);
-
-        elements.add(new ElementSpec(attr, ElementSpec.EndTagType));
+        return attr;
     }
 
     //======================================================================================================================
@@ -391,14 +333,21 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     @Override
     public void startElement(ElementBox elem)
     {
-        
-        
+        if (!elem.isReplaced())
+        {
+            SimpleAttributeSet attr = buildElement(elem);
+            elements.add(new ElementSpec(attr, ElementSpec.StartTagType));
+        }
     }
 
     @Override
     public void finishElement(ElementBox elem)
     {
-        
+        if (!elem.isReplaced())
+        {
+            SimpleAttributeSet attr = buildElement(elem);
+            elements.add(new ElementSpec(attr, ElementSpec.EndTagType));
+        }
     }
 
     @Override
@@ -407,15 +356,27 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     }
 
     @Override
-    public void renderTextContent(TextBox text)
+    public void renderTextContent(TextBox box)
     {
-        // TODO Auto-generated method stub
-        
+        String text = box.getText();
+        SimpleAttributeSet attr = buildText(box);
+        elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
     }
 
     @Override
     public void renderReplacedContent(ReplacedBox box)
     {
+        org.w3c.dom.Element elem = ((ElementBox) box).getElement();
+        String text = "";
+        // add some textual info, if picture
+        if ("img".equalsIgnoreCase(elem.getTagName()))
+        {
+            text = " [" + elem.getAttribute("alt") + " Location: "
+                    + elem.getAttribute("src") + "] ";
+        }
+
+        SimpleAttributeSet attr = buildReplacedBox(box);
+        elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
     }
 
     @Override

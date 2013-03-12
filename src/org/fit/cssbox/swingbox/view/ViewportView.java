@@ -84,7 +84,7 @@ public class ViewportView extends BlockBoxView implements ComponentListener
     @Override
     public void paint(Graphics graphics, Shape allocation)
     {
-
+        System.out.println("Paint: " + box + " in " + allocation);
         Graphics2D g;
         if (graphics instanceof Graphics2D)
         {
