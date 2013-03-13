@@ -315,7 +315,7 @@ public class TextBoxView extends View implements CSSBoxView
     @Override
     public void paint(Graphics gg, Shape a)
     {
-        System.out.println("Paint text: " + this + " in " + a);
+        //System.out.println("Paint text: " + this + " in " + a);
 
         if (isVisible())
         {

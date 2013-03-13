@@ -437,7 +437,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     @Override
     public void paint(Graphics graphics, Shape allocation)
     {
-        System.out.println("Paint element: " + box + " in " + allocation);
+        //System.out.println("Paint element: " + box + " in " + allocation);
 
         Graphics2D g = (Graphics2D) graphics;
         /*
@@ -448,7 +448,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
 
         // if (!isAllocationValid()) { }
 
-        Shape oldclip = g.getClip();
+        //Shape oldclip = g.getClip();
 
         box.getVisualContext().updateGraphics(g);
         box.drawBackground(g);
@@ -468,7 +468,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
             // We should paint views that intersect with clipping region
             paintChild(g, v, allocation, i);
         }
-        g.setClip(oldclip);
+        //g.setClip(oldclip);
     }
 
     /**

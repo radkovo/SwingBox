@@ -92,11 +92,15 @@ public class ViewportView extends BlockBoxView implements ComponentListener
         }
         else
         {
-            throw new RuntimeException(
-                    "Unknowen graphics enviroment, java.awt.Graphics2D required !");
+            throw new RuntimeException("Unknown graphics enviroment, java.awt.Graphics2D required !");
         }
 
-        Shape oldclip = g.getClip();
+        System.out.println("Container: " + this.getContainer());
+        Container c = this.getContainer();
+        if (c instanceof JComponent)
+            System.out.println("Visible: " + ((JComponent) c).getVisibleRect());
+        
+        //Shape oldclip = g.getClip();
         Rectangle absoluteBounds = box.getAbsoluteBounds();
         Rectangle alloc = toRect(allocation);
 
@@ -109,7 +113,7 @@ public class ViewportView extends BlockBoxView implements ComponentListener
         // the result is a rectangle, where content should be rendered
 
         intersection(alloc, absoluteBounds, tmpRect);
-        intersection(toRect(oldclip), tmpRect, tmpRect);
+        //intersection(toRect(oldclip), tmpRect, tmpRect);
 
         box.getVisualContext().updateGraphics(g);
         box.drawBackground(g);
@@ -121,7 +125,7 @@ public class ViewportView extends BlockBoxView implements ComponentListener
             getView(i).paint(g, tmpRect);
         }
 
-        g.setClip(oldclip);
+        //g.setClip(oldclip);
     }
 
     @Override
