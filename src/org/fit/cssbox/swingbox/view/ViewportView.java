@@ -22,8 +22,6 @@ package org.fit.cssbox.swingbox.view;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -84,48 +82,7 @@ public class ViewportView extends BlockBoxView implements ComponentListener
     @Override
     public void paint(Graphics graphics, Shape allocation)
     {
-        System.out.println("Paint: " + box + " in " + allocation);
-        Graphics2D g;
-        if (graphics instanceof Graphics2D)
-        {
-            g = (Graphics2D) graphics;
-        }
-        else
-        {
-            throw new RuntimeException("Unknown graphics enviroment, java.awt.Graphics2D required !");
-        }
-
-        System.out.println("Container: " + this.getContainer());
-        Container c = this.getContainer();
-        if (c instanceof JComponent)
-            System.out.println("Visible: " + ((JComponent) c).getVisibleRect());
-        
-        //Shape oldclip = g.getClip();
-        Rectangle absoluteBounds = box.getAbsoluteBounds();
-        Rectangle alloc = toRect(allocation);
-
-        // in this place we make an intersection :
-        // alloc - should be a "visible" area of component (JEditorPane)
-        // g.getClip - the "real" visible area
-        // absoluteBounds - our point of interest
-        // we are a root, so any child needs only to intersects with given
-        // allocation ;-)
-        // the result is a rectangle, where content should be rendered
-
-        intersection(alloc, absoluteBounds, tmpRect);
-        //intersection(toRect(oldclip), tmpRect, tmpRect);
-
-        box.getVisualContext().updateGraphics(g);
-        box.drawBackground(g);
-
-        // we dont set any clipping here, it is rosponsible of a child
-        int count = getViewCount();
-        for (int i = 0; i < count; i++)
-        {
-            getView(i).paint(g, tmpRect);
-        }
-
-        //g.setClip(oldclip);
+        super.paint(graphics, allocation);
     }
 
     @Override

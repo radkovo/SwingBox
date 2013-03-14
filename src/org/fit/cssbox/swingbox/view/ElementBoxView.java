@@ -50,7 +50,6 @@ import org.w3c.dom.Node;
 public class ElementBoxView extends CompositeView implements CSSBoxView
 {
     protected ElementBox box;
-    protected Rectangle tmpRect;
     protected Anchor anchor;
 
     /** the cache of attributes */
@@ -106,7 +105,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         }
 
         oldDimension = new Dimension();
-        tmpRect = new Rectangle();
 
         loadElementAttributes();
     }
@@ -437,38 +435,27 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     @Override
     public void paint(Graphics graphics, Shape allocation)
     {
-        //System.out.println("Paint element: " + box + " in " + allocation);
+        System.out.println("Paint: " + box + " in " + allocation);
+        Graphics2D g;
+        if (graphics instanceof Graphics2D)
+            g = (Graphics2D) graphics;
+        else
+            throw new RuntimeException("Unknown graphics enviroment, java.awt.Graphics2D required !");
 
-        Graphics2D g = (Graphics2D) graphics;
-        /*
-         * alloc is a rectangle - intersection from parent with almost
-         * everything :) to render to proper location, just intersect with alloc
-         * and set clip
-         */
-
-        // if (!isAllocationValid()) { }
-
-        //Shape oldclip = g.getClip();
-
+        Rectangle clip = toRect(g.getClip());
+        
         box.getVisualContext().updateGraphics(g);
         box.drawBackground(g);
 
-        /*if (bgimage_loaded)
+        Rectangle alloc = toRect(allocation);
+        int count = getViewCount();
+        for (int i = 0; i < count; i++)
         {
-            g.drawImage(bgimg, 0, 0, null);
-        }*/
-
-        int n = getViewCount();
-
-        // http://www.w3schools.com/jsref/prop_style_overflow.asp
-        for (int i = 0; i < n; i++)
-        {
-            View v = getView(i);
-
-            // We should paint views that intersect with clipping region
-            paintChild(g, v, allocation, i);
+            Rectangle bounds = new Rectangle(alloc);
+            childAllocation(i, bounds);
+            if (clip.intersects(bounds))
+                getView(i).paint(g, allocation);
         }
-        //g.setClip(oldclip);
     }
 
     /**
@@ -483,11 +470,11 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      * @param index
      *            the index of view
      */
-    protected void paintChild(Graphics g, View v, Shape rect, int index)
+    /*protected void paintChild(Graphics g, View v, Shape rect, int index)
     {
         // System.err.println("Painting " + v);
         v.paint(g, rect);
-    }
+    }*/
 
     @Override
     public Shape getChildAllocation(int index, Shape a)
@@ -808,7 +795,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      */
     public static final Rectangle toRect(Shape a)
     {
-        // TODO co ak a je null, napr graphics2D nema nastavene setClip()
         return a instanceof Rectangle ? (Rectangle) a : a.getBounds();
     }
 

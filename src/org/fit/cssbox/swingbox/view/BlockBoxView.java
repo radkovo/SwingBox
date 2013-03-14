@@ -20,6 +20,7 @@
 package org.fit.cssbox.swingbox.view;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.Shape;
 
 import javax.swing.text.AttributeSet;
@@ -81,6 +82,7 @@ public class BlockBoxView extends ElementBoxView
     {
         if (box.isDisplayed() && box.isDeclaredVisible())
         {
+            Rectangle tmpRect = new Rectangle();
             if ("visible".equals(overflow))
             {
                 // just let it be

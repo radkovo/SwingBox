@@ -106,11 +106,8 @@ public class BlockReplacedBoxView extends BlockBoxView
         Graphics2D g = (Graphics2D) graphics;
         Rectangle alloc = toRect(allocation);
 
-        if (isVisible() && intersection(alloc, box.getAbsoluteBounds(), tmpRect))
+        if (isVisible() /*&& intersection(alloc, box.getAbsoluteBounds(), tmpRect)*/)
         {
-            Shape oldAlloc = g.getClip();
-            g.setClip(tmpRect);
-
             paintHighlights(g, alloc);
             box.getVisualContext().updateGraphics(g);
             box.drawBackground(g);
@@ -128,11 +125,11 @@ public class BlockReplacedBoxView extends BlockBoxView
 
                         g.setFont(DEFAULT_FONT);
                         g.setColor(Color.BLACK);
-                        tmpRect = box.getAbsoluteContentBounds();
+                        //tmpRect = box.getAbsoluteContentBounds();
                         // alternative picture representation (screen readers)
                         // TODO hint : java accessability !!!
-                        g.drawString(alt, tmpRect.x + 2, tmpRect.y
-                                + (int) (tmpRect.height * 0.7));
+                        /*g.drawString(alt, tmpRect.x + 2, tmpRect.y
+                                + (int) (tmpRect.height * 0.7));*/
                     }
                     else
                     {
@@ -145,20 +142,19 @@ public class BlockReplacedBoxView extends BlockBoxView
                 drawCross(g);
             }
 
-            g.setClip(oldAlloc);
         }
 
     }
 
     private void drawCross(Graphics2D g)
     {
-        tmpRect = box.getAbsoluteContentBounds();
+        /*tmpRect = box.getAbsoluteContentBounds();
 
         g.setColor(Color.BLACK);
         g.drawLine(tmpRect.x, tmpRect.y, tmpRect.x + tmpRect.width - 1,
                 tmpRect.y + tmpRect.height - 1);
         g.drawLine(tmpRect.x + tmpRect.width - 1, tmpRect.y, tmpRect.x,
-                tmpRect.y + tmpRect.height - 1);
+                tmpRect.y + tmpRect.height - 1);*/
     }
 
     @Override
