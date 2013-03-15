@@ -26,10 +26,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
@@ -38,7 +35,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -52,6 +48,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 
+import org.fit.cssbox.layout.BlockBox;
 import org.fit.cssbox.layout.TextBox;
 import org.fit.cssbox.swingbox.util.Anchor;
 import org.fit.cssbox.swingbox.util.Constants;
@@ -67,9 +64,6 @@ import cz.vutbr.web.css.CSSProperty.TextDecoration;
  */
 public class TextBoxView extends View implements CSSBoxView
 {
-    private static final int TIMER_DELAY = 1000; // in ms
-    private static final int MAX_REPAINT_DELAY = 100; // in ms
-
     private TextBox box;
     private Font font;
     private Color foreground;
@@ -88,14 +82,8 @@ public class TextBoxView extends View implements CSSBoxView
     private boolean underline;
     private boolean strike;
     private boolean overline;
-    private boolean blink;
 
     private Container container;
-    private Timer timer;
-    private boolean blinking;
-
-    private ActionListener timerEvent;
-    private Rectangle tmpRect;
 
     private Anchor anchor;
 
@@ -124,8 +112,6 @@ public class TextBoxView extends View implements CSSBoxView
         {
             throw new IllegalArgumentException("Box reference is not an instance of TextBox");
         }
-
-        tmpRect = new Rectangle();
     }
 
     // --- View methods ---------------------------------------------
@@ -387,40 +373,24 @@ public class TextBoxView extends View implements CSSBoxView
      */
     protected void renderContent(Graphics2D g, Shape a, Color fg, int p0, int p1)
     {
-        /*
-         * text decoration - none, underline, overline, strikethrough, blink,
-         * (inherit ?) font variant - normal, small caps, (inherit ?)
-         */
         TextLayout layout = getTextLayout();
         Rectangle absoluteBounds = box.getAbsoluteBounds();
         Rectangle absoluteContentBounds = box.getAbsoluteContentBounds();
-        Rectangle alloc = toRect(a);
 
         int pStart = getStartOffset();
         int pEnd = getEndOffset();
         int x = absoluteBounds.x;
         int y = absoluteBounds.y;
 
-        // in this class we will not delegete call do update graphics in VisualContext
-        // we will do it manually...
-
         Shape oldclip = g.getClip();
-
-        if (blink && blinking)
+        BlockBox clipblock = box.getClipBlock();
+        if (clipblock != null)
         {
-            tmpRect = intersection(alloc, absoluteBounds, tmpRect);
-            g.setClip(tmpRect);
-            box.getVisualContext().getParentContext().updateGraphics(g);
-            box.getParent().drawBackground(g);
-            g.setClip(oldclip);
-            return;
+            Rectangle newclip = clipblock.getClippedContentBounds();
+            Rectangle clip = toRect(oldclip).intersection(newclip);
+            g.setClip(clip);
         }
-
-        // set all graphics config
-        // turn off AntiAliasing for graphics
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        // but turn it on for text
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+        
         g.setFont(getFont());
         g.setColor(fg);
 
@@ -439,10 +409,6 @@ public class TextBoxView extends View implements CSSBoxView
             }
         }
 
-        tmpRect = intersection(alloc, absoluteContentBounds, tmpRect);
-        // tmpRect = intersection(toRect(oldclip), tmpRect , tmpRect);
-        g.setClip(tmpRect);
-
         // render the text
         layout.draw(g, x, y + layout.getAscent());
 
@@ -451,7 +417,7 @@ public class TextBoxView extends View implements CSSBoxView
         // System.err.println("# fg: " + fg);
         // System.err.println("# text: " + getText(p0, p1) + "\n");
 
-        if (underline || strike || overline || blink)
+        if (underline || strike || overline)
         {
 
             // if (getFont().isBold()) {
@@ -594,7 +560,7 @@ public class TextBoxView extends View implements CSSBoxView
      */
     public void updateProperties()
     {
-        invalidateProperties(); // we are lazy :)
+        invalidateProperties();
     }
 
     private void invalidateCache()
@@ -700,34 +666,18 @@ public class TextBoxView extends View implements CSSBoxView
     {
         if (textDecoration == null || !textDecoration.equals(newTextDecoration))
         {
-            // TextDecoration val[] = TextDecoration.values();
-
-            // for (int i=0; i<val.length; i++) {
-            // if (val[i].toString().equals(newTextDecoration)) {
             textDecoration = newTextDecoration;
             reflectTextDecoration(textDecoration);
             invalidateCache();
-            // return;
-            // }
-            // }
-
         }
 
     }
 
     private void reflectTextDecoration(List<TextDecoration> decor)
     {
-        /*
-         * list_values(""), UNDERLINE("underline"), OVERLINE("overline"), BLINK(
-         * "blink"), LINE_THROUGH("line-through"), NONE("none"), INHERIT(
-         * "inherit");
-         */
-
         underline = false;
         strike = false;
         overline = false;
-        blink = false;
-        blinking = false;
 
         TextDecoration val;
         for (int i = 0; i < decor.size(); i++)
@@ -745,42 +695,6 @@ public class TextBoxView extends View implements CSSBoxView
             {
                 overline = true;
             }
-            else if (TextDecoration.BLINK == val)
-            {
-                blink = true;
-            }
-        }
-
-        if (blink)
-        {
-            if (timerEvent == null)
-            {
-                timerEvent = new ActionListener()
-                {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        blinking = !blinking;
-                        repaint(MAX_REPAINT_DELAY, box.getAbsoluteBounds());
-                    }
-                };
-            }
-
-            if (timer == null)
-            {
-                timer = new Timer(TIMER_DELAY, timerEvent);
-                timer.setRepeats(true);
-                timer.start();
-            }
-            else
-            {
-                timer.restart();
-            }
-        }
-        else if (timer != null)
-        {
-            timer.stop();
         }
     }
 
@@ -856,25 +770,4 @@ public class TextBoxView extends View implements CSSBoxView
         return a instanceof Rectangle ? (Rectangle) a : a.getBounds();
     }
 
-    /**
-     * calculates intersection of 2 rectangles
-     * 
-     * @param src1
-     *            the src1
-     * @param src2
-     *            the src2
-     * @param dest
-     *            the dest
-     * @return the resulting rectangle
-     */
-    public static final Rectangle intersection(Rectangle src1, Rectangle src2,
-            Rectangle dest)
-    {
-        int x1 = Math.max(src1.x, src2.x);
-        int y1 = Math.max(src1.y, src2.y);
-        int x2 = Math.min(src1.x + src1.width, src2.x + src2.width);
-        int y2 = Math.min(src1.y + src1.height, src2.y + src2.height);
-        dest.setBounds(x1, y1, x2 - x1, y2 - y1);
-        return dest;
-    }
 }
