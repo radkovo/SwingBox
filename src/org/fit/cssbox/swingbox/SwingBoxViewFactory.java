@@ -66,6 +66,9 @@ public class SwingBoxViewFactory implements ViewFactory
     public View create(Element elem)
     {
         AttributeSet attr = elem.getAttributes();
+        Object obj = attr.getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
+        if (obj != null && obj.toString().contains("mojo"))
+            System.out.println("jo!");
         String name = (String) attr.getAttribute(AbstractDocument.ElementNameAttribute);
         if (name == null)
             name = elem.getName();

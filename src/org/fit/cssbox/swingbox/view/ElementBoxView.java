@@ -77,6 +77,8 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         majorAxis = Y_AXIS;
         AttributeSet tmpAttr = elem.getAttributes();
         Object obj = tmpAttr.getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
+        if (obj.toString().contains("mojo"))
+            System.out.println("jo!");
 
         if (obj != null && obj instanceof ElementBox)
         {
@@ -435,7 +437,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     @Override
     public void paint(Graphics graphics, Shape allocation)
     {
-        System.out.println("Paint: " + box + " in " + allocation);
+        //System.out.println("Paint: " + box + " in " + allocation);
         Graphics2D g;
         if (graphics instanceof Graphics2D)
             g = (Graphics2D) graphics;

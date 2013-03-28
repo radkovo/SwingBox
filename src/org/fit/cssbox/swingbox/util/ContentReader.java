@@ -147,7 +147,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         if (cba == null)
             throw new IllegalArgumentException("CSSBoxAnalyzer can not be NULL !!!\nProvide your custom implementation or check instantiation of DefaultAnalyzer object...");
 
-        List<ElementSpec> elements = new LinkedList<ElementSpec>();
+        elements = new LinkedList<ElementSpec>();
         elements.add(new ElementSpec(SimpleAttributeSet.EMPTY, ElementSpec.EndTagType));
 
         Viewport vp;
@@ -316,6 +316,8 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
 
     private final SimpleAttributeSet commonBuild(ElementBox box, Object elementNameValue)
     {
+        if (box.toString().contains("mojo"))
+            System.out.println("jo!");
         // when there are no special requirements to build an element, use this
         // one
         SimpleAttributeSet attr = new SimpleAttributeSet();

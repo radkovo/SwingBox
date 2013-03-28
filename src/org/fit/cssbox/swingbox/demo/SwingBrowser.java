@@ -373,7 +373,7 @@ public class SwingBrowser
         JFrame main = browser.getMainWindow();
         main.setSize(1100, 850);
         main.setVisible(true);
-        browser.displayURL("http://cssbox.sourceforge.net/swingbox");
+        browser.displayURL("file:/home/burgetr/workspace/Testing/test/full/idnes.html");
     }
 
 }
