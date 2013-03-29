@@ -319,7 +319,7 @@ public class BrowserPane extends JEditorPane
     public void scrollToReference(String reference)
     {
         Document d = getDocument();
-        Element dst = findElementToScrool(reference, d.getDefaultRootElement());
+        Element dst = findElementToScroll(reference, d.getDefaultRootElement());
         if (dst == null) return;
 
         try
@@ -336,7 +336,7 @@ public class BrowserPane extends JEditorPane
 
     }
 
-    private Element findElementToScrool(String ref, Element root)
+    private Element findElementToScroll(String ref, Element root)
     {
         String eid = (String) root.getAttributes().getAttribute(Constants.ATTRIBUTE_ELEMENT_ID);
             
@@ -358,7 +358,7 @@ public class BrowserPane extends JEditorPane
         Element child = null;
         for (int i = 0; i < n; i++)
         {
-            if ((child = findElementToScrool(ref, root.getElement(i))) != null)
+            if ((child = findElementToScroll(ref, root.getElement(i))) != null)
                 return child;
         }
         return null;

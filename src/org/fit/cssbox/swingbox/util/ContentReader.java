@@ -338,7 +338,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     //BoxRenderer implementation
     
     @Override
-    public void startElement(ElementBox elem)
+    public void startElementContents(ElementBox elem)
     {
         if (!elem.isReplaced())
         {
@@ -349,7 +349,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     }
 
     @Override
-    public void finishElement(ElementBox elem)
+    public void finishElementContents(ElementBox elem)
     {
         if (!elem.isReplaced())
         {

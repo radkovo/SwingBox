@@ -370,17 +370,9 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
 
     protected SimpleAttributeSet createAttributes()
     {
-        // get all 'working variables' and make an AttributeSet.
-        // hint: use MutableAttributeSet & recycle instance
         SimpleAttributeSet res = new SimpleAttributeSet();
-
         res.addAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE, anchor);
         res.addAttribute(Constants.ATTRIBUTE_BOX_REFERENCE, box);
-        // TODO: v niektorych pripadoch jr box==null, ako je to mozne ?
-        // ak nacitam novu stranku a v testapp mam stary strom elementov a view
-        // objektov
-        // a zbehol GC tak hadze null , NPE!
-
         return res;
     }
 
