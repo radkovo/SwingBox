@@ -77,8 +77,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         majorAxis = Y_AXIS;
         AttributeSet tmpAttr = elem.getAttributes();
         Object obj = tmpAttr.getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
-        if (obj.toString().contains("mojo"))
-            System.out.println("jo!");
 
         if (obj != null && obj instanceof ElementBox)
         {

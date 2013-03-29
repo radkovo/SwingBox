@@ -50,6 +50,7 @@ public final class Constants
 
     //Custom elements
     //defines names for elements, used by ViewFactory to map element to a view
+    public static final String EMPTY = "empty"; //empty content
     public static final String TEXT_BOX = "text_box";
     public static final String BLOCK_BOX = "block_box";
     public static final String BLOCK_TABLE_BOX = "block_table_box";

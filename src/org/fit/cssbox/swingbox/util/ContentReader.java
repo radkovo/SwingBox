@@ -58,11 +58,11 @@ import org.fit.cssbox.swingbox.SwingBoxDocument;
  */
 public class ContentReader implements org.fit.cssbox.render.BoxRenderer
 {
-    /** Map of opened boxes and the corresponding attribute sets */
-    //private HashMap<Box, SimpleAttributeSet> boxMap;
-
     /** Resulting element list */
     private List<ElementSpec> elements;
+
+    /** Last started element (for detecting empty elements) */
+    private ElementBox lastStarted;
     
     /**
      * Instantiates a new content reader.
@@ -238,6 +238,13 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         return attr;
     }
 
+    private SimpleAttributeSet buildEmptyContent()
+    {
+        SimpleAttributeSet attr = new SimpleAttributeSet();
+        attr.addAttribute(SwingBoxDocument.ElementNameAttribute, Constants.EMPTY);
+        return attr;
+    }
+    
     private SimpleAttributeSet buildReplacedBox(ReplacedBox box)
     {
         SimpleAttributeSet attr = new SimpleAttributeSet();
@@ -316,8 +323,6 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
 
     private final SimpleAttributeSet commonBuild(ElementBox box, Object elementNameValue)
     {
-        if (box.toString().contains("mojo"))
-            System.out.println("jo!");
         // when there are no special requirements to build an element, use this
         // one
         SimpleAttributeSet attr = new SimpleAttributeSet();
@@ -339,6 +344,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         {
             SimpleAttributeSet attr = buildElement(elem);
             elements.add(new ElementSpec(attr, ElementSpec.StartTagType));
+            lastStarted = elem;
         }
     }
 
@@ -347,8 +353,15 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     {
         if (!elem.isReplaced())
         {
+            if (lastStarted == elem)
+            {
+                //rendering an empty element -- we must insert an empty string in order to preserve the element
+                SimpleAttributeSet content = buildEmptyContent();
+                elements.add(new ElementSpec(content, ElementSpec.ContentType, "".toCharArray(), 0, 0));
+            }
             SimpleAttributeSet attr = buildElement(elem);
             elements.add(new ElementSpec(attr, ElementSpec.EndTagType));
+            lastStarted = null;
         }
     }
 
@@ -363,6 +376,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         String text = box.getText();
         SimpleAttributeSet attr = buildText(box);
         elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
+        lastStarted = null;
     }
 
     @Override
@@ -379,6 +393,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
 
         SimpleAttributeSet attr = buildReplacedBox(box);
         elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
+        lastStarted = null;
     }
 
     @Override
