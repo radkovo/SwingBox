@@ -80,6 +80,10 @@ public class BlockBoxView extends ElementBoxView
     @Override
     public void paint(Graphics g, Shape a)
     {
+        /*if (box.toString().contains("box-in") && box.getParent() != null && box.getParent().toString().contains("discblog"))
+            System.out.println("jo22!");
+        if (box.toString().contains("discblog-prep-2"))
+            System.out.println("jo!");*/
         if (box.isDisplayed() && box.isDeclaredVisible())
         {
             Rectangle tmpRect = new Rectangle();

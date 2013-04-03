@@ -135,6 +135,15 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
             elementAttributes.clear();
         }
     }
+
+    @Override
+    public String toString()
+    {
+        String s = getClass().getSimpleName();
+        if (box != null)
+            s = s + ": " + box;
+        return s;
+    }
     
     /**
      * Examines the given element and all its parent elements in order to find the "a" element.
