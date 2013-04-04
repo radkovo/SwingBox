@@ -445,8 +445,8 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
 
         Rectangle clip = toRect(g.getClip());
         
-        box.getVisualContext().updateGraphics(g);
-        box.drawBackground(g);
+        //box.getVisualContext().updateGraphics(g);
+        //box.drawBackground(g);
 
         Rectangle alloc = toRect(allocation);
         int count = getViewCount();

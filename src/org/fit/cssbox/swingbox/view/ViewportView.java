@@ -22,6 +22,7 @@ package org.fit.cssbox.swingbox.view;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -82,6 +83,14 @@ public class ViewportView extends BlockBoxView implements ComponentListener
     @Override
     public void paint(Graphics graphics, Shape allocation)
     {
+        Graphics2D g;
+        if (graphics instanceof Graphics2D)
+            g = (Graphics2D) graphics;
+        else
+            throw new RuntimeException("Unknown graphics enviroment, java.awt.Graphics2D required !");
+        
+        box.getVisualContext().updateGraphics(g);
+        box.drawBackground(g);
         super.paint(graphics, allocation);
     }
 

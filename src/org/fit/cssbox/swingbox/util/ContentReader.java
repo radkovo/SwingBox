@@ -261,6 +261,11 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         return attr;
     }
 
+    private SimpleAttributeSet buildElementBackground(ElementBox box)
+    {
+        return commonBuild(box, Constants.BACKGROUND);
+    }
+    
     private SimpleAttributeSet buildBlockBox(BlockBox box)
     {
         return commonBuild(box, Constants.BLOCK_BOX);
@@ -320,7 +325,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     {
         return commonBuild(box, Constants.LIST_ITEM_BOX);
     }
-
+    
     private final SimpleAttributeSet commonBuild(ElementBox box, Object elementNameValue)
     {
         // when there are no special requirements to build an element, use this
@@ -368,6 +373,8 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     @Override
     public void renderElementBackground(ElementBox elem)
     {
+        SimpleAttributeSet attr = buildElementBackground(elem);
+        elements.add(new ElementSpec(attr, ElementSpec.ContentType));
     }
 
     @Override
