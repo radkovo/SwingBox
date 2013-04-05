@@ -71,6 +71,7 @@ public class TextBoxView extends View implements CSSBoxView
     private String fontVariant;
     private TextLayout layout;
     private AffineTransform transform;
+    private int order;
 
     /** the cache of attributes */
     private AttributeSet attributes;
@@ -103,6 +104,8 @@ public class TextBoxView extends View implements CSSBoxView
         AttributeSet tmpAttr = elem.getAttributes();
         Object obj = tmpAttr.getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
         anchor = (Anchor) tmpAttr.getAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE);
+        Integer i = (Integer) tmpAttr.getAttribute(Constants.ATTRIBUTE_DRAWING_ORDER);
+        order = (i == null) ? -1 : i;
 
         if (obj instanceof TextBox)
         {
@@ -114,6 +117,12 @@ public class TextBoxView extends View implements CSSBoxView
         }
     }
 
+    @Override
+    public int getDrawingOrder()
+    {
+        return order;
+    }
+    
     // --- View methods ---------------------------------------------
 
     @Override

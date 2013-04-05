@@ -64,6 +64,9 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     /** Last started element (for detecting empty elements) */
     private ElementBox lastStarted;
     
+    /** Element counter for determining the drawing order */
+    private int order;
+    
     /**
      * Instantiates a new content reader.
      */
@@ -98,6 +101,8 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
 
         elements = new Vector<ElementSpec>();// ArrayList<ElementSpec>(1024);
         elements.add(new ElementSpec(SimpleAttributeSet.EMPTY, ElementSpec.EndTagType));
+        lastStarted = null;
+        order = 0;
 
         // System.err.print("used Reader and encoding ? " +
         // is.getCharacterStream() + "  ,  ");
@@ -149,6 +154,8 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
 
         elements = new LinkedList<ElementSpec>();
         elements.add(new ElementSpec(SimpleAttributeSet.EMPTY, ElementSpec.EndTagType));
+        lastStarted = null;
+        order = 0;
 
         Viewport vp;
         try
@@ -348,6 +355,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         if (!elem.isReplaced())
         {
             SimpleAttributeSet attr = buildElement(elem);
+            attr.addAttribute(Constants.ATTRIBUTE_DRAWING_ORDER, order++);
             elements.add(new ElementSpec(attr, ElementSpec.StartTagType));
             lastStarted = elem;
         }
@@ -382,6 +390,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     {
         String text = box.getText();
         SimpleAttributeSet attr = buildText(box);
+        attr.addAttribute(Constants.ATTRIBUTE_DRAWING_ORDER, order++);
         elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
         lastStarted = null;
     }
@@ -399,6 +408,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         }
 
         SimpleAttributeSet attr = buildReplacedBox(box);
+        attr.addAttribute(Constants.ATTRIBUTE_DRAWING_ORDER, order++);
         elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
         lastStarted = null;
     }

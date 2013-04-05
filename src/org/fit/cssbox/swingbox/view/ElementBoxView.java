@@ -51,6 +51,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
 {
     protected ElementBox box;
     protected Anchor anchor;
+    protected int order;
 
     /** the cache of attributes */
     private AttributeSet attributes;
@@ -77,6 +78,8 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         majorAxis = Y_AXIS;
         AttributeSet tmpAttr = elem.getAttributes();
         Object obj = tmpAttr.getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
+        Integer i = (Integer) tmpAttr.getAttribute(Constants.ATTRIBUTE_DRAWING_ORDER);
+        order = (i == null) ? -1 : i;
 
         if (obj != null && obj instanceof ElementBox)
         {
@@ -140,9 +143,16 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     public String toString()
     {
         String s = getClass().getSimpleName();
+        s += " " + order;
         if (box != null)
             s = s + ": " + box;
         return s;
+    }
+
+    @Override
+    public int getDrawingOrder()
+    {
+        return order;
     }
     
     /**
@@ -647,22 +657,30 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     {
         View retv = null;
         Box retb = null;
+        int retorder = -1;
         for (int i = 0; i < getViewCount(); i++)
         {
             View v = getView(i);
-            Box b = getBox(v);
-            Rectangle r = getCompleteBoxAllocation(b);
-            if (locateBox(b, x, y) != null)
+            if (v instanceof CSSBoxView)
             {
-                if (retv == null || compareLevel(retb, b) >= 0) //next box has the same level or is above
+                Box b = getBox(v);
+                Rectangle r = getCompleteBoxAllocation(b);
+                if (locateBox(b, x, y) != null)
                 {
-                    //System.out.println("Found: " + b);
-                    retv = v;
-                    retb = b;
-                    alloc.setBounds(r);
+                    System.out.println("Candidate: " + v);
+                    int o = ((CSSBoxView) v).getDrawingOrder();
+                    if (retv == null || o >= retorder) //next box is drawn after the current one
+                    {
+                        //System.out.println("Found: " + b);
+                        retv = v;
+                        retb = b;
+                        retorder = order;
+                        alloc.setBounds(r);
+                    }
                 }
             }
         }
+        System.out.println("At " + x + ":" + y + " found " + retv);
         return retv;
     }
 

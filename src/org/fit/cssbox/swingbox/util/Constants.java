@@ -47,6 +47,7 @@ public final class Constants
     public static final String ATTRIBUTE_FOREGROUND = "attribute_foreground";
     public static final String ATTRIBUTE_BACKGROUND = "attribute_background";
     public static final String ATTRIBUTE_REPLACED_CONTENT = "attribute_replaced_content";
+    public static final String ATTRIBUTE_DRAWING_ORDER = "attribute_drawing_order";
 
     //Custom elements
     //defines names for elements, used by ViewFactory to map element to a view
