@@ -52,6 +52,7 @@ import org.fit.cssbox.layout.BlockBox;
 import org.fit.cssbox.layout.TextBox;
 import org.fit.cssbox.swingbox.util.Anchor;
 import org.fit.cssbox.swingbox.util.Constants;
+import org.w3c.dom.Node;
 
 import cz.vutbr.web.css.CSSProperty.FontVariant;
 import cz.vutbr.web.css.CSSProperty.TextDecoration;
@@ -115,12 +116,58 @@ public class TextBoxView extends View implements CSSBoxView
         {
             throw new IllegalArgumentException("Box reference is not an instance of TextBox");
         }
+        
+        if (this.toString().contains("Nejdražší poslechové") || this.toString().contains("Angeline Jolie si") || this.toString().contains("Vzkříšení WTC na"))
+            System.out.println("jo!");
+        
+        if (box.getParent() != null)
+        {
+            org.w3c.dom.Element pelem = findAnchorElement(box.getParent().getElement());
+            Map<String, String> elementAttributes = anchor.getProperties();
+    
+            if (pelem != null)
+            {
+                anchor.setActive(true);
+                elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_HREF, pelem.getAttribute("href"));
+                elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_NAME, pelem.getAttribute("name"));
+                elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_TITLE, pelem.getAttribute("title"));
+                String target = pelem.getAttribute("target");
+                if ("".equals(target))
+                {
+                    target = "_self";
+                }
+                elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_TARGET, target);
+                // System.err.println("## Anchor at : " + this + " attr: "+
+                // elementAttributes);
+            }
+            else
+            {
+                anchor.setActive(false);
+                elementAttributes.clear();
+            }
+        }
+
     }
 
     @Override
     public int getDrawingOrder()
     {
         return order;
+    }
+    
+    /**
+     * Examines the given element and all its parent elements in order to find the "a" element.
+     * @param e the child element to start with
+     * @return the "a" element found or null if it is not present
+     */
+    private org.w3c.dom.Element findAnchorElement(org.w3c.dom.Element e)
+    {
+        if ("a".equalsIgnoreCase(e.getTagName().trim()))
+            return e;
+        else if (e.getParentNode() != null && e.getParentNode().getNodeType() == Node.ELEMENT_NODE)
+            return findAnchorElement((org.w3c.dom.Element) e.getParentNode());
+        else
+            return null;
     }
     
     // --- View methods ---------------------------------------------
@@ -136,7 +183,7 @@ public class TextBoxView extends View implements CSSBoxView
             refreshAttributes = true;
             refreshProperties = false;
             container = getContainer();
-            if (parent instanceof ElementBoxView)
+            /*if (parent instanceof ElementBoxView)
             {
                 // avoid a RootView or any other non-SwingBox views
                 Anchor parentAnchor = ((ElementBoxView) parent).getAnchor();
@@ -146,7 +193,7 @@ public class TextBoxView extends View implements CSSBoxView
                     anchor.setActive(true);
                     anchor.getProperties().putAll(parentAnchor.getProperties());
                 }
-            }
+            }*/
         }
         else
         {

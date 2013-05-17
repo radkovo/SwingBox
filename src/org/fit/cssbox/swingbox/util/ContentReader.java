@@ -366,12 +366,12 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     {
         if (!elem.isReplaced())
         {
-            if (lastStarted == elem)
+            /*if (lastStarted == elem)
             {
                 //rendering an empty element -- we must insert an empty string in order to preserve the element
                 SimpleAttributeSet content = buildEmptyContent();
                 elements.add(new ElementSpec(content, ElementSpec.ContentType, "".toCharArray(), 0, 0));
-            }
+            }*/
             SimpleAttributeSet attr = buildElement(elem);
             elements.add(new ElementSpec(attr, ElementSpec.EndTagType));
             lastStarted = null;
