@@ -120,9 +120,9 @@ public class TextBoxView extends View implements CSSBoxView
         if (this.toString().contains("Nejdražší poslechové") || this.toString().contains("Angeline Jolie si") || this.toString().contains("Vzkříšení WTC na"))
             System.out.println("jo!");
         
-        if (box.getParent() != null)
+        if (box.getNode() != null && box.getNode().getParentNode() instanceof org.w3c.dom.Element)
         {
-            org.w3c.dom.Element pelem = findAnchorElement(box.getParent().getElement());
+            org.w3c.dom.Element pelem = findAnchorElement((org.w3c.dom.Element) box.getNode().getParentNode());
             Map<String, String> elementAttributes = anchor.getProperties();
     
             if (pelem != null)
