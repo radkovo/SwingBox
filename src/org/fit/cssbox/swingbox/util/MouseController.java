@@ -63,8 +63,14 @@ public class MouseController extends MouseAdapter
 
         if (!editor.isEditable() && SwingUtilities.isLeftMouseButton(e))
         {
+            Bias[] bias = new Bias[1];
             Point pt = new Point(e.getX(), e.getY());
-            int pos = editor.viewToModel(pt);
+            int pos = editor.getUI().viewToModel(editor, pt, bias);
+
+            if (bias[0] == Position.Bias.Backward && pos > 0) pos--;
+
+            //Point pt = new Point(e.getX(), e.getY());
+            //int pos = editor.viewToModel(pt);
             // System.err.println("found position : " + pos);
             if (pos >= 0)
             {
