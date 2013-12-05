@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Enumeration;
@@ -57,6 +58,7 @@ import org.fit.cssbox.swingbox.util.Constants;
 import org.fit.cssbox.swingbox.util.GeneralEvent;
 import org.fit.cssbox.swingbox.util.GeneralEvent.EventType;
 import org.fit.cssbox.swingbox.util.GeneralEventListener;
+import org.fit.net.DataURLHandler;
 
 /**
  * The Class BrowserPane - JEditorPane based component capable to render HTML +
@@ -273,24 +275,20 @@ public class BrowserPane extends JEditorPane
         return g;
     }
 
-    // /**
-    // * {@inheritDoc}
-    // */
-    // @Override
-    // public void setPage(URL page) throws IOException {
-    //
-    // super.setPage(page);
-    // }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setText(String t)
     {
-        fireGeneralEvent(new GeneralEvent(this, EventType.page_loading_begin,
-                null, null));
-        super.setText(t);
+        //fireGeneralEvent(new GeneralEvent(this, EventType.page_loading_begin, null, null));
+        //super.setText(t);
+        try
+        {
+            URL url = DataURLHandler.createURL(null, "data:text/html," + t);
+            setPage(url);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
