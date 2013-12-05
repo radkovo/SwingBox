@@ -50,8 +50,8 @@ import org.w3c.dom.Node;
 public class ElementBoxView extends CompositeView implements CSSBoxView
 {
     protected ElementBox box;
-    protected Rectangle tmpRect;
     protected Anchor anchor;
+    protected int order;
 
     /** the cache of attributes */
     private AttributeSet attributes;
@@ -78,6 +78,8 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         majorAxis = Y_AXIS;
         AttributeSet tmpAttr = elem.getAttributes();
         Object obj = tmpAttr.getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
+        Integer i = (Integer) tmpAttr.getAttribute(Constants.ATTRIBUTE_DRAWING_ORDER);
+        order = (i == null) ? -1 : i;
 
         if (obj != null && obj instanceof ElementBox)
         {
@@ -106,7 +108,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         }
 
         oldDimension = new Dimension();
-        tmpRect = new Rectangle();
 
         loadElementAttributes();
     }
@@ -136,6 +137,22 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
             anchor.setActive(false);
             elementAttributes.clear();
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        String s = getClass().getSimpleName();
+        s += " " + order;
+        if (box != null)
+            s = s + ": " + box;
+        return s;
+    }
+
+    @Override
+    public int getDrawingOrder()
+    {
+        return order;
     }
     
     /**
@@ -372,17 +389,9 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
 
     protected SimpleAttributeSet createAttributes()
     {
-        // get all 'working variables' and make an AttributeSet.
-        // hint: use MutableAttributeSet & recycle instance
         SimpleAttributeSet res = new SimpleAttributeSet();
-
         res.addAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE, anchor);
         res.addAttribute(Constants.ATTRIBUTE_BOX_REFERENCE, box);
-        // TODO: v niektorych pripadoch jr box==null, ako je to mozne ?
-        // ak nacitam novu stranku a v testapp mam stary strom elementov a view
-        // objektov
-        // a zbehol GC tak hadze null , NPE!
-
         return res;
     }
 
@@ -437,36 +446,27 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     @Override
     public void paint(Graphics graphics, Shape allocation)
     {
-        Graphics2D g = (Graphics2D) graphics;
-        /*
-         * alloc is a rectangle - intersection from parent with almost
-         * everything :) to render to proper location, just intersect with alloc
-         * and set clip
-         */
+        //System.out.println("Paint: " + box + " in " + allocation);
+        Graphics2D g;
+        if (graphics instanceof Graphics2D)
+            g = (Graphics2D) graphics;
+        else
+            throw new RuntimeException("Unknown graphics enviroment, java.awt.Graphics2D required !");
 
-        // if (!isAllocationValid()) { }
+        Rectangle clip = toRect(g.getClip());
+        
+        //box.getVisualContext().updateGraphics(g);
+        //box.drawBackground(g);
 
-        Shape oldclip = g.getClip();
-
-        box.getVisualContext().updateGraphics(g);
-        box.drawBackground(g);
-
-        /*if (bgimage_loaded)
+        Rectangle alloc = toRect(allocation);
+        int count = getViewCount();
+        for (int i = 0; i < count; i++)
         {
-            g.drawImage(bgimg, 0, 0, null);
-        }*/
-
-        int n = getViewCount();
-
-        // http://www.w3schools.com/jsref/prop_style_overflow.asp
-        for (int i = 0; i < n; i++)
-        {
-            View v = getView(i);
-
-            // We should paint views that intersect with clipping region
-            paintChild(g, v, allocation, i);
+            Rectangle bounds = new Rectangle(alloc);
+            childAllocation(i, bounds);
+            if (clip.intersects(bounds))
+                getView(i).paint(g, allocation);
         }
-        g.setClip(oldclip);
     }
 
     /**
@@ -481,11 +481,11 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      * @param index
      *            the index of view
      */
-    protected void paintChild(Graphics g, View v, Shape rect, int index)
+    /*protected void paintChild(Graphics g, View v, Shape rect, int index)
     {
         // System.err.println("Painting " + v);
         v.paint(g, rect);
-    }
+    }*/
 
     @Override
     public Shape getChildAllocation(int index, Shape a)
@@ -657,22 +657,30 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     {
         View retv = null;
         Box retb = null;
+        int retorder = -1;
         for (int i = 0; i < getViewCount(); i++)
         {
             View v = getView(i);
-            Box b = getBox(v);
-            Rectangle r = getCompleteBoxAllocation(b);
-            if (locateBox(b, x, y) != null)
+            if (v instanceof CSSBoxView)
             {
-                if (retv == null || compareLevel(retb, b) >= 0) //next box has the same level or is above
+                Box b = getBox(v);
+                Rectangle r = getCompleteBoxAllocation(b);
+                if (locateBox(b, x, y) != null)
                 {
-                    //System.out.println("Found: " + b);
-                    retv = v;
-                    retb = b;
-                    alloc.setBounds(r);
+                    System.out.println("Candidate: " + v);
+                    int o = ((CSSBoxView) v).getDrawingOrder();
+                    if (retv == null || o >= retorder) //next box is drawn after the current one
+                    {
+                        //System.out.println("Found: " + b);
+                        retv = v;
+                        retb = b;
+                        retorder = order;
+                        alloc.setBounds(r);
+                    }
                 }
             }
         }
+        System.out.println("At " + x + ":" + y + " found " + retv);
         return retv;
     }
 
@@ -806,7 +814,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      */
     public static final Rectangle toRect(Shape a)
     {
-        // TODO co ak a je null, napr graphics2D nema nastavene setClip()
         return a instanceof Rectangle ? (Rectangle) a : a.getBounds();
     }
 

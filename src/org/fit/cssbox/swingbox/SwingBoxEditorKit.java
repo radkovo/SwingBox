@@ -45,7 +45,7 @@ import javax.swing.text.ViewFactory;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.fit.cssbox.io.DocumentSource;
 import org.fit.cssbox.io.StreamDocumentSource;
-import org.fit.cssbox.layout.ElementBox;
+import org.fit.cssbox.layout.Viewport;
 import org.fit.cssbox.swingbox.util.CSSBoxAnalyzer;
 import org.fit.cssbox.swingbox.util.Constants;
 import org.fit.cssbox.swingbox.util.ContentReader;
@@ -267,7 +267,7 @@ public class SwingBoxEditorKit extends StyledEditorKit
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    public void update(SwingBoxDocument doc, ElementBox root, Dimension dim)
+    public void update(SwingBoxDocument doc, Viewport root, Dimension dim)
             throws IOException
     {
         ContentReader rdr = new ContentReader();

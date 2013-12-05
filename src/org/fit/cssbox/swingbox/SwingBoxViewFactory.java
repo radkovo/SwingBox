@@ -31,6 +31,7 @@ import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 
 import org.fit.cssbox.swingbox.util.Constants;
+import org.fit.cssbox.swingbox.view.BackgroundView;
 import org.fit.cssbox.swingbox.view.BlockBoxView;
 import org.fit.cssbox.swingbox.view.BlockReplacedBoxView;
 import org.fit.cssbox.swingbox.view.BlockTableBoxView;
@@ -72,7 +73,15 @@ public class SwingBoxViewFactory implements ViewFactory
 
         if (name != null)
         {
-            if (name.equals(Constants.TEXT_BOX))
+            if (name.equals(Constants.EMPTY))
+            {
+                return new LabelView(elem);
+            }
+            else if (name.equals(Constants.BACKGROUND))
+            {
+                return new BackgroundView(elem);
+            }
+            else if (name.equals(Constants.TEXT_BOX))
             {
                 return new TextBoxView(elem);
             }

@@ -24,7 +24,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 
 import org.fit.cssbox.io.DocumentSource;
-import org.fit.cssbox.layout.ElementBox;
+import org.fit.cssbox.layout.Viewport;
 import org.xml.sax.InputSource;
 
 /**
@@ -46,7 +46,7 @@ public interface CSSBoxAnalyzer
      * @throws Exception
      *             some exception may be throwen during processing.
      */
-    public ElementBox analyze(DocumentSource docSource, Dimension dim) throws Exception;
+    public Viewport analyze(DocumentSource docSource, Dimension dim) throws Exception;
 
     /**
      * Updates the layout according to the new dimmension (the tree structure of
@@ -60,7 +60,7 @@ public interface CSSBoxAnalyzer
      * @throws Exception
      *             some exception may be throwen during processing.
      */
-    public ElementBox update(ElementBox root, Dimension dim) throws Exception;
+    public Viewport update(Dimension dim) throws Exception;
 
     /**
      * Gets parsed W3C document. After calling

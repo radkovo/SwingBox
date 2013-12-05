@@ -47,15 +47,19 @@ public final class Constants
     public static final String ATTRIBUTE_FOREGROUND = "attribute_foreground";
     public static final String ATTRIBUTE_BACKGROUND = "attribute_background";
     public static final String ATTRIBUTE_REPLACED_CONTENT = "attribute_replaced_content";
+    public static final String ATTRIBUTE_DRAWING_ORDER = "attribute_drawing_order";
 
     //Custom elements
     //defines names for elements, used by ViewFactory to map element to a view
+    public static final String EMPTY = "empty"; //empty content
+    public static final String BACKGROUND = "bg"; //empty content
     public static final String TEXT_BOX = "text_box";
     public static final String BLOCK_BOX = "block_box";
     public static final String BLOCK_TABLE_BOX = "block_table_box";
     public static final String INLINE_BOX = "inline_box";
     public static final String INLINE_REPLACED_BOX = "inline_replaced_box";
     public static final String BLOCK_REPLACED_BOX = "block_replaced_box";
+    public static final String INLINE_BLOCK_REPLACED_BOX = "inline_block_replaced_box";
     public static final String VIEWPORT = "viewport";
     public static final String DELEGATE = "delegate";
     public static final String LIST_ITEM_BOX = "list_item_box";

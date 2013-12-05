@@ -27,7 +27,7 @@ import org.fit.cssbox.io.DOMSource;
 import org.fit.cssbox.io.DefaultDOMSource;
 import org.fit.cssbox.io.DocumentSource;
 import org.fit.cssbox.layout.BrowserCanvas;
-import org.fit.cssbox.layout.ElementBox;
+import org.fit.cssbox.layout.Viewport;
 import org.w3c.dom.NodeList;
 
 /**
@@ -42,7 +42,7 @@ public class DefaultAnalyzer implements CSSBoxAnalyzer
     protected BrowserCanvas canvas;
 
     @Override
-    public ElementBox analyze(DocumentSource docSource, Dimension dim)
+    public Viewport analyze(DocumentSource docSource, Dimension dim)
             throws Exception
     {
         DOMSource parser = new DefaultDOMSource(docSource);
@@ -66,7 +66,7 @@ public class DefaultAnalyzer implements CSSBoxAnalyzer
     }
 
     @Override
-    public ElementBox update(ElementBox elem, Dimension dim)
+    public Viewport update(Dimension dim)
             throws Exception
     {
         canvas.createLayout(dim);

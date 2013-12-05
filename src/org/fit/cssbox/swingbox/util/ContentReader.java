@@ -23,20 +23,20 @@ import java.awt.Dimension;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.text.DefaultStyledDocument.ElementSpec;
-import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 
 import org.fit.cssbox.io.DocumentSource;
 import org.fit.cssbox.layout.BlockBox;
 import org.fit.cssbox.layout.BlockReplacedBox;
 import org.fit.cssbox.layout.BlockTableBox;
-import org.fit.cssbox.layout.Box;
 import org.fit.cssbox.layout.ElementBox;
+import org.fit.cssbox.layout.InlineBlockReplacedBox;
 import org.fit.cssbox.layout.InlineBox;
-import org.fit.cssbox.layout.InlineReplacedBox;
 import org.fit.cssbox.layout.ListItemBox;
+import org.fit.cssbox.layout.ReplacedBox;
 import org.fit.cssbox.layout.TableBodyBox;
 import org.fit.cssbox.layout.TableBox;
 import org.fit.cssbox.layout.TableCaptionBox;
@@ -54,17 +54,25 @@ import org.fit.cssbox.swingbox.SwingBoxDocument;
  * document.
  * 
  * @author Peter Bielik
- * @version 1.0
- * @since 1.0 - 29.1.2011
+ * @author burgetr
  */
-public class ContentReader
+public class ContentReader implements org.fit.cssbox.render.BoxRenderer
 {
+    /** Resulting element list */
+    private List<ElementSpec> elements;
 
+    /** Last started element (for detecting empty elements) */
+    private ElementBox lastStarted;
+    
+    /** Element counter for determining the drawing order */
+    private int order;
+    
     /**
      * Instantiates a new content reader.
      */
     public ContentReader()
     {
+        //boxMap = new HashMap<Box, SimpleAttributeSet>();
     }
 
     /**
@@ -89,37 +97,31 @@ public class ContentReader
         // (URL) doc.getProperty(Document.StreamDescriptionProperty)
 
         if (cba == null)
-            throw new IllegalArgumentException(
-                    "CSSBoxAnalyzer can not be NULL !!!\nProvide your custom implementation or check instantiation of DefaultAnalyzer object...");
+            throw new IllegalArgumentException("CSSBoxAnalyzer can not be NULL !!!\nProvide your custom implementation or check instantiation of DefaultAnalyzer object...");
 
-        List<ElementSpec> elements = new LinkedList<ElementSpec>();// ArrayList<ElementSpec>(1024);
+        elements = new Vector<ElementSpec>();// ArrayList<ElementSpec>(1024);
         elements.add(new ElementSpec(SimpleAttributeSet.EMPTY, ElementSpec.EndTagType));
+        lastStarted = null;
+        order = 0;
 
         // System.err.print("used Reader and encoding ? " +
         // is.getCharacterStream() + "  ,  ");
         // InputStreamReader r = (InputStreamReader)is.getCharacterStream();
         // System.err.println(r.getEncoding());
 
-        ElementBox root;
+        Viewport vp;
         try
         {
             // System.err.println("analyzing...");
-            root = cba.analyze(docSource, dim);
+            vp = cba.analyze(docSource, dim);
             // System.err.println("analyzing finished...");
         } catch (Exception e)
         {
             throw new IOException(e);
         }
 
-        if (root instanceof Viewport)
-        {
-            // root should by an instance of Viewport
-            buildViewport(elements, (Viewport) root);
-        }
-        else
-        {
-            buildElements(elements, root);
-        }
+        //Use this for "drawing" the boxes. This constructs the element list.
+        vp.draw(this);
 
         // System.err.println("num. of elements : " + elements.size());
         // System.err.println("Root min width : " + root.getMinimalWidth() +
@@ -145,120 +147,91 @@ public class ContentReader
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    public List<ElementSpec> update(ElementBox root, Dimension newDimension, CSSBoxAnalyzer cba) throws IOException
+    public List<ElementSpec> update(Viewport root, Dimension newDimension, CSSBoxAnalyzer cba) throws IOException
     {
         if (cba == null)
             throw new IllegalArgumentException("CSSBoxAnalyzer can not be NULL !!!\nProvide your custom implementation or check instantiation of DefaultAnalyzer object...");
 
-        List<ElementSpec> elements = new LinkedList<ElementSpec>();
+        elements = new LinkedList<ElementSpec>();
         elements.add(new ElementSpec(SimpleAttributeSet.EMPTY, ElementSpec.EndTagType));
+        lastStarted = null;
+        order = 0;
 
-        ElementBox tmp;
+        Viewport vp;
         try
         {
-            tmp = cba.update(root, newDimension);
+            vp = cba.update(newDimension);
         } catch (Exception e)
         {
             throw new IOException(e);
         }
 
-        if (tmp instanceof Viewport)
-        {
-            // tmp should by an instance of Viewport
-            buildViewport(elements, (Viewport) tmp);
-        }
-        else
-        {
-            buildElements(elements, tmp);
-        }
-
+        vp.draw(this);
+        
         return elements;
     }
 
-    private void buildElements(List<ElementSpec> elements, ElementBox box)
+    private SimpleAttributeSet buildElement(ElementBox box)
     {
-        Box tmp;
-
-        int total = box.getEndChild();
-        for (int i = box.getStartChild(); i < total; i++)
+        if (box instanceof InlineBox)
         {
-            tmp = box.getSubBox(i);
-
-            if (tmp instanceof TextBox)
-            { // -- text box
-                buildText(elements, (TextBox) tmp);
-            }
-            else if (tmp instanceof InlineReplacedBox)
-            { // -- inline boxes
-                buildInlineReplacedBox(elements, (InlineReplacedBox) tmp);
-            }
-            else if (tmp instanceof InlineBox)
-            {
-                buildInlineBox(elements, (InlineBox) tmp);
-            }
-            else if (tmp instanceof Viewport)
-            { // -- the boxes
-                buildViewport(elements, (Viewport) tmp);
-            }
-            else if (tmp instanceof BlockReplacedBox)
-            {
-                buildBlockReplacedBox(elements, (BlockReplacedBox) tmp);
-            }
-            else if (tmp instanceof TableBox)
-            { // -- tables
-                buildTableBox(elements, (TableBox) tmp);
-            }
-            else if (tmp instanceof TableCaptionBox)
-            {
-                buildTableCaptionBox(elements, (TableCaptionBox) tmp);
-            }
-            else if (tmp instanceof TableBodyBox)
-            {
-                buildTableBodyBox(elements, (TableBodyBox) tmp);
-            }
-            else if (tmp instanceof TableRowBox)
-            {
-                buildTableRowBox(elements, (TableRowBox) tmp);
-            }
-            else if (tmp instanceof TableCellBox)
-            {
-                buildTableCellBox(elements, (TableCellBox) tmp);
-            }
-            else if (tmp instanceof TableColumnGroup)
-            {
-                buildTableColumnGroup(elements, (TableColumnGroup) tmp);
-            }
-            else if (tmp instanceof TableColumn)
-            {
-                buildTableColumn(elements, (TableColumn) tmp);
-            }
-            else if (tmp instanceof BlockTableBox)
-            {
-                buildBlockTableBox(elements, (BlockTableBox) tmp);
-            }
-            else if (tmp instanceof ListItemBox)
-            {
-                buildListItemBox(elements, (ListItemBox) tmp);
-            }
-            else if (tmp instanceof BlockBox)
-            {
-                buildBlockBox(elements, (BlockBox) tmp);
-            }
-            else
-            {
-                // todo log this !
-                System.err.println("Unknowen BOX : " + tmp.getClass().getName());
-            }
-
+            return buildInlineBox((InlineBox) box);
         }
-
+        else if (box instanceof Viewport)
+        { // -- the boxes
+            return buildViewport((Viewport) box);
+        }
+        else if (box instanceof TableBox)
+        { // -- tables
+            return buildTableBox((TableBox) box);
+        }
+        else if (box instanceof TableCaptionBox)
+        {
+            return buildTableCaptionBox((TableCaptionBox) box);
+        }
+        else if (box instanceof TableBodyBox)
+        {
+            return buildTableBodyBox((TableBodyBox) box);
+        }
+        else if (box instanceof TableRowBox)
+        {
+            return buildTableRowBox((TableRowBox) box);
+        }
+        else if (box instanceof TableCellBox)
+        {
+            return buildTableCellBox((TableCellBox) box);
+        }
+        else if (box instanceof TableColumnGroup)
+        {
+            return buildTableColumnGroup((TableColumnGroup) box);
+        }
+        else if (box instanceof TableColumn)
+        {
+            return buildTableColumn((TableColumn) box);
+        }
+        else if (box instanceof BlockTableBox)
+        {
+            return buildBlockTableBox((BlockTableBox) box);
+        }
+        else if (box instanceof ListItemBox)
+        {
+            return buildListItemBox((ListItemBox) box);
+        }
+        else if (box instanceof BlockBox)
+        {
+            return buildBlockBox((BlockBox) box);
+        }
+        else
+        {
+            System.err.println("Unknown BOX : " + box.getClass().getName());
+            return null;
+        }
     }
 
-    private void buildText(List<ElementSpec> elements, TextBox box)
+    private SimpleAttributeSet buildText(TextBox box)
     {
-        String text = box.getText();
         VisualContext vc = box.getVisualContext();
-        MutableAttributeSet attr = new SimpleAttributeSet();
+        SimpleAttributeSet attr = new SimpleAttributeSet();
 
         attr.addAttribute(Constants.ATTRIBUTE_FONT_VARIANT, vc.getFontVariant());
         attr.addAttribute(Constants.ATTRIBUTE_TEXT_DECORATION, vc.getTextDecoration());
@@ -269,133 +242,180 @@ public class ContentReader
         attr.addAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE, new Anchor());
         attr.addAttribute(Constants.ATTRIBUTE_BOX_REFERENCE, box);
 
-        // elements.add(new ElementSpec(attr, ElementSpec.StartTagType));
-        elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
-        // elements.add(new ElementSpec(attr, ElementSpec.EndTagType));
-
+        return attr;
     }
 
-    private void buildInlineReplacedBox(List<ElementSpec> elements,
-            InlineReplacedBox box)
+    private SimpleAttributeSet buildEmptyContent()
     {
-        org.w3c.dom.Element elem = box.getElement();
-        String text = "";
-        // add some textual info, if picture
-        if ("img".equalsIgnoreCase(elem.getTagName()))
-        {
-            text = " [" + elem.getAttribute("alt") + " Location: "
-                    + elem.getAttribute("src") + "] ";
-        }
-
-        MutableAttributeSet attr = new SimpleAttributeSet();
-        attr.addAttribute(SwingBoxDocument.ElementNameAttribute,
-                Constants.INLINE_REPLACED_BOX);
+        SimpleAttributeSet attr = new SimpleAttributeSet();
+        attr.addAttribute(SwingBoxDocument.ElementNameAttribute, Constants.EMPTY);
+        return attr;
+    }
+    
+    private SimpleAttributeSet buildReplacedBox(ReplacedBox box)
+    {
+        SimpleAttributeSet attr = new SimpleAttributeSet();
+        if (box instanceof BlockReplacedBox)
+            attr.addAttribute(SwingBoxDocument.ElementNameAttribute, Constants.BLOCK_REPLACED_BOX);
+        else if (box instanceof InlineBlockReplacedBox)
+            attr.addAttribute(SwingBoxDocument.ElementNameAttribute, Constants.INLINE_BLOCK_REPLACED_BOX);
+        else
+            attr.addAttribute(SwingBoxDocument.ElementNameAttribute, Constants.INLINE_REPLACED_BOX);
         attr.addAttribute(Constants.ATTRIBUTE_BOX_REFERENCE, box);
         attr.addAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE, new Anchor());
-        attr.addAttribute(Constants.ATTRIBUTE_REPLACED_CONTENT,
-                box.getContentObj());
+        attr.addAttribute(Constants.ATTRIBUTE_REPLACED_CONTENT, box.getContentObj());
 
-        elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
+        return attr;
     }
 
-    private void buildBlockReplacedBox(List<ElementSpec> elements, BlockReplacedBox box)
+    private SimpleAttributeSet buildElementBackground(ElementBox box)
     {
-        // some content
-        org.w3c.dom.Element elem = box.getElement();
-        String text = "";
-        // add some textual info, if picture
-        if ("img".equalsIgnoreCase(elem.getTagName()))
-        {
-            text = " [" + elem.getAttribute("alt") + " Location: "
-                    + elem.getAttribute("src") + "] ";
-        }
-
-        MutableAttributeSet attr = new SimpleAttributeSet();
-        attr.addAttribute(SwingBoxDocument.ElementNameAttribute, Constants.BLOCK_REPLACED_BOX);
-        attr.addAttribute(Constants.ATTRIBUTE_BOX_REFERENCE, box);
-        attr.addAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE, new Anchor());
-        attr.addAttribute(Constants.ATTRIBUTE_REPLACED_CONTENT,
-                box.getContentObj());
-
-        elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
+        return commonBuild(box, Constants.BACKGROUND);
     }
-
-    private void buildBlockBox(List<ElementSpec> elements, BlockBox box)
+    
+    private SimpleAttributeSet buildBlockBox(BlockBox box)
     {
-        commonBuild(elements, box, Constants.BLOCK_BOX);
+        return commonBuild(box, Constants.BLOCK_BOX);
     }
 
-    private void buildInlineBox(List<ElementSpec> elements, InlineBox box)
+    private SimpleAttributeSet buildInlineBox(InlineBox box)
     {
-        commonBuild(elements, box, Constants.INLINE_BOX);
+        return commonBuild(box, Constants.INLINE_BOX);
     }
 
-    private void buildViewport(List<ElementSpec> elements, Viewport box)
+    private SimpleAttributeSet buildViewport(Viewport box)
     {
-        commonBuild(elements, box, Constants.VIEWPORT);
+        return commonBuild(box, Constants.VIEWPORT);
     }
 
-    private void buildBlockTableBox(List<ElementSpec> elements, BlockTableBox box)
+    private SimpleAttributeSet buildBlockTableBox(BlockTableBox box)
     {
-        commonBuild(elements, box, Constants.BLOCK_TABLE_BOX);
+        return commonBuild(box, Constants.BLOCK_TABLE_BOX);
     }
 
-    private void buildTableBox(List<ElementSpec> elements, TableBox box)
+    private SimpleAttributeSet buildTableBox(TableBox box)
     {
-        commonBuild(elements, box, Constants.TABLE_BOX);
+        return commonBuild(box, Constants.TABLE_BOX);
     }
 
-    private void buildTableCaptionBox(List<ElementSpec> elements, TableCaptionBox box)
+    private SimpleAttributeSet buildTableCaptionBox(TableCaptionBox box)
     {
-        commonBuild(elements, box, Constants.TABLE_CAPTION_BOX);
+        return commonBuild(box, Constants.TABLE_CAPTION_BOX);
     }
 
-    private void buildTableBodyBox(List<ElementSpec> elements, TableBodyBox box)
+    private SimpleAttributeSet buildTableBodyBox(TableBodyBox box)
     {
-        commonBuild(elements, box, Constants.TABLE_BODY_BOX);
+        return commonBuild(box, Constants.TABLE_BODY_BOX);
     }
 
-    private void buildTableRowBox(List<ElementSpec> elements, TableRowBox box)
+    private SimpleAttributeSet buildTableRowBox(TableRowBox box)
     {
-        commonBuild(elements, box, Constants.TABLE_ROW_BOX);
+        return commonBuild(box, Constants.TABLE_ROW_BOX);
     }
 
-    private void buildTableCellBox(List<ElementSpec> elements, TableCellBox box)
+    private SimpleAttributeSet buildTableCellBox(TableCellBox box)
     {
-        commonBuild(elements, box, Constants.TABLE_CELL_BOX);
+        return commonBuild(box, Constants.TABLE_CELL_BOX);
     }
 
-    private void buildTableColumn(List<ElementSpec> elements, TableColumn box)
+    private SimpleAttributeSet buildTableColumn(TableColumn box)
     {
-        commonBuild(elements, box, Constants.TABLE_COLUMN);
+        return commonBuild(box, Constants.TABLE_COLUMN);
     }
 
-    private void buildTableColumnGroup(List<ElementSpec> elements, TableColumnGroup box)
+    private SimpleAttributeSet buildTableColumnGroup(TableColumnGroup box)
     {
-        commonBuild(elements, box, Constants.TABLE_COLUMN_GROUP);
+        return commonBuild(box, Constants.TABLE_COLUMN_GROUP);
     }
 
-    private void buildListItemBox(List<ElementSpec> elements, ListItemBox box)
+    private SimpleAttributeSet buildListItemBox(ListItemBox box)
     {
-        commonBuild(elements, box, Constants.LIST_ITEM_BOX);
+        return commonBuild(box, Constants.LIST_ITEM_BOX);
     }
-
-    private final void commonBuild(List<ElementSpec> elements, ElementBox box, Object elementNameValue)
+    
+    private final SimpleAttributeSet commonBuild(ElementBox box, Object elementNameValue)
     {
         // when there are no special requirements to build an element, use this
         // one
         SimpleAttributeSet attr = new SimpleAttributeSet();
-        attr.addAttribute(SwingBoxDocument.ElementNameAttribute,
-                elementNameValue);
+        attr.addAttribute(SwingBoxDocument.ElementNameAttribute, elementNameValue);
         attr.addAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE, new Anchor());
         attr.addAttribute(Constants.ATTRIBUTE_BOX_REFERENCE, box);
         attr.addAttribute(Constants.ATTRIBUTE_ELEMENT_ID, box.getElement().getAttribute("id"));
 
-        elements.add(new ElementSpec(attr, ElementSpec.StartTagType));
+        return attr;
+    }
 
-        buildElements(elements, box);
+    //======================================================================================================================
+    //BoxRenderer implementation
+    
+    @Override
+    public void startElementContents(ElementBox elem)
+    {
+        if (!elem.isReplaced())
+        {
+            SimpleAttributeSet attr = buildElement(elem);
+            attr.addAttribute(Constants.ATTRIBUTE_DRAWING_ORDER, order++);
+            elements.add(new ElementSpec(attr, ElementSpec.StartTagType));
+            lastStarted = elem;
+        }
+    }
 
-        elements.add(new ElementSpec(attr, ElementSpec.EndTagType));
+    @Override
+    public void finishElementContents(ElementBox elem)
+    {
+        if (!elem.isReplaced())
+        {
+            /*if (lastStarted == elem)
+            {
+                //rendering an empty element -- we must insert an empty string in order to preserve the element
+                SimpleAttributeSet content = buildEmptyContent();
+                elements.add(new ElementSpec(content, ElementSpec.ContentType, "".toCharArray(), 0, 0));
+            }*/
+            SimpleAttributeSet attr = buildElement(elem);
+            elements.add(new ElementSpec(attr, ElementSpec.EndTagType));
+            lastStarted = null;
+        }
+    }
+
+    @Override
+    public void renderElementBackground(ElementBox elem)
+    {
+        SimpleAttributeSet attr = buildElementBackground(elem);
+        elements.add(new ElementSpec(attr, ElementSpec.ContentType));
+    }
+
+    @Override
+    public void renderTextContent(TextBox box)
+    {
+        String text = box.getText();
+        SimpleAttributeSet attr = buildText(box);
+        attr.addAttribute(Constants.ATTRIBUTE_DRAWING_ORDER, order++);
+        elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
+        lastStarted = null;
+    }
+
+    @Override
+    public void renderReplacedContent(ReplacedBox box)
+    {
+        org.w3c.dom.Element elem = ((ElementBox) box).getElement();
+        String text = "";
+        // add some textual info, if picture
+        if ("img".equalsIgnoreCase(elem.getTagName()))
+        {
+            text = " [" + elem.getAttribute("alt") + " Location: "
+                    + elem.getAttribute("src") + "] ";
+        }
+
+        SimpleAttributeSet attr = buildReplacedBox(box);
+        attr.addAttribute(Constants.ATTRIBUTE_DRAWING_ORDER, order++);
+        elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
+        lastStarted = null;
+    }
+
+    @Override
+    public void close()
+    {
     }
 
     // block attributes, in general
