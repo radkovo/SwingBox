@@ -28,15 +28,19 @@ import org.fit.cssbox.swingbox.BrowserPane;
 import org.fit.cssbox.swingbox.util.GeneralEvent;
 import org.fit.cssbox.swingbox.util.GeneralEventListener;
 import org.fit.cssbox.swingbox.util.GeneralEvent.EventType;
+import org.fit.net.DataURLHandler;
 
 import java.awt.GridBagConstraints;
+
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.text.Document;
 
 import java.awt.Rectangle;
 import java.awt.GridBagLayout;
+
 import javax.swing.JTabbedPane;
+
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -76,11 +80,13 @@ public class SwingBrowser
     {
         try {
             if (!urlstring.startsWith("http:") &&
-                !urlstring.startsWith("ftp:") &&
-                !urlstring.startsWith("file:"))
-                    urlstring = "http://" + urlstring;
-            
-            URL url = new URL(urlstring);
+                    !urlstring.startsWith("https:") &&
+                    !urlstring.startsWith("ftp:") &&
+                    !urlstring.startsWith("file:") &&
+                    !urlstring.startsWith("data:"))
+                        urlstring = "http://" + urlstring;
+                
+            URL url = DataURLHandler.createURL(null, urlstring);
             urlText.setText(url.toString());
 
             while (historyPos < history.size())
