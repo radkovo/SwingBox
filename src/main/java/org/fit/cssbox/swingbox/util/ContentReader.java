@@ -61,9 +61,6 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     /** Resulting element list */
     private List<ElementSpec> elements;
 
-    /** Last started element (for detecting empty elements) */
-    private ElementBox lastStarted;
-    
     /** Element counter for determining the drawing order */
     private int order;
     
@@ -101,7 +98,6 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
 
         elements = new Vector<ElementSpec>();// ArrayList<ElementSpec>(1024);
         elements.add(new ElementSpec(SimpleAttributeSet.EMPTY, ElementSpec.EndTagType));
-        lastStarted = null;
         order = 0;
 
         // System.err.print("used Reader and encoding ? " +
@@ -154,7 +150,6 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
 
         elements = new LinkedList<ElementSpec>();
         elements.add(new ElementSpec(SimpleAttributeSet.EMPTY, ElementSpec.EndTagType));
-        lastStarted = null;
         order = 0;
 
         Viewport vp;
@@ -245,13 +240,6 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         return attr;
     }
 
-    private SimpleAttributeSet buildEmptyContent()
-    {
-        SimpleAttributeSet attr = new SimpleAttributeSet();
-        attr.addAttribute(SwingBoxDocument.ElementNameAttribute, Constants.EMPTY);
-        return attr;
-    }
-    
     private SimpleAttributeSet buildReplacedBox(ReplacedBox box)
     {
         SimpleAttributeSet attr = new SimpleAttributeSet();
@@ -357,7 +345,6 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
             SimpleAttributeSet attr = buildElement(elem);
             attr.addAttribute(Constants.ATTRIBUTE_DRAWING_ORDER, order++);
             elements.add(new ElementSpec(attr, ElementSpec.StartTagType, "{".toCharArray(), 1, 0));
-            lastStarted = elem;
         }
     }
 
@@ -374,7 +361,6 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
             }*/
             SimpleAttributeSet attr = buildElement(elem);
             elements.add(new ElementSpec(attr, ElementSpec.EndTagType, "}".toCharArray(), 1, 0));
-            lastStarted = null;
         }
     }
 
@@ -393,7 +379,6 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         SimpleAttributeSet attr = buildText(box);
         attr.addAttribute(Constants.ATTRIBUTE_DRAWING_ORDER, order++);
         elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
-        lastStarted = null;
     }
 
     @Override
@@ -413,7 +398,6 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         SimpleAttributeSet attr = buildReplacedBox(box);
         attr.addAttribute(Constants.ATTRIBUTE_DRAWING_ORDER, order++);
         elements.add(new ElementSpec(attr, ElementSpec.ContentType, text.toCharArray(), 0, text.length()));
-        lastStarted = null;
     }
 
     @Override

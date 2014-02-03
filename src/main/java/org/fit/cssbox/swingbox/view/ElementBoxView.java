@@ -641,11 +641,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     protected View getViewAtPoint(int x, int y, Rectangle alloc)
     {
         View retv = null;
-        Box retb = null;
         int retorder = -1;
-        
-        if (x == 545 && y > 3000)
-            System.out.println("jo!");
         
         Vector<View> leaves = new Vector<View>();
         findLeaves(this, leaves);
@@ -661,48 +657,19 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
                     while (v.getParent() != null && v.getParent() != this)
                         v = v.getParent();
                     
-                    System.out.println("Candidate: " + v + " (leaf: " + leaf + ")");
+                    //System.out.println("Candidate: " + v + " (leaf: " + leaf + ")");
                     int o = ((CSSBoxView) v).getDrawingOrder();
                     if (retv == null || o >= retorder) //next box is drawn after the current one
                     {
-                        System.out.println("(better)");
                         retv = v;
-                        retb = b;
                         retorder = order;
                         alloc.setBounds(getCompleteBoxAllocation(b));
                     }
-                    else
-                        System.out.println("(worse)");
                 }
             }
             
         }
-        
-        /*for (int i = 0; i < getViewCount(); i++)
-        {
-            View v = getView(i);
-            if (v instanceof CSSBoxView)
-            {
-                Box b = getBox(v);
-                Rectangle r = getCompleteBoxAllocation(b);
-                if (locateBox(b, x, y) != null)
-                {
-                    System.out.println("Candidate: " + v);
-                    int o = ((CSSBoxView) v).getDrawingOrder();
-                    if (retv == null || o >= retorder) //next box is drawn after the current one
-                    {
-                        System.out.println("(better)");
-                        retv = v;
-                        retb = b;
-                        retorder = order;
-                        alloc.setBounds(r);
-                    }
-                    else
-                        System.out.println("(worse)");
-                }
-            }
-        }*/
-        System.out.println("At " + x + ":" + y + " found " + retv);
+        //System.out.println("At " + x + ":" + y + " found " + retv);
         return retv;
     }
 
@@ -758,22 +725,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         }
         else
             return null;
-    }
-    
-    /**
-     * Compares the stacking level of the two boxes
-     * @param b1 the first box
-     * @param b2 the second box
-     * @return 0 when the levels are equal, &lt;0 when b2 is below b1, &gt;0 when b2 is above b1
-     */
-    private int compareLevel(Box b1, Box b2)
-    {
-        //TODO this should be replaced by something better as soon as CSSBox supports stacking levels properly
-        int l1 = 0;
-        int l2 = 0;
-        if (b1 instanceof BlockBox && ((BlockBox) b1).isPositioned()) l1 = 1;
-        if (b2 instanceof BlockBox && ((BlockBox) b2).isPositioned()) l2 = 1;
-        return l2 - l1;
     }
     
     @Override

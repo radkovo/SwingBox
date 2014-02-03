@@ -103,9 +103,9 @@ public class MouseController extends MouseAdapter
                 Element elem = ((StyledDocument) editor.getDocument()).getCharacterElement(pos);
                 Object bb = elem.getAttributes().getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
                 Anchor anchor = (Anchor) elem.getAttributes().getAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE);
-                System.out.println("Pos: " + pos);
-                System.out.println("Elem: " + elem.getAttributes().getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE));
-                System.out.println("Anchor: " + anchor);
+                //System.out.println("Pos: " + pos);
+                //System.out.println("Elem: " + elem.getAttributes().getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE));
+                //System.out.println("Anchor: " + anchor);
 
                 if (elem != prevElem)
                 {
@@ -123,7 +123,6 @@ public class MouseController extends MouseAdapter
                             createHyperLinkEvent(editor, elem, anchor, EventType.ENTERED);
                         }
                         prevAnchor = anchor;
-
                     }
                     else if (!prevAnchor.equalProperties(anchor.getProperties()))
                     {
