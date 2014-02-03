@@ -12,7 +12,7 @@
 
 	<groupId>net.sf.cssbox</groupId>
 	<artifactId>swingbox</artifactId>
-	<version>0.3-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 	<name>SwingBox</name>
 	<description>SwingBox is a Java Swing component that allows displaying the (X)HTML documents including the CSS support. It is designed as a JEditorPane replacement with considerably better rendering results. SwingBox is pure Java and it is using the CSSBox rendering engine for rendering the documents.</description>
 	<url>http://cssbox.sourceforge.net/swingbox</url>
@@ -94,7 +94,12 @@
 					<descriptors>
 						<descriptor>/src/main/assembly/dist.xml</descriptor>
 					</descriptors>
-					<appendAssemblyId>false</appendAssemblyId>
+					<archive>
+						<manifest>
+							<mainClass>org.fit.cssbox.swingbox.demo.SwingBrowser</mainClass>
+						</manifest>
+					</archive>
+					<appendAssemblyId>true</appendAssemblyId>
 				</configuration>
 			</plugin>
 
