@@ -110,8 +110,13 @@ public class MouseController extends MouseAdapter
                 if (elem != prevElem)
                 {
                     prevElem = elem;
-                    if (bb != null && bb instanceof TextBox)
-                        setCursor(editor, textCursor);
+                    if (!anchor.isActive())
+                    {
+                        if (bb != null && bb instanceof TextBox)
+                            setCursor(editor, textCursor);
+                        else
+                            setCursor(editor, defaultCursor);
+                    }
                 }
                 
                 if (anchor != prevAnchor)
