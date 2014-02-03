@@ -21,12 +21,14 @@ package org.fit.cssbox.swingbox.view;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.Map;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
+import javax.swing.text.Position;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Position.Bias;
 import javax.swing.text.View;
@@ -72,10 +74,13 @@ public class BackgroundView extends View implements CSSBoxView
             throw new IllegalArgumentException("Box reference is not an instance of ElementBox");
         }
         
-        if (box.getNode() != null && box.getNode().getParentNode() instanceof org.w3c.dom.Element)
+        if (box.toString().contains("\"btn\""))
+            System.out.println("jo!");
+        
+        if (box.getElement() != null)
         {
             Map<String, String> elementAttributes = anchor.getProperties();
-            org.w3c.dom.Element pelem = Anchor.findAnchorElement((org.w3c.dom.Element) box.getNode().getParentNode());
+            org.w3c.dom.Element pelem = Anchor.findAnchorElement(box.getElement());
             if (pelem != null)
             {
                 anchor.setActive(true);
@@ -133,7 +138,14 @@ public class BackgroundView extends View implements CSSBoxView
     @Override
     public int viewToModel(float x, float y, Shape a, Bias[] bias)
     {
-        return 0;
+        Rectangle alloc = a instanceof Rectangle ? (Rectangle) a : a.getBounds();
+        if (x < alloc.x + (alloc.width / 2))
+        {
+            bias[0] = Position.Bias.Forward;
+            return getStartOffset();
+        }
+        bias[0] = Position.Bias.Backward;
+        return getEndOffset();
     }
 
     @Override

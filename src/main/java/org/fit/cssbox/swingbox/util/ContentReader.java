@@ -356,7 +356,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         {
             SimpleAttributeSet attr = buildElement(elem);
             attr.addAttribute(Constants.ATTRIBUTE_DRAWING_ORDER, order++);
-            elements.add(new ElementSpec(attr, ElementSpec.StartTagType));
+            elements.add(new ElementSpec(attr, ElementSpec.StartTagType, "{".toCharArray(), 1, 0));
             lastStarted = elem;
         }
     }
@@ -373,7 +373,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
                 elements.add(new ElementSpec(content, ElementSpec.ContentType, "".toCharArray(), 0, 0));
             }*/
             SimpleAttributeSet attr = buildElement(elem);
-            elements.add(new ElementSpec(attr, ElementSpec.EndTagType));
+            elements.add(new ElementSpec(attr, ElementSpec.EndTagType, "}".toCharArray(), 1, 0));
             lastStarted = null;
         }
     }
@@ -383,7 +383,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     {
         SimpleAttributeSet attr = buildElementBackground(elem);
         attr.addAttribute(Constants.ATTRIBUTE_DRAWING_ORDER, order++);
-        elements.add(new ElementSpec(attr, ElementSpec.ContentType, "".toCharArray(), 0, 0));
+        elements.add(new ElementSpec(attr, ElementSpec.ContentType, "*".toCharArray(), 0, 1));
     }
 
     @Override
@@ -407,6 +407,8 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
             text = " [" + elem.getAttribute("alt") + " Location: "
                     + elem.getAttribute("src") + "] ";
         }
+        else
+            text = "{object}";
 
         SimpleAttributeSet attr = buildReplacedBox(box);
         attr.addAttribute(Constants.ATTRIBUTE_DRAWING_ORDER, order++);
