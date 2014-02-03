@@ -22,6 +22,8 @@ package org.fit.cssbox.swingbox.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.w3c.dom.Node;
+
 /**
  * The Class Anchor. Provides info about hyperlinks.
  * 
@@ -107,4 +109,20 @@ public class Anchor
         return "Anchor(@" + Integer.toHexString(hashCode()) + ")[Active: "
                 + active + ", Properties: " + properties.toString() + "]";
     }
+    
+    /**
+     * Examines the given element and all its parent elements in order to find the "a" element.
+     * @param e the child element to start with
+     * @return the "a" element found or null if it is not present
+     */
+    public static org.w3c.dom.Element findAnchorElement(org.w3c.dom.Element e)
+    {
+        if ("a".equalsIgnoreCase(e.getTagName().trim()))
+            return e;
+        else if (e.getParentNode() != null && e.getParentNode().getNodeType() == Node.ELEMENT_NODE)
+            return findAnchorElement((org.w3c.dom.Element) e.getParentNode());
+        else
+            return null;
+    }
+
 }

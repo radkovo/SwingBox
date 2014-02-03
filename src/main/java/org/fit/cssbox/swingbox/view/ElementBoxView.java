@@ -26,6 +26,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.SizeRequirements;
 import javax.swing.event.DocumentEvent;
@@ -41,7 +42,6 @@ import org.fit.cssbox.layout.Box;
 import org.fit.cssbox.layout.ElementBox;
 import org.fit.cssbox.swingbox.util.Anchor;
 import org.fit.cssbox.swingbox.util.Constants;
-import org.w3c.dom.Node;
 
 /**
  * @author Peter Bielik
@@ -114,7 +114,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
 
     private void loadElementAttributes()
     {
-        org.w3c.dom.Element elem = findAnchorElement(box.getElement());
+        org.w3c.dom.Element elem = Anchor.findAnchorElement(box.getElement());
         Map<String, String> elementAttributes = anchor.getProperties();
 
         if (elem != null)
@@ -155,21 +155,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         return order;
     }
     
-    /**
-     * Examines the given element and all its parent elements in order to find the "a" element.
-     * @param e the child element to start with
-     * @return the "a" element found or null if it is not present
-     */
-    private org.w3c.dom.Element findAnchorElement(org.w3c.dom.Element e)
-    {
-        if ("a".equalsIgnoreCase(e.getTagName().trim()))
-            return e;
-        else if (e.getParentNode() != null && e.getParentNode().getNodeType() == Node.ELEMENT_NODE)
-            return findAnchorElement((org.w3c.dom.Element) e.getParentNode());
-        else
-            return null;
-    }
-
     /**
      * Fetches the tile axis property. This is the axis along which the child
      * views are tiled.
@@ -658,7 +643,42 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         View retv = null;
         Box retb = null;
         int retorder = -1;
-        for (int i = 0; i < getViewCount(); i++)
+        
+        if (x == 545 && y > 3000)
+            System.out.println("jo!");
+        
+        Vector<View> leaves = new Vector<View>();
+        findLeaves(this, leaves);
+        
+        for (View leaf : leaves)
+        {
+            View v = leaf;
+            if (v instanceof CSSBoxView)
+            {
+                Box b = getBox(v);
+                if (locateBox(b, x, y) != null)
+                {
+                    while (v.getParent() != null && v.getParent() != this)
+                        v = v.getParent();
+                    
+                    System.out.println("Candidate: " + v + " (leaf: " + leaf + ")");
+                    int o = ((CSSBoxView) v).getDrawingOrder();
+                    if (retv == null || o >= retorder) //next box is drawn after the current one
+                    {
+                        System.out.println("(better)");
+                        retv = v;
+                        retb = b;
+                        retorder = order;
+                        alloc.setBounds(getCompleteBoxAllocation(b));
+                    }
+                    else
+                        System.out.println("(worse)");
+                }
+            }
+            
+        }
+        
+        /*for (int i = 0; i < getViewCount(); i++)
         {
             View v = getView(i);
             if (v instanceof CSSBoxView)
@@ -671,19 +691,38 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
                     int o = ((CSSBoxView) v).getDrawingOrder();
                     if (retv == null || o >= retorder) //next box is drawn after the current one
                     {
-                        //System.out.println("Found: " + b);
+                        System.out.println("(better)");
                         retv = v;
                         retb = b;
                         retorder = order;
                         alloc.setBounds(r);
                     }
+                    else
+                        System.out.println("(worse)");
                 }
             }
-        }
+        }*/
         System.out.println("At " + x + ":" + y + " found " + retv);
         return retv;
     }
 
+    private void findLeaves(View root, Vector<View> leaves)
+    {
+        if (root instanceof ElementBoxView)
+        {
+            ElementBoxView ev = (ElementBoxView) root;
+            if (ev.getViewCount() == 0)
+                leaves.add(ev);
+            else
+            {
+                for (int i = 0; i < ev.getViewCount(); i++)
+                    findLeaves(ev.getView(i), leaves);
+            }
+        }
+        else
+            leaves.add(root);
+    }
+    
     /**
      * Locates a box from its position
      */

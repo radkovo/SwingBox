@@ -103,6 +103,7 @@ public class MouseController extends MouseAdapter
                 Element elem = ((StyledDocument) editor.getDocument()).getCharacterElement(pos);
                 Object bb = elem.getAttributes().getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
                 Anchor anchor = (Anchor) elem.getAttributes().getAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE);
+                System.out.println("Pos: " + pos);
                 System.out.println("Elem: " + elem.getAttributes().getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE));
                 System.out.println("Anchor: " + anchor);
 

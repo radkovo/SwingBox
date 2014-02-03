@@ -382,7 +382,8 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     public void renderElementBackground(ElementBox elem)
     {
         SimpleAttributeSet attr = buildElementBackground(elem);
-        elements.add(new ElementSpec(attr, ElementSpec.ContentType));
+        attr.addAttribute(Constants.ATTRIBUTE_DRAWING_ORDER, order++);
+        elements.add(new ElementSpec(attr, ElementSpec.ContentType, "".toCharArray(), 0, 0));
     }
 
     @Override
