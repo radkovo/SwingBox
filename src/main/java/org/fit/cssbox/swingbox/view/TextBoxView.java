@@ -19,6 +19,7 @@
 
 package org.fit.cssbox.swingbox.view;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -27,6 +28,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
@@ -449,17 +451,20 @@ public class TextBoxView extends View implements CSSBoxView
         // render the text
         layout.draw(g, x, y + layout.getAscent());
 
-        // System.err.println("# p0: " + p0);
-        // System.err.println("# p1: " + p1);
-        // System.err.println("# fg: " + fg);
-        // System.err.println("# text: " + getText(p0, p1) + "\n");
-
+        //render the decoration
         if (underline || strike || overline)
         {
+            Stroke origStroke = g.getStroke();
 
-            // if (getFont().isBold()) {
-            // //hint nastavit hrubsi stetec, aj podla velkosti pisma :)
-            // }
+            int w;
+            if (getFont().isBold())
+                w = getFont().getSize() / 8;
+            else
+                w = getFont().getSize() / 10;
+            if (w < 1) w = 1;
+            y += w / 2;
+            
+            g.setStroke(new BasicStroke(w));
 
             int xx = absoluteContentBounds.x + absoluteContentBounds.width;
             if (overline)
@@ -476,10 +481,11 @@ public class TextBoxView extends View implements CSSBoxView
                 int yy = y + (int) (absoluteContentBounds.height / 2);
                 g.drawLine(absoluteContentBounds.x, yy, xx, yy);
             }
+            
+            g.setStroke(origStroke);
         }
 
         g.setClip(oldclip);
-
     }
 
     /**
