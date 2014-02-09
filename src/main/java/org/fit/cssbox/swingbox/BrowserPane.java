@@ -554,10 +554,14 @@ public class BrowserPane extends JEditorPane
                     Rectangle bottom = new Rectangle(0, getHeight() - 1, 1, 1);
                     if (reference != null)
                     {
-                        // scroll down and back to reference to get reference
-                        // the topmost item
-                        scrollRectToVisible(bottom);
-                        scrollToReference(reference);
+                        Element dst = findElementToScroll(reference, doc.getDefaultRootElement());
+                        if (dst != null)
+                        {
+                            // scroll down and back to reference to get reference
+                            // the topmost item
+                            scrollRectToVisible(bottom);
+                            scrollToReference(reference);
+                        }
                     }
                     else
                     {

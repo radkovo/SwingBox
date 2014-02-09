@@ -152,7 +152,19 @@ public class BackgroundView extends View implements CSSBoxView
     public Shape modelToView(int pos, Shape a, Bias b)
             throws BadLocationException
     {
-        throw new BadLocationException("Should not be applied here", pos);
+        int p0 = getStartOffset();
+        int p1 = getEndOffset();
+        if ((pos >= p0) && (pos <= p1))
+        {
+            Rectangle r = a instanceof Rectangle ? (Rectangle) a : a.getBounds();
+            if (pos == p1)
+            {
+                r.x += r.width;
+            }
+            r.width = 0;
+            return r;
+        }
+        throw new BadLocationException(pos + " not in range " + p0 + "," + p1, pos);
     }
 
     @Override
