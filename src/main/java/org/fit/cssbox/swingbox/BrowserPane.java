@@ -310,48 +310,51 @@ public class BrowserPane extends JEditorPane
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void scrollToReference(String reference)
     {
-        Document d = getDocument();
-        Element dst = findElementToScroll(reference, d.getDefaultRootElement());
-        if (dst == null) return;
-
-        try
+        Element dst = findElementToScroll(reference, getDocument().getDefaultRootElement());
+        if (dst != null)
         {
-            Rectangle rec = modelToView(dst.getStartOffset());
-            if (rec != null)
+            try
             {
-                scrollRectToVisible(rec);
+                Rectangle bottom = new Rectangle(0, getHeight() - 1, 1, 1);
+                Rectangle rec = modelToView(dst.getStartOffset());
+                if (rec != null)
+                {
+                    scrollRectToVisible(bottom); //move to the bottom and back in order to put the reference to the window top
+                    scrollRectToVisible(rec);
+                }
+            } catch (BadLocationException e)
+            {
+                UIManager.getLookAndFeel().provideErrorFeedback(this);
             }
-        } catch (BadLocationException e)
-        {
-            UIManager.getLookAndFeel().provideErrorFeedback(this);
         }
-
     }
 
     private Element findElementToScroll(String ref, Element root)
     {
-        String eid = (String) root.getAttributes().getAttribute(Constants.ATTRIBUTE_ELEMENT_ID);
-            
-        if (eid != null && ref.equalsIgnoreCase(eid))
+        String name = (String) root.getAttributes().getAttribute(SwingBoxDocument.ElementNameAttribute);
+        if (!Constants.BACKGROUND.equals(name)) //do not consider backgrounds
         {
-            return root;
-        }
-        else
-        {
-            Anchor anchor = (Anchor) root.getAttributes().getAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE);
-    
-            if (anchor != null && anchor.isActive())
+            //try the id attribute
+            String eid = (String) root.getAttributes().getAttribute(Constants.ATTRIBUTE_ELEMENT_ID);
+            if (eid != null && ref.equalsIgnoreCase(eid))
             {
-                if (anchor.getProperties().get(Constants.ELEMENT_A_ATTRIBUTE_NAME).equals(ref))
-                    return root;
+                return root;
+            }
+            //or try the name attribute of <a>
+            else
+            {
+                Anchor anchor = (Anchor) root.getAttributes().getAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE);
+                if (anchor != null && anchor.isActive())
+                {
+                    if (anchor.getProperties().get(Constants.ELEMENT_A_ATTRIBUTE_NAME).equals(ref))
+                        return root;
+                }
             }
         }
+        
         int n = root.getElementCount();
         Element child = null;
         for (int i = 0; i < n; i++)
@@ -457,8 +460,7 @@ public class BrowserPane extends JEditorPane
         final URL oldPage = getPage();
         Object postData = getPostData();
 
-        if ((oldPage == null) || !oldPage.sameFile(newPage)
-                || (postData != null))
+        if ((oldPage == null) || !oldPage.sameFile(newPage) || (postData != null))
         {
             // different url or POST method, load the new content
 
@@ -507,8 +509,6 @@ public class BrowserPane extends JEditorPane
                    @Override
                    public void run()
                    {
-                       Rectangle bottom = new Rectangle(0, getHeight() - 1, 1, 1);
-                       scrollRectToVisible(bottom);
                        scrollToReference(reference);
                    }
                });
@@ -518,8 +518,7 @@ public class BrowserPane extends JEditorPane
 
     }
 
-    private void loadPage(final URL newPage, final URL oldPage,
-            final InputStream in, final Document doc)
+    private void loadPage(final URL newPage, final URL oldPage, final InputStream in, final Document doc)
     {
         boolean done = false;
         try
@@ -550,24 +549,9 @@ public class BrowserPane extends JEditorPane
                 @Override
                 public void run()
                 {
-                    Rectangle top = new Rectangle(0, 0, 1, 1); // top of pane
-                    Rectangle bottom = new Rectangle(0, getHeight() - 1, 1, 1);
+                    scrollRectToVisible(new Rectangle(0, 0, 1, 1)); // top of the pane
                     if (reference != null)
-                    {
-                        Element dst = findElementToScroll(reference, doc.getDefaultRootElement());
-                        if (dst != null)
-                        {
-                            // scroll down and back to reference to get reference
-                            // the topmost item
-                            scrollRectToVisible(bottom);
-                            scrollToReference(reference);
-                        }
-                    }
-                    else
-                    {
-                        // scroll to the top of the new page
-                        scrollRectToVisible(top);
-                    }
+                        scrollToReference(reference);
                 }
             });
 
