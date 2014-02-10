@@ -1,3 +1,12 @@
+Version 1.0 - Feb 10, 2014
+- Drawing order completely rewritten using the new CSSBox API
+- View-to-model (mainly mouse click behavior) fixes
+- Clipping fixes
+- setText() implementation using data urls
+- Text decoration fixes
+- Scroll to reference fixed
+- Converted to Maven 
+ 
 Version 0.2 - Feb 22, 2013
 - Updated to current CSSBox version
 - Scrolling to anchor improved and ID attribute as anchor interpretation added (closes #5)
