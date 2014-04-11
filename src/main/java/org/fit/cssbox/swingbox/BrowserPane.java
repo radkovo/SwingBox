@@ -313,6 +313,17 @@ public class BrowserPane extends JEditorPane
     @Override
     public void scrollToReference(String reference)
     {
+        tryScrollToReference(reference);
+    }
+    
+    /**
+     * This method has the same purpose as {@link BrowserPane#scrollToReference(String)}.
+     * However, it allows checking whether the reference exists in the document.
+     * @param reference the named location to scroll to
+     * @return <code>true</code> when the location exists in the document, <code>false</code> when not found.
+     */
+    public boolean tryScrollToReference(String reference)
+    {
         Element dst = findElementToScroll(reference, getDocument().getDefaultRootElement());
         if (dst != null)
         {
@@ -325,11 +336,15 @@ public class BrowserPane extends JEditorPane
                     scrollRectToVisible(bottom); //move to the bottom and back in order to put the reference to the window top
                     scrollRectToVisible(rec);
                 }
+                return true;
             } catch (BadLocationException e)
             {
                 UIManager.getLookAndFeel().provideErrorFeedback(this);
+                return false;
             }
         }
+        else
+            return false;
     }
 
     private Element findElementToScroll(String ref, Element root)
