@@ -94,8 +94,12 @@ public class BrowserPane extends JEditorPane
     protected void init()
     {
         // "support for SSL"
-        System.setProperty("java.protocol.handler.pkgs",
-                "com.sun.net.ssl.internal.www.protocol");
+        String handlerPkgs = System.getProperty("java.protocol.handler.pkgs");
+        if ((handlerPkgs != null) && !(handlerPkgs.isEmpty())) {
+            handlerPkgs = handlerPkgs + "|com.sun.net.ssl.internal.www.protocol";
+        }
+        System.setProperty("java.protocol.handler.pkgs", handlerPkgs);
+
         java.security.Security
                 .addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 
