@@ -97,6 +97,8 @@ public class BrowserPane extends JEditorPane
         String handlerPkgs = System.getProperty("java.protocol.handler.pkgs");
         if ((handlerPkgs != null) && !(handlerPkgs.isEmpty())) {
             handlerPkgs = handlerPkgs + "|com.sun.net.ssl.internal.www.protocol";
+        } else {
+        	handlerPkgs = "com.sun.net.ssl.internal.www.protocol";
         }
         System.setProperty("java.protocol.handler.pkgs", handlerPkgs);
 
