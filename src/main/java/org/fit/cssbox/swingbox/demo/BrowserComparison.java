@@ -107,6 +107,7 @@ public class BrowserComparison extends JFrame
                         loadPage(txt.getText());
                     }
                 });
+                t.setDaemon(true);
                 t.start();
             }
         });
@@ -123,6 +124,7 @@ public class BrowserComparison extends JFrame
                         loadPage(txt.getText());
                     }
                 });
+                t.setDaemon(true);
                 t.start();
             }
         });

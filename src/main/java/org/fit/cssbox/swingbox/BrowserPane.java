@@ -515,7 +515,7 @@ public class BrowserPane extends JEditorPane
                             loadPage(newPage, oldPage, in, document);
                         }
                     });
-
+                    t.setDaemon(true);
                     t.start();
                 }
             }
