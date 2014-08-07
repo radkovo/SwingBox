@@ -698,7 +698,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         if (root.isVisible())
         {
             Box found = null;
-            Rectangle bounds = root.getAbsoluteContentBounds().intersection(root.getClipBlock().getAbsoluteContentBounds());
+            Rectangle bounds = root.getAbsoluteContentBounds().intersection(root.getClipBlock().getClippedContentBounds());
             if (bounds.contains(x, y))
                 found = root;
             
