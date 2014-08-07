@@ -517,7 +517,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
                 }
             }
         }
-        return ret.intersection(b.getClipBlock().getAbsoluteContentBounds());
+        return ret.intersection(b.getClipBlock().getClippedContentBounds());
     }
     
     @Override
