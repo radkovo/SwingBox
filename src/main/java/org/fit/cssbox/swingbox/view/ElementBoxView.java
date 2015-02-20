@@ -454,18 +454,18 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         }
     }
 
-    /**
-     * renders given child, possible to override and customize.
-     * 
-     * @param g
-     *            graphics context
-     * @param v
-     *            the View
-     * @param rect
-     *            an allocation
-     * @param index
-     *            the index of view
-     */
+//    /**
+//     * renders given child, possible to override and customize.
+//     * 
+//     * @param g
+//     *            graphics context
+//     * @param v
+//     *            the View
+//     * @param rect
+//     *            an allocation
+//     * @param index
+//     *            the index of view
+//     */
     /*protected void paintChild(Graphics g, View v, Shape rect, int index)
     {
         // System.err.println("Painting " + v);
