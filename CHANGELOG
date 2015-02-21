@@ -1,3 +1,6 @@
+Version 1.1.2 - Feb 20, 2015
+- upgrade to cssbox-4.8.1 (same dependency changes as below - https://github.com/KajKandler/CSSBox)
+- declare dependencies on xerces and xml-api's as provided, making the component friendlier to cooperate with other components in environments where isolated class loaders are used, i.e. IDE plugin development - implementations for these are shipped with JRE 6 or younger
 Version 1.1 - Sep 1, 2014
 - Improved scrollToReference API
 - Content clipping fixes according to the current CSSBox API

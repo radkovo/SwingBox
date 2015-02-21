@@ -75,12 +75,12 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     /**
      * Reads input data and converts them to "elements"
      * 
-     * @param is
-     *            the input source
-     * @param url
-     *            the source of data
+     * @param docSource
+     *            the document source
      * @param cba
      *            the instance of {@link CSSBoxAnalyzer}
+     * @param dim
+     *            the dimension
      * @return the list of elements. Note that, this method returns instance of
      *         LinkedList.
      * @throws IOException

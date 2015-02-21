@@ -38,7 +38,7 @@ public interface CSSBoxAnalyzer
      * Analyzes content from InputSource and constructs a tree of Boxes, which
      * is further processed.
      * 
-     * @param is
+     * @param docSource
      *            the document source implementation.
      * @param dim
      *            the dimension of rendering area.
@@ -52,8 +52,6 @@ public interface CSSBoxAnalyzer
      * Updates the layout according to the new dimmension (the tree structure of
      * view objects has to be modified).
      * 
-     * @param root
-     *            the root box at which to perform update.
      * @param dim
      *            the new dimension of rendering area.
      * @return the box
@@ -64,19 +62,19 @@ public interface CSSBoxAnalyzer
 
     /**
      * Gets parsed W3C document. After calling
-     * {@link CSSBoxAnalyzer#analyze(InputSource, URL, Dimension, Charset)
+     * {@link CSSBoxAnalyzer#analyze(DocumentSource, Dimension)
      * analyze} there should exist such representation.
      * 
      * @return parsed W3C document.
      * @see org.w3c.dom.Document
-     * @see CSSBoxAnalyzer#analyze(InputSource, URL, Dimension, Charset)
+     * @see CSSBoxAnalyzer#analyze(DocumentSource, Dimension)
      */
     public org.w3c.dom.Document getDocument();
     
     /**
      * Obtains the title from the DOM tree of the current document.
-     * The {@link CSSBoxAnalyzer#analyze(InputSource, URL, Dimension, Charset)} method must be called before calling this.
-     * @return The document title or <code>null</code> if there is not title defined.
+     * The {@link CSSBoxAnalyzer#analyze(DocumentSource, Dimension)} method must be called before calling this.
+     * @return The document title or <code>null</code> if there is no title defined.
      */
     public String getDocumentTitle();
     
