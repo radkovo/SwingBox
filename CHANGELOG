@@ -5,7 +5,7 @@ Version 1.1 - Sep 1, 2014
 - Improved scrollToReference API
 - Content clipping fixes according to the current CSSBox API
 - URL protocol registration fixes
-- Thread parametres fixed in demos 
+- Thread parameters fixed in demos
 
 Version 1.0 - Feb 10, 2014
 - Drawing order completely rewritten using the new CSSBox API

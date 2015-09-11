@@ -172,7 +172,7 @@ public class TextBoxView extends View implements CSSBoxView
                 Anchor parentAnchor = ((ElementBoxView) parent).getAnchor();
                 if (parentAnchor.isActive())
                 {
-                    // share elemntAttributes
+                    // share elementAttributes
                     anchor.setActive(true);
                     anchor.getProperties().putAll(parentAnchor.getProperties());
                 }
@@ -478,7 +478,7 @@ public class TextBoxView extends View implements CSSBoxView
             }
             if (strike)
             {
-                int yy = y + (int) (absoluteContentBounds.height / 2);
+                int yy = y + absoluteContentBounds.height / 2;
                 g.drawLine(absoluteContentBounds.x, yy, xx, yy);
             }
             
@@ -686,9 +686,9 @@ public class TextBoxView extends View implements CSSBoxView
         {
             FontVariant val[] = FontVariant.values();
 
-            for (int i = 0; i < val.length; i++)
+            for (FontVariant aVal : val)
             {
-                if (val[i].toString().equals(newFontVariant))
+                if (aVal.toString().equals(newFontVariant))
                 {
                     fontVariant = newFontVariant;
                     invalidateCache();
@@ -722,19 +722,17 @@ public class TextBoxView extends View implements CSSBoxView
         strike = false;
         overline = false;
 
-        TextDecoration val;
-        for (int i = 0; i < decor.size(); i++)
+        for (TextDecoration aDecor : decor)
         {
-            val = decor.get(i);
-            if (TextDecoration.UNDERLINE == val)
+            if (TextDecoration.UNDERLINE == aDecor)
             {
                 underline = true;
             }
-            else if (TextDecoration.LINE_THROUGH == val)
+            else if (TextDecoration.LINE_THROUGH == aDecor)
             {
                 strike = true;
             }
-            else if (TextDecoration.OVERLINE == val)
+            else if (TextDecoration.OVERLINE == aDecor)
             {
                 overline = true;
             }

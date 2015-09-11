@@ -161,8 +161,8 @@ public class MouseController extends MouseAdapter
     private void createHyperLinkEvent(JEditorPane editor, Element elem, Anchor anchor, EventType type)
     {
         HyperlinkEvent linkEvent;
-        String href = (String) anchor.getProperties().get(Constants.ELEMENT_A_ATTRIBUTE_HREF);
-        String target = (String) anchor.getProperties().get(Constants.ELEMENT_A_ATTRIBUTE_TARGET);
+        String href = anchor.getProperties().get(Constants.ELEMENT_A_ATTRIBUTE_HREF);
+        String target = anchor.getProperties().get(Constants.ELEMENT_A_ATTRIBUTE_TARGET);
         URL url;
         URL base = (URL) editor.getDocument().getProperty(DefaultStyledDocument.StreamDescriptionProperty);
         try {

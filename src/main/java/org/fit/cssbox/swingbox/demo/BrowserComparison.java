@@ -28,9 +28,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
@@ -61,7 +59,7 @@ import org.fit.cssbox.swingbox.util.GeneralEventListener;
 import org.w3c.dom.Document;
 
 /**
- * This demo provides 3 result of same location by 3 renderrers. You will see CSSBox, SwingBox and JEditorPane + HTMLEditorKit.
+ * This demo provides 3 result of same location by 3 renderers. You will see CSSBox, SwingBox and JEditorPane + HTMLEditorKit.
  * Use the "GO!" button to start action.
  * 
  * @author Peter Bielik
@@ -220,8 +218,6 @@ public class BrowserComparison extends JFrame
 
     private void loadPage_cssbox(String urlstring)
     {
-        InputStream is = null;
-
         try
         {
             DocumentSource docSource = new DefaultDocumentSource(urlstring);
@@ -261,19 +257,8 @@ public class BrowserComparison extends JFrame
             });            
             contentScroll.setViewportView(cssbox);
             
-        } catch (Exception e)        {
+        } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (is != null)
-            {
-                try
-                {
-                    is.close();
-                } catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 

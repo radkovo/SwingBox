@@ -189,7 +189,7 @@ public class BrowserPane extends JEditorPane
     }
 
     /**
-     * Gets registred general event listeners.
+     * Gets registered general event listeners.
      * 
      * @return the array of general event listeners
      */
@@ -200,7 +200,7 @@ public class BrowserPane extends JEditorPane
     }
 
     /**
-     * Fires general event. All registred listeners will be notified.
+     * Fires general event. All registered listeners will be notified.
      * 
      * @param e
      *            the event
@@ -258,7 +258,7 @@ public class BrowserPane extends JEditorPane
     /**
      * Renders current content to given graphic context, which is updated and
      * returned. Context must have set the clip, otherwise NullPointerException
-     * is throwen.
+     * is thrown.
      * 
      * @param g
      *            the context to be rendered to.
@@ -301,7 +301,7 @@ public class BrowserPane extends JEditorPane
      * Sets the css box analyzer.
      * 
      * @param cba
-     *            the analyzzer to be set
+     *            the analyzer to be set
      * @return true, if successful
      */
     public boolean setCSSBoxAnalyzer(CSSBoxAnalyzer cba)
@@ -377,7 +377,7 @@ public class BrowserPane extends JEditorPane
         }
         
         int n = root.getElementCount();
-        Element child = null;
+        Element child;
         for (int i = 0; i < n; i++)
         {
             if ((child = findElementToScroll(ref, root.getElement(i))) != null)
@@ -615,7 +615,7 @@ public class BrowserPane extends JEditorPane
     private Document createDocument(EditorKit kit, URL page)
     {
         // we have pageProperties, because we can be in situation that
-        // old page is beeing removed & new page is not yet created...
+        // old page is being removed & new page is not yet created...
         // we need somewhere store important data.
         Document doc = kit.createDefaultDocument();
         if (pageProperties != null)

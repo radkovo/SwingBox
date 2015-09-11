@@ -32,14 +32,10 @@ import org.fit.net.DataURLHandler;
 
 import java.awt.GridBagConstraints;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
 import javax.swing.text.Document;
 
 import java.awt.Rectangle;
 import java.awt.GridBagLayout;
-
-import javax.swing.JTabbedPane;
 
 import java.awt.Insets;
 import java.awt.event.ActionListener;

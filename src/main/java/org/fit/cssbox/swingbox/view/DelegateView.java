@@ -111,8 +111,8 @@ public class DelegateView extends CompositeView
         if (offset < offset + length && views.length > 0)
         {
             /*
-             * Actually, we remove old view only, if we have some view to add.We
-             * can not stay empty (no child, no LeafElement-View), otherwiserun
+             * Actually, we remove old view only, if we have some view to add. We
+             * can not stay empty (no child, no LeafElement-View), otherwise run
              * into troubles...
              */
             if (view != null)
@@ -141,7 +141,7 @@ public class DelegateView extends CompositeView
 
             view = tmp;
             /*
-             * setParent is guaranteed to be first method calledafter new
+             * setParent is guaranteed to be first method called after new
              * instance is created.
              */
             view.setParent(this);

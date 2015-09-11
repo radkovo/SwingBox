@@ -116,7 +116,7 @@ public class BackgroundView extends View implements CSSBoxView
         if (graphics instanceof Graphics2D)
             g = (Graphics2D) graphics;
         else
-            throw new RuntimeException("Unknown graphics enviroment, java.awt.Graphics2D required !");
+            throw new RuntimeException("Unknown graphics environment, java.awt.Graphics2D required !");
         
         box.getVisualContext().updateGraphics(g);
         box.drawBackground(g);

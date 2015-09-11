@@ -80,7 +80,7 @@ public class SwingBoxEditorKit extends StyledEditorKit
         String tmp;
         tmp = System.getProperty(Constants.DEFAULT_ANALYZER_PROPERTY,
                 Constants.PROPERTY_NOT_SET);
-        if (tmp == Constants.PROPERTY_NOT_SET)
+        if (tmp.equals(Constants.PROPERTY_NOT_SET))
         {
             // sets property for default analyzer, the fully qualified classname
             // which is used to instantiate this class by reflection
@@ -91,7 +91,7 @@ public class SwingBoxEditorKit extends StyledEditorKit
         tmp = System.getProperty(
                 Constants.DOCUMENT_ASYNCHRONOUS_LOAD_PRIORITY_PROPERTY,
                 Constants.PROPERTY_NOT_SET);
-        if (tmp == Constants.PROPERTY_NOT_SET)
+        if (tmp.equals(Constants.PROPERTY_NOT_SET))
         {
             // property not set, load synchronously !
             System.setProperty(
@@ -146,7 +146,7 @@ public class SwingBoxEditorKit extends StyledEditorKit
         String tmp = System.getProperty(
                 Constants.DOCUMENT_ASYNCHRONOUS_LOAD_PRIORITY_PROPERTY,
                 Constants.PROPERTY_NOT_SET);
-        if (tmp != Constants.PROPERTY_NOT_SET)
+        if (!tmp.equals(Constants.PROPERTY_NOT_SET))
         {
             try
             {
@@ -311,7 +311,7 @@ public class SwingBoxEditorKit extends StyledEditorKit
         String cname = System.getProperty(Constants.DEFAULT_ANALYZER_PROPERTY,
                 Constants.PROPERTY_NOT_SET);
 
-        if (Constants.PROPERTY_NOT_SET == cname)
+        if (Constants.PROPERTY_NOT_SET.equals(cname))
         {
             cba = null;
         }
