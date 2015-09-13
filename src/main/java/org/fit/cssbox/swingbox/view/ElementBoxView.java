@@ -436,7 +436,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         if (graphics instanceof Graphics2D)
             g = (Graphics2D) graphics;
         else
-            throw new RuntimeException("Unknown graphics enviroment, java.awt.Graphics2D required !");
+            throw new RuntimeException("Unknown graphics environment, java.awt.Graphics2D required !");
 
         Rectangle clip = toRect(g.getClip());
         
@@ -743,7 +743,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
 
         /*
          * in current implementation we do not support propagation do childs,
-         * beacuse, if there is a change, world is rebuilt..
+         * because, if there is a change, world is rebuilt..
          */
     }
 

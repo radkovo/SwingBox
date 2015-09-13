@@ -44,11 +44,11 @@ public interface CSSBoxView
      * 
      * @return the attributes
      */
-    public AttributeSet getAttributes();
+    AttributeSet getAttributes();
     
     /**
      * Obtains the drawing order of this view
      */
-    public int getDrawingOrder();
+    int getDrawingOrder();
     
 }

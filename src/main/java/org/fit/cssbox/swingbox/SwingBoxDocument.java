@@ -41,7 +41,7 @@ public class SwingBoxDocument extends DefaultStyledDocument
     public SwingBoxDocument()
     {
         super();
-        // we do not suuport any inserting, removing or replacing of string & no
+        // we do not support any inserting, removing or replacing of string & no
         // filters
         setDocumentFilter(null);
     }
@@ -128,11 +128,11 @@ public class SwingBoxDocument extends DefaultStyledDocument
             {
                 javax.swing.text.Element data = elems[0];
 
-                for (int i = 0; i < elems.length; i++)
+                for (Element elem : elems)
                 {
-                    if (delegateName.equals(elems[i].getName()))
+                    if (delegateName.equals(elem.getName()))
                     {
-                        data = elems[i];
+                        data = elem;
                         break;
                     }
                 }

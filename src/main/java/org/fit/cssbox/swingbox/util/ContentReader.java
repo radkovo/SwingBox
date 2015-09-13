@@ -385,7 +385,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     public void renderReplacedContent(ReplacedBox box)
     {
         org.w3c.dom.Element elem = ((ElementBox) box).getElement();
-        String text = "";
+        String text;
         // add some textual info, if picture
         if ("img".equalsIgnoreCase(elem.getTagName()))
         {

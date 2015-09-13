@@ -37,7 +37,7 @@ public final class Constants
     public static final String DEFAULT_ANALYZER_PROPERTY = "swingbox.default.analyzer";
     public static final String PROPERTY_NOT_SET = "property_not_set";
 
-    // Attrinutes used by AttributeSet in elements and later in views
+    // Attributes used by AttributeSet in elements and later in views
     public static final String ATTRIBUTE_BOX_REFERENCE = "attribute_box_reference";
     public static final String ATTRIBUTE_ANCHOR_REFERENCE = "attribute_anchor_reference";
     public static final String ATTRIBUTE_ELEMENT_ID = "element_id";

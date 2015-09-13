@@ -78,7 +78,7 @@ public class DefaultHyperlinkHandler implements HyperlinkListener
     }
 
     /**
-     * Region entered. Called when mouse poionter is over some link
+     * Region entered. Called when mouse pointer is over some link
      * 
      * @param pane
      *            the pane

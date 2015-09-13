@@ -113,7 +113,7 @@ public class InlineReplacedBoxView extends InlineBoxView
                         g.setColor(Color.BLACK);
                         //tmpRect = box.getAbsoluteContentBounds();
                         // alternative picture representation (screen readers)
-                        // TODO hint : java accessability !!!
+                        // TODO hint : java accessibility !!!
                         //g.drawString(alt, tmpRect.x + 2, tmpRect.y
                         //        + (int) (tmpRect.height * 0.7));
                     }
