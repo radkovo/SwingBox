@@ -37,7 +37,7 @@ import org.fit.cssbox.layout.BlockBox;
  */
 public class BlockBoxView extends ElementBoxView
 {
-    private String overflow;
+    private String overflowX;
 
     /**
      * @param elem
@@ -46,7 +46,7 @@ public class BlockBoxView extends ElementBoxView
     public BlockBoxView(Element elem)
     {
         super(elem);
-        overflow = ((BlockBox) box).getOverflowString();
+        overflowX = ((BlockBox) box).getOverflowXString();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class BlockBoxView extends ElementBoxView
         if (box.isDisplayed() && box.isDeclaredVisible())
         {
             Rectangle tmpRect = new Rectangle();
-            if ("visible".equals(overflow))
+            if ("visible".equals(overflowX))
             {
                 // just let it be
                 tmpRect = toRect(a);
