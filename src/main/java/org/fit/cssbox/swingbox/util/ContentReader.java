@@ -373,6 +373,12 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     }
 
     @Override
+    public void renderMarker(ListItemBox elem)
+    {
+        // empty for now - the marker is currently drawn in ListItemBoxView
+    }
+
+    @Override
     public void renderTextContent(TextBox box)
     {
         String text = box.getText();
