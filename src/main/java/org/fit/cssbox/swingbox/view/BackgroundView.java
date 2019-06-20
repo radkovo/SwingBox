@@ -74,8 +74,8 @@ public class BackgroundView extends View implements CSSBoxView
             throw new IllegalArgumentException("Box reference is not an instance of ElementBox");
         }
         
-        if (box.toString().contains("\"btn\""))
-            System.out.println("jo!");
+        //if (box.toString().contains("\"btn\""))
+        //    System.out.println("jo!");
         
         if (box.getElement() != null)
         {

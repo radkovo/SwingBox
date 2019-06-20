@@ -405,7 +405,7 @@ public class BrowserPane extends JEditorPane
         if (conn instanceof HttpsURLConnection)
         {
             // XXX toto moc nefunguje
-            System.out.println("$ Connection is HTTPS !!");
+            //System.out.println("$ Connection is HTTPS !!");
         }
         else if (conn instanceof HttpURLConnection)
         {
@@ -687,11 +687,11 @@ public class BrowserPane extends JEditorPane
             }
         }
 
-        System.out.println("# pageProperties #");
-        for (String k : pageProperties.keySet())
-        {
-            System.out.println(k + " : " + pageProperties.get(k));
-        }
+        //System.out.println("# pageProperties #");
+        //for (String k : pageProperties.keySet())
+        //{
+        //    System.out.println(k + " : " + pageProperties.get(k));
+        //}
 
     }
 
