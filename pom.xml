@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
   <!--
     Deploy: mvn clean deploy (includes javadoc)
@@ -9,7 +10,6 @@
                mvn release:perform
    -->
 
-  <modelVersion>4.0.0</modelVersion>
 
   <groupId>net.sf.cssbox</groupId>
   <artifactId>swingbox</artifactId>
@@ -34,7 +34,7 @@
     <developer>
       <name>Radek Burget</name>
       <roles>
-        <role>Main developer &amp;amp; project leader</role>
+        <role>Main developer &amp; project leader</role>
       </roles>
     </developer>
     <developer>
@@ -76,7 +76,6 @@
   </properties>
 
   <build>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -111,6 +110,9 @@
               <mainClass>org.fit.cssbox.swingbox.demo.SwingBrowser</mainClass>
             </manifest>
           </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
           <appendAssemblyId>true</appendAssemblyId>
         </configuration>
       </plugin>
@@ -167,7 +169,6 @@
         </plugin>
       </plugins>
     </pluginManagement>
-
   </build>
 
   <dependencies>
@@ -177,20 +178,19 @@
       <version>4.15</version>
     </dependency>
     <dependency>
+      <groupId>net.sf.cssbox</groupId>
+      <artifactId>jstyleparser</artifactId>
+      <version>1.20</version>
+    </dependency>
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.4</version>
+      <version>2.6</version>
     </dependency>
     <dependency>
       <groupId>xml-apis</groupId>
       <artifactId>xml-apis</artifactId>
       <version>1.4.01</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.cssbox</groupId>
-      <artifactId>jstyleparser</artifactId>
-      <version>1.20</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -200,7 +200,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
+        <version>3.2.0</version>
         <configuration>
           <show>protected</show>
         </configuration>
@@ -237,5 +237,4 @@
       </build>
     </profile>
   </profiles>
-
 </project>
