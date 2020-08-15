@@ -1,5 +1,4 @@
-/**
- * GeneralEvent.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -27,12 +26,13 @@ import java.util.EventObject;
  * 
  * @author Peter Bielik
  */
+@SuppressWarnings("unused")
 public class GeneralEvent extends EventObject
 {
     private static final long serialVersionUID = -3946243806649687837L;
-    public Object primary_value = null;
-    public Object secondary_value = null;
-    public EventType event_type = null;
+    public Object primary_value;
+    public Object secondary_value;
+    public EventType event_type;
 
     /**
      * Currently supported types of event.

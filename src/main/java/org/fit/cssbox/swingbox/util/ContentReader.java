@@ -1,5 +1,4 @@
-/**
- * ContentReader.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -19,35 +18,17 @@
 
 package org.fit.cssbox.swingbox.util;
 
-import java.awt.Dimension;
+import org.fit.cssbox.io.DocumentSource;
+import org.fit.cssbox.layout.*;
+import org.fit.cssbox.swingbox.SwingBoxDocument;
+
+import javax.swing.text.DefaultStyledDocument.ElementSpec;
+import javax.swing.text.SimpleAttributeSet;
+import java.awt.*;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
-
-import javax.swing.text.DefaultStyledDocument.ElementSpec;
-import javax.swing.text.SimpleAttributeSet;
-
-import org.fit.cssbox.io.DocumentSource;
-import org.fit.cssbox.layout.BlockBox;
-import org.fit.cssbox.layout.BlockReplacedBox;
-import org.fit.cssbox.layout.BlockTableBox;
-import org.fit.cssbox.layout.ElementBox;
-import org.fit.cssbox.layout.InlineBlockReplacedBox;
-import org.fit.cssbox.layout.InlineBox;
-import org.fit.cssbox.layout.ListItemBox;
-import org.fit.cssbox.layout.ReplacedBox;
-import org.fit.cssbox.layout.TableBodyBox;
-import org.fit.cssbox.layout.TableBox;
-import org.fit.cssbox.layout.TableCaptionBox;
-import org.fit.cssbox.layout.TableCellBox;
-import org.fit.cssbox.layout.TableColumn;
-import org.fit.cssbox.layout.TableColumnGroup;
-import org.fit.cssbox.layout.TableRowBox;
-import org.fit.cssbox.layout.TextBox;
-import org.fit.cssbox.layout.Viewport;
-import org.fit.cssbox.layout.VisualContext;
-import org.fit.cssbox.swingbox.SwingBoxDocument;
 
 /**
  * This class is used by editor kit to convert input data to elements used in
@@ -89,14 +70,9 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     public List<ElementSpec> read(DocumentSource docSource, CSSBoxAnalyzer cba, Dimension dim)
             throws IOException
     {
-        // ale ked sa pouzije setText() neviem nic o url, nic sa nenastavuje ,
-        // moze byt null
-        // (URL) doc.getProperty(Document.StreamDescriptionProperty)
+        assert cba != null;
 
-        if (cba == null)
-            throw new IllegalArgumentException("CSSBoxAnalyzer can not be NULL !!!\nProvide your custom implementation or check instantiation of DefaultAnalyzer object...");
-
-        elements = new Vector<ElementSpec>();// ArrayList<ElementSpec>(1024);
+        elements = new Vector<>();
         elements.add(new ElementSpec(SimpleAttributeSet.EMPTY, ElementSpec.EndTagType));
         order = 0;
 
@@ -119,13 +95,6 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         //Use this for "drawing" the boxes. This constructs the element list.
         vp.draw(this);
 
-        // System.err.println("num. of elements : " + elements.size());
-        // System.err.println("Root min width : " + root.getMinimalWidth() +
-        // " ,normal width : " + root.getWidth() + " ,maximal width : " +
-        // root.getMaximalWidth());
-
-        // TODO po skonceni nacitavania aj nejake info spravit
-        // >> Document.TitleProperty - observer, metainfo
         return elements;
     }
 
@@ -133,8 +102,6 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
      * Updates the layout. It is designed to do a re-layout only, not to process
      * input data again.
      * 
-     * @param root
-     *            the root
      * @param newDimension
      *            the new dimension
      * @param cba
@@ -143,12 +110,13 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    public List<ElementSpec> update(Viewport root, Dimension newDimension, CSSBoxAnalyzer cba) throws IOException
+    public List<ElementSpec> update(Dimension newDimension, CSSBoxAnalyzer cba)
+        throws IOException
     {
         if (cba == null)
             throw new IllegalArgumentException("CSSBoxAnalyzer can not be NULL !!!\nProvide your custom implementation or check instantiation of DefaultAnalyzer object...");
 
-        elements = new LinkedList<ElementSpec>();
+        elements = new LinkedList<>();
         elements.add(new ElementSpec(SimpleAttributeSet.EMPTY, ElementSpec.EndTagType));
         order = 0;
 
@@ -321,7 +289,7 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         return commonBuild(box, Constants.LIST_ITEM_BOX);
     }
     
-    private final SimpleAttributeSet commonBuild(ElementBox box, Object elementNameValue)
+    private SimpleAttributeSet commonBuild( ElementBox box, Object elementNameValue)
     {
         // when there are no special requirements to build an element, use this
         // one
@@ -343,8 +311,12 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         if (!elem.isReplaced())
         {
             SimpleAttributeSet attr = buildElement(elem);
-            attr.addAttribute(Constants.ATTRIBUTE_DRAWING_ORDER, order++);
-            elements.add(new ElementSpec(attr, ElementSpec.StartTagType, "{".toCharArray(), 1, 0));
+
+            if(attr != null) {
+                attr.addAttribute( Constants.ATTRIBUTE_DRAWING_ORDER, order++ );
+                elements.add( new ElementSpec(
+                    attr, ElementSpec.StartTagType, "{".toCharArray(),1,0 ) );
+            }
         }
     }
 
@@ -353,12 +325,6 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
     {
         if (!elem.isReplaced())
         {
-            /*if (lastStarted == elem)
-            {
-                //rendering an empty element -- we must insert an empty string in order to preserve the element
-                SimpleAttributeSet content = buildEmptyContent();
-                elements.add(new ElementSpec(content, ElementSpec.ContentType, "".toCharArray(), 0, 0));
-            }*/
             SimpleAttributeSet attr = buildElement(elem);
             elements.add(new ElementSpec(attr, ElementSpec.EndTagType, "}".toCharArray(), 1, 0));
         }

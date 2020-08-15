@@ -1,47 +1,35 @@
-/**
- * DelegateView.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *  
+ *
  * SwingBox is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with SwingBox. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.Shape;
-
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.CompositeView;
-import javax.swing.text.Document;
-import javax.swing.text.Element;
-import javax.swing.text.Position;
-import javax.swing.text.View;
-import javax.swing.text.ViewFactory;
-
 import org.fit.cssbox.swingbox.SwingBoxDocument.DelegateElement;
 
-/**
- * @author Peter Bielik
- * @version 1.0
- * @since 1.0 - 3.4.2011
- */
+import javax.swing.text.*;
+import java.awt.*;
+
 /**
  * Root view that acts as a gateway between the component and the View
  * hierarchy.
+ *
+ * @author Peter Bielik
+ * @version 1.0
+ * @since 1.0 - 3.4.2011
  */
 public class DelegateView extends CompositeView
 {
@@ -50,7 +38,7 @@ public class DelegateView extends CompositeView
 
     /**
      * Instantiates a new delegate view.
-     * 
+     *
      * @param elem
      *            the element
      */
@@ -61,7 +49,7 @@ public class DelegateView extends CompositeView
 
     /**
      * Sets the view parent.
-     * 
+     *
      * @param parent
      *            the parent view
      */
@@ -151,7 +139,7 @@ public class DelegateView extends CompositeView
 
     /**
      * Gets the name of delegate
-     * 
+     *
      * @return the name. It may not be a name of a Class !
      */
     public String getDelegateName()
@@ -175,7 +163,7 @@ public class DelegateView extends CompositeView
 
     /**
      * Determines the preferred span for this view along an axis.
-     * 
+     *
      * @param axis
      *            may be either X_AXIS or Y_AXIS
      * @return the span the view would like to be rendered into. Typically the
@@ -192,7 +180,7 @@ public class DelegateView extends CompositeView
 
     /**
      * Determines the minimum span for this view along an axis.
-     * 
+     *
      * @param axis
      *            may be either X_AXIS or Y_AXIS
      * @return the span the view would like to be rendered into. Typically the
@@ -209,7 +197,7 @@ public class DelegateView extends CompositeView
 
     /**
      * Determines the maximum span for this view along an axis.
-     * 
+     *
      * @param axis
      *            may be either X_AXIS or Y_AXIS
      * @return the span the view would like to be rendered into. Typically the
@@ -235,7 +223,7 @@ public class DelegateView extends CompositeView
      * thread for completion. It is a design goal that all view methods be safe
      * to call without concern for concurrency, and this behavior helps make
      * that true.
-     * 
+     *
      * @param child
      *            the child view
      * @param width
@@ -254,7 +242,7 @@ public class DelegateView extends CompositeView
 
     /**
      * Determines the desired alignment for this view along an axis.
-     * 
+     *
      * @param axis
      *            may be either X_AXIS or Y_AXIS
      * @return the desired alignment, where 0.0 indicates the origin and 1.0 the
@@ -269,7 +257,7 @@ public class DelegateView extends CompositeView
 
     /**
      * Renders the view.
-     * 
+     *
      * @param g
      *            the graphics context
      * @param allocation
@@ -287,7 +275,7 @@ public class DelegateView extends CompositeView
     /**
      * Returns the number of views in this view. Since this view simply wraps
      * the root of the view hierarchy it has exactly one child.
-     * 
+     *
      * @return the number of views
      * @see #getView
      */
@@ -299,7 +287,7 @@ public class DelegateView extends CompositeView
 
     /**
      * Gets the n-th view in this container.
-     * 
+     *
      * @param n
      *            the number of the view to get
      * @return the view
@@ -313,7 +301,7 @@ public class DelegateView extends CompositeView
     /**
      * Returns the child view index representing the given position in the
      * model. This is implemented to return the index of the only child.
-     * 
+     *
      * @param pos
      *            the position , must be non-negative integer
      * @return index of the view representing the given position, or -1 if no
@@ -331,7 +319,7 @@ public class DelegateView extends CompositeView
      * where various views are located, without assuming the views store their
      * location. This returns the given allocation since this view simply acts
      * as a gateway between the view hierarchy and the associated component.
-     * 
+     *
      * @param index
      *            the index of the child
      * @param a
@@ -348,7 +336,7 @@ public class DelegateView extends CompositeView
     /**
      * Provides a mapping from the document model coordinate space to the
      * coordinate space of the view mapped to it.
-     * 
+     *
      * @param pos
      *            the position to convert
      * @param a
@@ -366,7 +354,7 @@ public class DelegateView extends CompositeView
     /**
      * Provides a mapping from the document model coordinate space to the
      * coordinate space of the view mapped to it.
-     * 
+     *
      * @param p0
      *            the position to convert, must be non-negative integer
      * @param b0
@@ -400,7 +388,7 @@ public class DelegateView extends CompositeView
     /**
      * Provides a mapping from the view coordinate space to the logical
      * coordinate space of the model.
-     * 
+     *
      * @param x
      *            x coordinate of the view location to convert
      * @param y
@@ -413,12 +401,7 @@ public class DelegateView extends CompositeView
     @Override
     public int viewToModel(float x, float y, Shape a, Position.Bias[] bias)
     {
-        if (view != null)
-        {
-            int retValue = view.viewToModel(x, y, a, bias);
-            return retValue;
-        }
-        return -1;
+        return view == null ? -1 : view.viewToModel( x, y, a, bias);
     }
 
     /**
@@ -426,7 +409,7 @@ public class DelegateView extends CompositeView
      * that one might place a caret. Some views may not be visible, they might
      * not be in the same order found in the model, or they just might not allow
      * access to some of the locations in the model.
-     * 
+     *
      * @param pos
      *            the position to convert, must be non-negative integer
      * @param a
@@ -464,7 +447,7 @@ public class DelegateView extends CompositeView
 
     /**
      * Returns the document model underlying the view.
-     * 
+     *
      * @return the model
      */
     @Override
@@ -475,7 +458,7 @@ public class DelegateView extends CompositeView
 
     /**
      * Returns the starting offset into the model for this view.
-     * 
+     *
      * @return the starting offset
      */
     @Override
@@ -487,7 +470,7 @@ public class DelegateView extends CompositeView
 
     /**
      * Returns the ending offset into the model for this view.
-     * 
+     *
      * @return the ending offset
      */
     @Override
@@ -500,7 +483,7 @@ public class DelegateView extends CompositeView
     /**
      * Determines the resizability of the view along the given axis. A value of
      * 0 or less is not resizable.
-     * 
+     *
      * @param axis
      *            may be either X_AXIS or Y_AXIS
      * @return the weight
@@ -514,7 +497,7 @@ public class DelegateView extends CompositeView
 
     /**
      * Sets the view size.
-     * 
+     *
      * @param width
      *            the width
      * @param height
@@ -536,8 +519,8 @@ public class DelegateView extends CompositeView
             return view.getToolTipText(x, y, allocation);
         else
             return super.getToolTipText(x, y, allocation);
-    }   
-    
+    }
+
     @Override
     protected boolean isBefore(int x, int y, Rectangle alloc)
     {
@@ -561,5 +544,5 @@ public class DelegateView extends CompositeView
     {
         //nothing
     }
-    
+
 }

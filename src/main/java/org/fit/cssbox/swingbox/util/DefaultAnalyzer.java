@@ -1,5 +1,4 @@
-/**
- * DefaultAnalyzer.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -36,6 +35,7 @@ import org.w3c.dom.NodeList;
  * @author Peter Bielik
  * @author Radek Burget
  */
+@SuppressWarnings("unused")
 public class DefaultAnalyzer implements CSSBoxAnalyzer
 {
     protected org.w3c.dom.Document w3cdoc;
@@ -67,7 +67,6 @@ public class DefaultAnalyzer implements CSSBoxAnalyzer
 
     @Override
     public Viewport update(Dimension dim)
-            throws Exception
     {
         canvas.createLayout(dim);
         return canvas.getViewport();

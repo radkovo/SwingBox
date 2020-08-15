@@ -1,5 +1,4 @@
-/**
- * ContentWriter.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -36,53 +35,13 @@ import org.w3c.dom.Document;
  */
 public class ContentWriter
 {
-    private StringBuilder buffer;
+    private final StringBuilder buffer = new StringBuilder(8 * 1024);
 
     /**
      * Instantiates a new content writer.
      */
-    public ContentWriter()
-    {
-        buffer = new StringBuilder(8 * 1024);
+    public ContentWriter() {
     }
-
-    // hint: in the future, implement dumping, of REAL, CURRENT state (in the
-    // future, the content will be dynamic)
-    // this implementation is just "work-around", because of problems with
-    // document :
-    // public StringBuilder write(SwingBoxDocument doc, int pos, int len) {
-    // Object o = doc.getDefaultRootElement();
-    // DelegateElement de;
-    // //we have custom root-element, so this should be a DelegateElement
-    // if (o instanceof DelegateElement) {
-    // //DelegateElement has only 1 child, and it should be
-    // //element, which represents Viewport (CSSBox), so let's get it.
-    // de = (DelegateElement)o;
-    // AttributeSet attr = de.getElement(0).getAttributes();
-    // //in attributes, there should be a box reference (if element is part of
-    // SwingBox)
-    // o = attr.getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
-    // if (o instanceof Box) {
-    // //each box remembers a node, bingo !
-    // Box box = (Box)o;
-    // Node node = box.getNode();
-    // NormalOutput out = new NormalOutput(node);
-    //
-    //
-    // //System.err.println("@ box: " + box + " node length: " +
-    // box.getNode().getChildNodes().getLength());
-    // //hint: this should be reimplemented !!! > use Writer !
-    // ByteArrayOutputStream baos = new ByteArrayOutputStream(8 * 1024);
-    // out.dumpTo(new PrintStream(baos));
-    // try {
-    // buffer.append(baos.toString("UTF-8"));
-    // } catch (UnsupportedEncodingException e) {
-    // e.printStackTrace();
-    // }
-    // }
-    // }
-    // return buffer;
-    // }
 
     /**
      * Writes current representation of document. If empty output is produced,
@@ -112,9 +71,8 @@ public class ContentWriter
         try
         {
             buffer.append(baos.toString(Charset.defaultCharset().name()));
-        } catch (UnsupportedEncodingException e)
+        } catch (UnsupportedEncodingException ignored)
         {
-            e.printStackTrace();
         }
 
         return buffer;

@@ -1,6 +1,6 @@
-/**
- * InlineReplacedBoxView.java
- * (c) Peter Bielik and Radek Burget, 2011-2012
+/*
+ *
+ (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

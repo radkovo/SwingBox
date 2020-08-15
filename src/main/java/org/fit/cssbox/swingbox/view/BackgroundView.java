@@ -1,5 +1,4 @@
-/**
- * BackgroundView.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -44,14 +43,14 @@ import org.fit.cssbox.swingbox.util.Constants;
  */
 public class BackgroundView extends View implements CSSBoxView
 {
-    private ElementBox box;
-    private int order;
+    private final ElementBox box;
+    private final int order;
     
     /** the cache of attributes */
     private AttributeSet attributes;
     /** decides whether to construct a cache from current working properties */
     private boolean refreshAttributes;
-    private Anchor anchor;
+    private final Anchor anchor;
 
     public BackgroundView(Element elem)
     {
@@ -136,7 +135,7 @@ public class BackgroundView extends View implements CSSBoxView
     public int viewToModel(float x, float y, Shape a, Bias[] bias)
     {
         Rectangle alloc = a instanceof Rectangle ? (Rectangle) a : a.getBounds();
-        if (x < alloc.x + (alloc.width / 2))
+        if (x < alloc.x + (alloc.width / 2f))
         {
             bias[0] = Position.Bias.Forward;
             return getStartOffset();
@@ -167,15 +166,10 @@ public class BackgroundView extends View implements CSSBoxView
     @Override
     public float getPreferredSpan(int axis)
     {
-        switch (axis)
-        {
-            case View.X_AXIS:
-                return 10f; //box.getWidth();
-            case View.Y_AXIS:
-                return 10f; //box.getHeight();
-            default:
-                throw new IllegalArgumentException("Invalid axis: " + axis);
-        }
+        return switch( axis ) {
+            case View.X_AXIS, View.Y_AXIS -> 10f;
+            default -> throw new IllegalArgumentException( "Invalid axis: " + axis );
+        };
     }
 
     @Override

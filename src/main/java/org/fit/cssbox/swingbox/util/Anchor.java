@@ -1,5 +1,4 @@
-/**
- * Anchor.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -35,7 +34,7 @@ public class Anchor
 {
     // a helper object for hyperlinks
     private boolean active;
-    private Map<String, String> properties;
+    private final Map<String, String> properties;
 
     /**
      * Instantiates a new anchor.

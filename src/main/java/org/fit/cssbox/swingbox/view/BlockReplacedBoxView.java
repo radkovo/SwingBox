@@ -1,5 +1,4 @@
-/**
- * BlockReplacedBoxView.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -131,30 +130,10 @@ public class BlockReplacedBoxView extends BlockBoxView
                         /*g.drawString(alt, tmpRect.x + 2, tmpRect.y
                                 + (int) (tmpRect.height * 0.7));*/
                     }
-                    else
-                    {
-                        drawCross(g);
-                    }
                 }
             }
-            else
-            {
-                drawCross(g);
-            }
-
         }
 
-    }
-
-    private void drawCross(Graphics2D g)
-    {
-        /*tmpRect = box.getAbsoluteContentBounds();
-
-        g.setColor(Color.BLACK);
-        g.drawLine(tmpRect.x, tmpRect.y, tmpRect.x + tmpRect.width - 1,
-                tmpRect.y + tmpRect.height - 1);
-        g.drawLine(tmpRect.x + tmpRect.width - 1, tmpRect.y, tmpRect.x,
-                tmpRect.y + tmpRect.height - 1);*/
     }
 
     @Override
@@ -219,18 +198,9 @@ public class BlockReplacedBoxView extends BlockBoxView
     @Override
     public int viewToModel(float x, float y, Shape a, Bias[] bias)
     {
-        // Rectangle alloc = a instanceof Rectangle ? (Rectangle)a :
-        // a.getBounds();
-        // if (x < alloc.x + alloc.width) {
-        // bias[0] = Position.Bias.Forward;
-        // return getStartOffset(); // LTR
-        // }
-        // bias[0] = Position.Bias.Backward;
-        // return getEndOffset(); //RTL
-
         Rectangle alloc = a instanceof Rectangle ? (Rectangle) a : a
                 .getBounds();
-        if (x < alloc.x + (alloc.width / 2))
+        if (x < alloc.x + (alloc.width / 2f))
         {
             bias[0] = Position.Bias.Forward;
             return getStartOffset();
@@ -256,8 +226,7 @@ public class BlockReplacedBoxView extends BlockBoxView
             r.width = 0;
             return r;
         }
-        // return null;
-        // //return box.getAbsoluteBounds();
+
         throw new BadLocationException(pos + " not in range " + p0 + "," + p1,
                 pos);
     }

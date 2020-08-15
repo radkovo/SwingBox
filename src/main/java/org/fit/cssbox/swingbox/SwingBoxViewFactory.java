@@ -1,5 +1,4 @@
-/**
- * SwingBoxViewFactory.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -68,102 +67,60 @@ public class SwingBoxViewFactory implements ViewFactory
     {
         AttributeSet attr = elem.getAttributes();
         String name = (String) attr.getAttribute(AbstractDocument.ElementNameAttribute);
-        if (name == null)
+        if (name == null) {
             name = elem.getName();
-
-        if (name != null)
-        {
-            if (name.equals(Constants.EMPTY))
-            {
-                return new LabelView(elem);
-            }
-            else if (name.equals(Constants.BACKGROUND))
-            {
-                return new BackgroundView(elem);
-            }
-            else if (name.equals(Constants.TEXT_BOX))
-            {
-                return new TextBoxView(elem);
-            }
-            else if (name.equals(Constants.BLOCK_BOX))
-            {
-                return new BlockBoxView(elem);
-            }
-            else if (name.equals(Constants.INLINE_BOX))
-            {
-                return new InlineBoxView(elem);
-            }
-            else if (name.equals(Constants.BLOCK_REPLACED_BOX))
-            {
-                return new BlockReplacedBoxView(elem);
-            }
-            else if (name.equals(Constants.INLINE_REPLACED_BOX))
-            {
-                return new InlineReplacedBoxView(elem);
-            }
-            else if (name.equals(Constants.LIST_ITEM_BOX))
-            {
-                return new ListItemBoxView(elem);
-            }
-            else if (name.equals(Constants.BLOCK_TABLE_BOX))
-            {
-                return new BlockTableBoxView(elem);
-            }
-            else if (name.equals(Constants.TABLE_BOX))
-            {
-                return new TableBoxView(elem);
-            }
-            else if (name.equals(Constants.TABLE_BODY_BOX))
-            {
-                return new TableBodyBoxView(elem);
-            }
-            else if (name.equals(Constants.TABLE_CAPTION_BOX))
-            {
-                return new TableCaptionBoxView(elem);
-            }
-            else if (name.equals(Constants.TABLE_CELL_BOX))
-            {
-                return new TableCellBoxView(elem);
-            }
-            else if (name.equals(Constants.TABLE_COLUMN))
-            {
-                return new TableColumnView(elem);
-            }
-            else if (name.equals(Constants.TABLE_COLUMN_GROUP))
-            {
-                return new TableColumnGroupView(elem);
-            }
-            else if (name.equals(Constants.TABLE_ROW_BOX))
-            {
-                return new TableRowBoxView(elem);
-            }
-            else if (name.equals(Constants.VIEWPORT))
-            {
-                viewport = new ViewportView(elem);
-                return viewport;
-            }
-            else if (name.equals(Constants.DELEGATE))
-            {
-                return new DelegateView(elem);
-            }
-            // -- javax.swing.text views --------------------------------
-            else if (name.equals(AbstractDocument.SectionElementName))
-            {
-                return new BoxView(elem, View.Y_AXIS);
-            }
-            else if (name.equals(StyleConstants.ComponentElementName))
-            {
-                return new ComponentView(elem);
-            }
-            else if (name.equals(StyleConstants.IconElementName))
-            {
-                return new IconView(elem);
-            }
-
         }
 
-        // System.err.println("returning default LabelView ! " +
-        // elem.toString());
+        if (name != null) {
+            switch( name ) {
+                case Constants.EMPTY:
+                    return new LabelView( elem );
+                case Constants.BACKGROUND:
+                    return new BackgroundView( elem );
+                case Constants.TEXT_BOX:
+                    return new TextBoxView( elem );
+                case Constants.BLOCK_BOX:
+                    return new BlockBoxView( elem );
+                case Constants.INLINE_BOX:
+                    return new InlineBoxView( elem );
+                case Constants.BLOCK_REPLACED_BOX:
+                    return new BlockReplacedBoxView( elem );
+                case Constants.INLINE_REPLACED_BOX:
+                    return new InlineReplacedBoxView( elem );
+                case Constants.LIST_ITEM_BOX:
+                    return new ListItemBoxView( elem );
+                case Constants.BLOCK_TABLE_BOX:
+                    return new BlockTableBoxView( elem );
+                case Constants.TABLE_BOX:
+                    return new TableBoxView( elem );
+                case Constants.TABLE_BODY_BOX:
+                    return new TableBodyBoxView( elem );
+                case Constants.TABLE_CAPTION_BOX:
+                    return new TableCaptionBoxView( elem );
+                case Constants.TABLE_CELL_BOX:
+                    return new TableCellBoxView( elem );
+                case Constants.TABLE_COLUMN:
+                    return new TableColumnView( elem );
+                case Constants.TABLE_COLUMN_GROUP:
+                    return new TableColumnGroupView( elem );
+                case Constants.TABLE_ROW_BOX:
+                    return new TableRowBoxView( elem );
+                case Constants.VIEWPORT:
+                    viewport = new ViewportView( elem );
+                    return viewport;
+                case Constants.DELEGATE:
+                    return new DelegateView( elem );
+
+                // -- javax.swing.text views --------------------------------
+                case AbstractDocument.SectionElementName:
+                    return new BoxView( elem, View.Y_AXIS );
+                case StyleConstants.ComponentElementName:
+                    return new ComponentView( elem );
+                case StyleConstants.IconElementName:
+                    return new IconView( elem );
+            }
+        }
+
         return new LabelView(elem);
     }
 

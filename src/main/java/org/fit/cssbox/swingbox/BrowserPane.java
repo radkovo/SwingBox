@@ -1,5 +1,4 @@
-/**
- * BrowserPane.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  * <p>
  * SwingBox is free software: you can redistribute it and/or modify
@@ -26,13 +25,13 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.Security;
@@ -47,16 +46,13 @@ import java.util.*;
  * @version 1.0
  * @since 1.0 - 28.9.2010
  */
+@SuppressWarnings("unused")
 public class BrowserPane extends JEditorPane {
   private static final long serialVersionUID = 7303652028812084960L;
   private InputStream loadingStream;
   private Hashtable<String, Object> pageProperties;
   private Document document;
   private static EditorKit swingBoxEditorKit = null;
-
-  // "org.fit.cssbox.swingbox.SwingBoxEditorKit"
-  protected String HtmlEditorKitClass = "org.fit.cssbox.swingbox" +
-      ".SwingBoxEditorKit";
 
   /**
    * Instantiates a new browser pane.
@@ -126,15 +122,6 @@ public class BrowserPane extends JEditorPane {
   }
 
   /**
-   * Checks if tooltips are activated.
-   *
-   * @return true, if is activated
-   */
-  public boolean isTooltipActivated() {
-    return ToolTipManager.sharedInstance().isEnabled();
-  }
-
-  /**
    * Adds the general event listener.
    *
    * @param listener the listener
@@ -154,10 +141,9 @@ public class BrowserPane extends JEditorPane {
    */
   public synchronized void removeGeneralEventListener(
       GeneralEventListener listener ) {
-    if( listener == null ) {
-      return;
+    if( listener != null ) {
+      listenerList.remove( GeneralEventListener.class, listener );
     }
-    listenerList.remove( GeneralEventListener.class, listener );
   }
 
   /**
@@ -166,8 +152,7 @@ public class BrowserPane extends JEditorPane {
    * @return the array of general event listeners
    */
   public synchronized GeneralEventListener[] getGeneralEventListeners() {
-    return (GeneralEventListener[]) listenerList
-        .getListeners( GeneralEventListener.class );
+    return listenerList.getListeners( GeneralEventListener.class );
   }
 
   /**
@@ -247,14 +232,9 @@ public class BrowserPane extends JEditorPane {
 
   @Override
   public void setText( String t ) {
-    //fireGeneralEvent(new GeneralEvent(this, EventType.page_loading_begin,
-    // null, null));
-    //super.setText(t);
     try {
-      URL url = DataURLHandler.createURL( null, "data:text/html," + t );
+      final var url = DataURLHandler.createURL( null, "data:text/html," + t );
       setPage( url );
-    } catch( MalformedURLException e ) {
-      e.printStackTrace();
     } catch( IOException e ) {
       e.printStackTrace();
     }
@@ -287,29 +267,22 @@ public class BrowserPane extends JEditorPane {
    * However, it allows checking whether the reference exists in the document.
    *
    * @param reference the named location to scroll to
-   * @return <code>true</code> when the location exists in the document,
-   * <code>false</code> when not found.
    */
-  public boolean tryScrollToReference( String reference ) {
+  public void tryScrollToReference( String reference ) {
     Element dst = findElementToScroll( reference,
                                        getDocument().getDefaultRootElement() );
     if( dst != null ) {
       try {
         Rectangle bottom = new Rectangle( 0, getHeight() - 1, 1, 1 );
-        Rectangle rec = modelToView( dst.getStartOffset() );
+        Rectangle2D rec = modelToView2D( dst.getStartOffset() );
         if( rec != null ) {
           scrollRectToVisible( bottom ); //move to the bottom and back in
           // order to put the reference to the window top
-          scrollRectToVisible( rec );
+          scrollRectToVisible( rec.getBounds() );
         }
-        return true;
       } catch( BadLocationException e ) {
         UIManager.getLookAndFeel().provideErrorFeedback( this );
-        return false;
       }
-    }
-    else {
-      return false;
     }
   }
 
@@ -321,7 +294,7 @@ public class BrowserPane extends JEditorPane {
       //try the id attribute
       String eid = (String) root.getAttributes()
                                 .getAttribute( Constants.ATTRIBUTE_ELEMENT_ID );
-      if( eid != null && ref.equalsIgnoreCase( eid ) ) {
+      if( ref.equalsIgnoreCase( eid ) ) {
         return root;
       }
       //or try the name attribute of <a>
@@ -386,7 +359,7 @@ public class BrowserPane extends JEditorPane {
        */
       if( redirect ) {
         String loc = conn.getHeaderField( "Location" );
-        if( loc.startsWith( "http", 0 ) ) {
+        if( loc.startsWith( "http" ) ) {
           page = new URL( loc );
         }
         else {
@@ -403,15 +376,8 @@ public class BrowserPane extends JEditorPane {
     }
     else {
       try {
-        SwingUtilities.invokeAndWait( new Runnable() {
-          @Override
-          public void run() {
-            handleConnectionProperties( conn );
-          }
-        } );
-      } catch( InterruptedException e ) {
-        throw new RuntimeException( e );
-      } catch( InvocationTargetException e ) {
+        SwingUtilities.invokeAndWait( () -> handleConnectionProperties( conn ) );
+      } catch( InterruptedException | InvocationTargetException e ) {
         throw new RuntimeException( e );
       }
     }
@@ -451,12 +417,9 @@ public class BrowserPane extends JEditorPane {
         }
         else {
           // load asynchro
-          Thread t = new Thread( new Runnable() {
-            @Override
-            public void run() {
-              loadPage( newPage, oldPage, in, document );
-            }
-          } );
+          Thread t = new Thread(
+              () -> loadPage( newPage, oldPage, in, document )
+          );
           t.setDaemon( true );
           t.start();
         }
@@ -465,16 +428,9 @@ public class BrowserPane extends JEditorPane {
     else if( oldPage.sameFile( newPage ) ) {
       if( newPage.getRef() != null ) {
         final String reference = newPage.getRef();
-        SwingUtilities.invokeLater( new Runnable() {
-          @Override
-          public void run() {
-            scrollToReference( reference );
-          }
-        } );
+        SwingUtilities.invokeLater( () -> scrollToReference( reference ) );
       }
     }
-
-
   }
 
   private void loadPage( final URL newPage, final URL oldPage,
@@ -500,13 +456,11 @@ public class BrowserPane extends JEditorPane {
 
       final String reference = newPage.getRef();
       // Have to scroll after painted.
-      SwingUtilities.invokeLater( new Runnable() {
-        @Override
-        public void run() {
-          scrollRectToVisible( new Rectangle( 0, 0, 1, 1 ) ); // top of the pane
-          if( reference != null ) {
-            scrollToReference( reference );
-          }
+      SwingUtilities.invokeLater( () -> {
+        // top of the pane
+        scrollRectToVisible( new Rectangle( 0, 0, 1, 1 ) );
+        if( reference != null ) {
+          scrollToReference( reference );
         }
       } );
 
@@ -526,12 +480,9 @@ public class BrowserPane extends JEditorPane {
       }
 
       if( done ) {
-        SwingUtilities.invokeLater( new Runnable() {
-          @Override
-          public void run() {
-            firePropertyChange( "page", oldPage, newPage );
-          }
-        } );
+        SwingUtilities.invokeLater(
+            () -> firePropertyChange( "page", oldPage, newPage )
+        );
       }
     }
 
@@ -571,7 +522,7 @@ public class BrowserPane extends JEditorPane {
    */
   private void handleConnectionProperties( URLConnection conn ) {
     if( pageProperties == null ) {
-      pageProperties = new Hashtable<String, Object>( 22 );
+      pageProperties = new Hashtable<>( 22 );
     }
 
     String type = conn.getContentType();
@@ -655,57 +606,18 @@ public class BrowserPane extends JEditorPane {
     }
   }
 
-  private void setCharsetFromContentTypeParameters( String paramlist ) {
-    String charset = null;
-    try {
-      // paramlist is handed to us with a leading ';', strip it.
-      int semi = paramlist.indexOf( ';' );
-      if( semi > -1 && semi < paramlist.length() - 1 ) {
-        paramlist = paramlist.substring( semi + 1 );
-      }
-
-      if( paramlist.length() > 0 ) {
-        // parse the paramlist into attr-value pairs & get the
-        // charset pair's value
-        // TODO error here
-        // HeaderParser hdrParser = new HeaderParser(paramlist);
-        // charset = hdrParser.findValue("charset");
-        if( charset != null ) {
-          putClientProperty( "charset", charset );
-        }
-      }
-    } catch( IndexOutOfBoundsException e ) {
-      // malformed parameter list, use charset we have
-    } catch( NullPointerException e ) {
-      // malformed parameter list, use charset we have
-    } catch( Exception e ) {
-      // malformed parameter list, use charset we have; but complain
-      System.err
-          .println(
-              "JEditorPane.getCharsetFromContentTypeParameters failed on: "
-                  + paramlist );
-      e.printStackTrace();
-    }
-  }
-
   @Override
   public void read( InputStream in, Object desc ) throws IOException {
-    super.read( in, desc ); // !!! na toto sa tiez pozriet
+    super.read( in, desc );
   }
 
   void read( InputStream in, Document doc ) throws IOException {
-    EditorKit kit = getEditorKit();
+    final var kit = getEditorKit();
 
     try {
       kit.read( in, doc, 0 );
-
-    } catch( ChangedCharSetException ccse ) {
-      // ignored, may be in the future will be processed
-      throw ccse;
     } catch( BadLocationException ble ) {
       throw new IOException( ble );
     }
-
   }
-
 }

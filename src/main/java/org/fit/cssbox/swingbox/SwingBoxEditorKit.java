@@ -1,5 +1,4 @@
-/**
- * SwingBoxEditorKit.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -19,40 +18,22 @@
 
 package org.fit.cssbox.swingbox;
 
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
+import org.apache.commons.io.input.ReaderInputStream;
+import org.fit.cssbox.io.DocumentSource;
+import org.fit.cssbox.io.StreamDocumentSource;
+import org.fit.cssbox.swingbox.util.*;
+import org.fit.cssbox.swingbox.util.GeneralEvent.EventType;
+
+import javax.swing.*;
+import javax.swing.text.*;
+import javax.swing.text.DefaultStyledDocument.ElementSpec;
+import java.awt.*;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import javax.swing.JEditorPane;
-import javax.swing.JViewport;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Caret;
-import javax.swing.text.DefaultStyledDocument.ElementSpec;
-import javax.swing.text.Document;
-import javax.swing.text.StyledEditorKit;
-import javax.swing.text.ViewFactory;
-
-import org.apache.commons.io.input.ReaderInputStream;
-import org.fit.cssbox.io.DocumentSource;
-import org.fit.cssbox.io.StreamDocumentSource;
-import org.fit.cssbox.layout.Viewport;
-import org.fit.cssbox.swingbox.util.CSSBoxAnalyzer;
-import org.fit.cssbox.swingbox.util.Constants;
-import org.fit.cssbox.swingbox.util.ContentReader;
-import org.fit.cssbox.swingbox.util.ContentWriter;
-import org.fit.cssbox.swingbox.util.GeneralEvent;
-import org.fit.cssbox.swingbox.util.GeneralEvent.EventType;
-import org.fit.cssbox.swingbox.util.MouseController;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * This is custom implementation of EditoKit for (X)HTML with use of CSSBox.
@@ -61,15 +42,15 @@ import org.fit.cssbox.swingbox.util.MouseController;
  * @version 1.0
  * @since 1.0 - 28.9.2010
  */
+@SuppressWarnings("unused")
 public class SwingBoxEditorKit extends StyledEditorKit
 {
     private static final long serialVersionUID = -2774578978116020429L;
-    /*private static final Pattern charsetPattern = Pattern
-            .compile("charset\\s*=[\\s'\"]*([\\-\\.\\:_0-9a-zA-Z]+)[\\s'\\\",;]*");*/
+
     private CSSBoxAnalyzer cbanalyzer;
     private ViewFactory vfactory;
     private JEditorPane component;
-    private MouseController mcontroller;
+    private final MouseController mcontroller;
 
     /**
      * Instantiates a new swing box editor kit.
@@ -77,8 +58,7 @@ public class SwingBoxEditorKit extends StyledEditorKit
     public SwingBoxEditorKit()
     {
         super();
-        String tmp;
-        tmp = System.getProperty(Constants.DEFAULT_ANALYZER_PROPERTY,
+        String tmp = System.getProperty(Constants.DEFAULT_ANALYZER_PROPERTY,
                 Constants.PROPERTY_NOT_SET);
         if (tmp.equals(Constants.PROPERTY_NOT_SET))
         {
@@ -142,7 +122,8 @@ public class SwingBoxEditorKit extends StyledEditorKit
         // this value is stored as internal property under
         // AbstractDocument.AsyncLoadPriority key.
 
-        int priority = -1;// -1 == synchronously
+        // -1 == synchronously
+        int priority = -1;
         String tmp = System.getProperty(
                 Constants.DOCUMENT_ASYNCHRONOUS_LOAD_PRIORITY_PROPERTY,
                 Constants.PROPERTY_NOT_SET);
@@ -193,7 +174,7 @@ public class SwingBoxEditorKit extends StyledEditorKit
             Writer tmpOut = new BufferedWriter(new OutputStreamWriter(out,
                     Charset.defaultCharset()), 8 * 1024);
 
-            writeImpl(tmpOut, (SwingBoxDocument) doc, pos, len);
+            writeImpl(tmpOut, (SwingBoxDocument) doc, pos );
 
             tmpOut.flush();
             tmpOut.close();
@@ -213,7 +194,7 @@ public class SwingBoxEditorKit extends StyledEditorKit
         {
             Writer tmpOut = new BufferedWriter(out, 8 * 1024);
 
-            writeImpl(tmpOut, (SwingBoxDocument) doc, pos, len);
+            writeImpl(tmpOut, (SwingBoxDocument) doc, pos );
 
             tmpOut.flush();
             tmpOut.close();
@@ -246,7 +227,7 @@ public class SwingBoxEditorKit extends StyledEditorKit
 
         if (doc instanceof org.fit.cssbox.swingbox.SwingBoxDocument)
         {
-            InputStream is = new ReaderInputStream(in);
+            InputStream is = new ReaderInputStream(in, UTF_8);
             readImpl(is, (org.fit.cssbox.swingbox.SwingBoxDocument) doc, pos);
         }
         else
@@ -260,19 +241,17 @@ public class SwingBoxEditorKit extends StyledEditorKit
      * 
      * @param doc
      *            the document
-     * @param root
-     *            the root box
      * @param dim
      *            new dimension
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    public void update(SwingBoxDocument doc, Viewport root, Dimension dim)
+    public void update(SwingBoxDocument doc, Dimension dim)
             throws IOException
     {
         ContentReader rdr = new ContentReader();
-        List<ElementSpec> elements = rdr.update(root, dim, getCSSBoxAnalyzer());
-        ElementSpec elementsArray[] = elements.toArray(new ElementSpec[0]);
+        List<ElementSpec> elements = rdr.update(dim, getCSSBoxAnalyzer());
+        ElementSpec[] elementsArray = elements.toArray( new ElementSpec[0]);
         doc.create(elementsArray);
     }
 
@@ -307,15 +286,12 @@ public class SwingBoxEditorKit extends StyledEditorKit
     protected CSSBoxAnalyzer getDefaultAnalyzer()
     {
         // possible to provide custom implementation
-        CSSBoxAnalyzer cba;
-        String cname = System.getProperty(Constants.DEFAULT_ANALYZER_PROPERTY,
-                Constants.PROPERTY_NOT_SET);
+        CSSBoxAnalyzer cba = null;
+        String cname = System.getProperty(
+            Constants.DEFAULT_ANALYZER_PROPERTY,
+            Constants.PROPERTY_NOT_SET);
 
-        if (Constants.PROPERTY_NOT_SET.equals(cname))
-        {
-            cba = null;
-        }
-        else
+        if (!Constants.PROPERTY_NOT_SET.equals(cname))
         {
             try
             {
@@ -330,18 +306,14 @@ public class SwingBoxEditorKit extends StyledEditorKit
                     c = Class.forName(cname);
                 }
 
-                Object o = c.newInstance();
+                @SuppressWarnings("unchecked")
+                Object o = c.getDeclaredConstructor().newInstance();
                 if (o instanceof CSSBoxAnalyzer)
                 {
                     cba = (CSSBoxAnalyzer) o;
                 }
-                else
-                {
-                    cba = null;
-                }
-            } catch (Exception e)
+            } catch (Exception ignored )
             {
-                cba = null;
             }
         }
 
@@ -367,7 +339,7 @@ public class SwingBoxEditorKit extends StyledEditorKit
 
         Container parent = component.getParent();
         Dimension dim;
-        if (parent != null && parent instanceof JViewport)
+        if ( parent instanceof JViewport )
         {
             dim = ((JViewport) parent).getExtentSize();
         }
@@ -382,8 +354,6 @@ public class SwingBoxEditorKit extends StyledEditorKit
             Dimension tmp = Toolkit.getDefaultToolkit().getScreenSize();
             dim.setSize(tmp.width / 2.5, tmp.height / 2.5);
         }
-
-        // long time = System.currentTimeMillis();
 
         List<ElementSpec> elements;
         try
@@ -410,24 +380,10 @@ public class SwingBoxEditorKit extends StyledEditorKit
             throw e;
         }
 
-        // System.out.println(System.currentTimeMillis() - time + " ms");
-
-        ElementSpec elementsArray[] = elements.toArray(new ElementSpec[0]);
+        ElementSpec[] elementsArray = elements.toArray( new ElementSpec[0]);
         doc.create(elementsArray);
-        // component.revalidate();
-        // component.repaint();
-
-        // System.out.println(System.currentTimeMillis() - time + " ms");
-
-        // Dictionary<Object, Object> dic = doc.getDocumentProperties();
-        // Enumeration<Object> en = dic.keys();
-        // while( en.hasMoreElements()) {
-        // Object k = en.nextElement();
-        // System.out.println(k + "  " + dic.get(k));
-        // }
 
         readFinish(url);
-
     }
 
     private void readError(URL url, Exception e)
@@ -435,8 +391,6 @@ public class SwingBoxEditorKit extends StyledEditorKit
         if (component instanceof BrowserPane)
         {
             ((BrowserPane) component).fireGeneralEvent(new GeneralEvent(this, EventType.page_loading_error, url, e));
-            // NodeList nodes =
-            // analyzer.getDocument().getElementsByTagName("meta");
         }
     }
 
@@ -446,24 +400,20 @@ public class SwingBoxEditorKit extends StyledEditorKit
         {
             ((BrowserPane) component).fireGeneralEvent(new GeneralEvent(this,
                     EventType.page_loading_end, url, null));
-            // NodeList nodes =
-            // analyzer.getDocument().getElementsByTagName("meta");
         }
     }
 
-    private void writeImpl(Writer out, SwingBoxDocument doc, int pos, int len)
+    private void writeImpl( Writer out, SwingBoxDocument doc, int pos )
             throws BadLocationException, IOException
     {
-
-        if (pos > doc.getLength() || pos < 0) { throw new BadLocationException(
-                "Invalid location", pos); }
-        if (len < 0) len = 0;
+        if (pos > doc.getLength() || pos < 0) {
+            throw new BadLocationException("Invalid location", pos);
+        }
 
         ContentWriter wrt = new ContentWriter();
         StringBuilder sb = wrt.write(getCSSBoxAnalyzer().getDocument());
         out.write(sb.toString());
         out.flush();
-
     }
 
 }

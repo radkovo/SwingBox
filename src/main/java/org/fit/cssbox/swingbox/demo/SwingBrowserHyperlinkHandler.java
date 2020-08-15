@@ -1,5 +1,4 @@
-/**
- * SwingBrowserHyperlinkHandler.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -30,7 +29,7 @@ import org.fit.cssbox.swingbox.util.DefaultHyperlinkHandler;
  */
 public class SwingBrowserHyperlinkHandler extends DefaultHyperlinkHandler
 {
-    private SwingBrowser browser;
+    private final SwingBrowser browser;
     
     public SwingBrowserHyperlinkHandler(SwingBrowser browser)
     {
