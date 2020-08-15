@@ -18,29 +18,15 @@
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.Map;
-
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
-import javax.swing.text.Highlighter;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.LayeredHighlighter;
-import javax.swing.text.Position;
-import javax.swing.text.Position.Bias;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.View;
-
 import org.fit.cssbox.layout.BlockReplacedBox;
 import org.fit.cssbox.layout.ReplacedContent;
 import org.fit.cssbox.layout.ReplacedImage;
 import org.fit.cssbox.swingbox.util.Constants;
+
+import javax.swing.text.*;
+import javax.swing.text.Position.Bias;
+import java.awt.*;
+import java.util.Map;
 
 /**
  * @author Peter Bielik

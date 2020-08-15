@@ -18,10 +18,10 @@
 
 package org.fit.cssbox.swingbox.util;
 
-import java.awt.Dimension;
-
 import org.fit.cssbox.io.DocumentSource;
 import org.fit.cssbox.layout.Viewport;
+
+import java.awt.*;
 
 /**
  * @author Peter Bielik

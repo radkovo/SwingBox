@@ -21,7 +21,6 @@ import org.fit.cssbox.swingbox.util.*;
 import org.fit.cssbox.swingbox.util.GeneralEvent.EventType;
 import org.fit.net.DataURLHandler;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
@@ -235,8 +234,7 @@ public class BrowserPane extends JEditorPane {
     try {
       final var url = DataURLHandler.createURL( null, "data:text/html," + t );
       setPage( url );
-    } catch( IOException e ) {
-      e.printStackTrace();
+    } catch( IOException ignored ) {
     }
   }
 
@@ -336,14 +334,9 @@ public class BrowserPane extends JEditorPane {
   @Override
   protected InputStream getStream( URL page ) throws IOException {
     final URLConnection conn = setConnectionProperties( page.openConnection() );
-    // http://stackoverflow.com/questions/875467/java-client-certificates
-    // -over-https-ssl
+    // http://stackoverflow.com/questions/875467/java-client-certificates-over-https-ssl
 
-    if( conn instanceof HttpsURLConnection ) {
-      // XXX toto moc nefunguje
-      System.out.println( "$ Connection is HTTPS !!" );
-    }
-    else if( conn instanceof HttpURLConnection ) {
+   if( conn instanceof HttpURLConnection ) {
       HttpURLConnection hconn = (HttpURLConnection) conn;
       hconn.setInstanceFollowRedirects( false );
       Object postData = getPostData();
@@ -527,19 +520,10 @@ public class BrowserPane extends JEditorPane {
 
     String type = conn.getContentType();
     if( type != null ) {
-      // XXX mozno prepisat podla seba, setContentType, len pre text/****
-      setContentType( type ); // >> XXX putClientProperty("charset",
-      // charset); !!!
-      // charset\s*=[\s'"]*([\-_a-zA-Z0-9]+)[\s'",;]*
-      // pageProperties.put("content-type", type);
+      setContentType( type );
     }
 
     pageProperties.put( Document.StreamDescriptionProperty, conn.getURL() );
-
-    // String enc = conn.getContentEncoding();
-    // if (enc != null) {
-    // pageProperties.put("content-encoding", enc);
-    // }
 
     Map<String, List<String>> header = conn.getHeaderFields();
 
@@ -551,14 +535,16 @@ public class BrowserPane extends JEditorPane {
         pageProperties.put( key, obj );
       }
     }
-
-    System.out.println( "# pageProperties #" );
-    for( String k : pageProperties.keySet() ) {
-      System.out.println( k + " : " + pageProperties.get( k ) );
-    }
-
   }
 
+  /*
+   * An unofficial user agent format, based on the above, used by Web browsers
+   * is as follows: Mozilla/[version] ([system and browser information])
+   * [platform] ([platform details]) [extensions]. For example, Safari on
+   * the iPad has used the following: Mozilla/5.0 (iPad; U; CPU OS 3_2_1
+   * like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko)
+   * Mobile/7B405.
+   */
   private URLConnection setConnectionProperties( URLConnection conn ) {
     // http://www.useragentstring.com/index.php
     // http://tools.ietf.org/html/rfc1945
@@ -573,18 +559,11 @@ public class BrowserPane extends JEditorPane {
     // CLR 3.0.04506.648)
     // SwingBox : Mozilla/5.0 (compatible; SwingBox/1.x; Linux; U)
     // CSSBox/2.x (like Gecko)
-    /*
-     * An unofficial format, based on the above, used by Web browsers is as
-     * follows: Mozilla/[version] ([system and browser information])
-     * [platform] ([platform details]) [extensions]. For example, Safari on
-     * the iPad has used the following: Mozilla/5.0 (iPad; U; CPU OS 3_2_1
-     * like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko)
-     * Mobile/7B405.
-     */
 
-    conn.setRequestProperty( "User-Agent",
-                             "Mozilla/5.0 (compatible; SwingBox/1.x; Linux; " +
-                                 "U) CSSBox/4.x (like Gecko)" );
+    conn.setRequestProperty(
+        "User-Agent",
+        "Mozilla/5.0 (compatible; SwingBox/1.x; Linux; U) CSSBox/4.x (like Gecko)"
+    );
     conn.setRequestProperty( "Accept-Charset", "utf-8" );
 
     return conn;
@@ -593,16 +572,10 @@ public class BrowserPane extends JEditorPane {
   private void handlePostData( HttpURLConnection conn, Object postData )
       throws IOException {
     conn.setDoOutput( true );
-    DataOutputStream os = null;
-    try {
-      conn.setRequestProperty( "Content-Type",
-                               "application/x-www-form-urlencoded" );
-      os = new DataOutputStream( conn.getOutputStream() );
+    conn.setRequestProperty( "Content-Type",
+                             "application/x-www-form-urlencoded" );
+    try(final var os = new DataOutputStream( conn.getOutputStream() ) ) {
       os.writeBytes( (String) postData );
-    } finally {
-      if( os != null ) {
-        os.close();
-      }
     }
   }
 

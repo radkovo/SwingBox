@@ -18,35 +18,10 @@
 
 package org.fit.cssbox.swingbox;
 
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BoxView;
-import javax.swing.text.ComponentView;
-import javax.swing.text.Element;
-import javax.swing.text.IconView;
-import javax.swing.text.LabelView;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.View;
-import javax.swing.text.ViewFactory;
-
 import org.fit.cssbox.swingbox.util.Constants;
-import org.fit.cssbox.swingbox.view.BackgroundView;
-import org.fit.cssbox.swingbox.view.BlockBoxView;
-import org.fit.cssbox.swingbox.view.BlockReplacedBoxView;
-import org.fit.cssbox.swingbox.view.BlockTableBoxView;
-import org.fit.cssbox.swingbox.view.DelegateView;
-import org.fit.cssbox.swingbox.view.InlineBoxView;
-import org.fit.cssbox.swingbox.view.InlineReplacedBoxView;
-import org.fit.cssbox.swingbox.view.ListItemBoxView;
-import org.fit.cssbox.swingbox.view.TableBodyBoxView;
-import org.fit.cssbox.swingbox.view.TableBoxView;
-import org.fit.cssbox.swingbox.view.TableCaptionBoxView;
-import org.fit.cssbox.swingbox.view.TableCellBoxView;
-import org.fit.cssbox.swingbox.view.TableColumnGroupView;
-import org.fit.cssbox.swingbox.view.TableColumnView;
-import org.fit.cssbox.swingbox.view.TableRowBoxView;
-import org.fit.cssbox.swingbox.view.TextBoxView;
-import org.fit.cssbox.swingbox.view.ViewportView;
+import org.fit.cssbox.swingbox.view.*;
+
+import javax.swing.text.*;
 
 /**
  * This is implementation of ViewFactory interface for SwingBox View objects.

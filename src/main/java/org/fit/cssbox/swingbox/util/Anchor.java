@@ -18,10 +18,10 @@
 
 package org.fit.cssbox.swingbox.util;
 
+import org.w3c.dom.Node;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.w3c.dom.Node;
 
 /**
  * The Class Anchor. Provides info about hyperlinks.

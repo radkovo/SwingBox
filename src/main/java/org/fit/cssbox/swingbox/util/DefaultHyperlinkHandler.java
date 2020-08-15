@@ -18,12 +18,11 @@
 
 package org.fit.cssbox.swingbox.util;
 
-import java.awt.Cursor;
-import java.io.IOException;
-
-import javax.swing.JEditorPane;
+import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import java.awt.*;
+import java.io.IOException;
 
 /**
  * Customizable implementation of HyperlinListener. This default implementation only changes
@@ -70,9 +69,8 @@ public class DefaultHyperlinkHandler implements HyperlinkListener
         try
         {
             pane.setPage(evt.getURL());
-        } catch (IOException e)
+        } catch (IOException ignored)
         {
-            System.err.println(e.getLocalizedMessage());
         }
     }
 

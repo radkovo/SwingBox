@@ -114,8 +114,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
                 target = "_self";
             }
             elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_TARGET, target);
-            // System.err.println("## Anchor at : " + this + " attr: "+
-            // elementAttributes);
         }
         else
         {
@@ -276,8 +274,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     public void replace(int offset, int length, View[] views)
     {
         super.replace(offset, length, views);
-        // System.err.println("Replace : " + views.length + " view count  " +
-        // getViewCount());
 
         majorReqValid = false;
         majorAllocValid = false;
@@ -404,7 +400,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     @Override
     public void paint(Graphics graphics, Shape allocation)
     {
-        //System.out.println("Paint: " + box + " in " + allocation);
         Graphics2D g;
         if (graphics instanceof Graphics2D)
             g = (Graphics2D) graphics;
@@ -412,9 +407,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
             throw new RuntimeException("Unknown graphics environment, java.awt.Graphics2D required !");
 
         Rectangle clip = toRect(g.getClip());
-        
-        //box.getVisualContext().updateGraphics(g);
-        //box.drawBackground(g);
 
         Rectangle alloc = toRect(allocation);
         int count = getViewCount();
@@ -427,34 +419,14 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         }
     }
 
-//    /**
-//     * renders given child, possible to override and customize.
-//     * 
-//     * @param g
-//     *            graphics context
-//     * @param v
-//     *            the View
-//     * @param rect
-//     *            an allocation
-//     * @param index
-//     *            the index of view
-//     */
-    /*protected void paintChild(Graphics g, View v, Shape rect, int index)
-    {
-        // System.err.println("Painting " + v);
-        v.paint(g, rect);
-    }*/
-
     @Override
     public Shape getChildAllocation(int index, Shape a)
     {
-        // zvyraznovanie !
-        if (a != null /* && isAllocationValid() */)
+        if (a != null)
         {
             Box tmpBox = getBox(getView(index));
 
             Rectangle alloc = (a instanceof Rectangle) ? (Rectangle) a : a.getBounds();
-            //alloc.setBounds(tmpBox.getAbsoluteBounds());
             alloc.setBounds(getCompleteBoxAllocation(tmpBox));
             return alloc;
         }
@@ -464,8 +436,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     @Override
     protected void childAllocation(int index, Rectangle alloc)
     {
-        // set allocation (== the bounds) for a view
-        //alloc.setBounds(getBox(getView(index)).getAbsoluteBounds());
         alloc.setBounds(getCompleteBoxAllocation(getBox(getView(index))));
     }
 
@@ -568,9 +538,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     @Override
     protected boolean isBefore(int x, int y, Rectangle innerAlloc)
     {
-        // System.err.println("isBefore: " + innerAlloc + " my bounds " +
-        // box.getAbsoluteBounds());
-        // System.err.println("XY: " + x + " : " + y);
         innerAlloc.setBounds(box.getAbsoluteBounds());
         if (majorAxis == View.X_AXIS)
         {
@@ -596,9 +563,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     @Override
     protected boolean isAfter(int x, int y, Rectangle innerAlloc)
     {
-        // System.err.println("isAfter: " + innerAlloc + " my bounds " +
-        // box.getAbsoluteBounds());
-        // System.err.println("XY: " + x + " : " + y);
         innerAlloc.setBounds(box.getAbsoluteBounds());
         if (majorAxis == View.X_AXIS)
         {

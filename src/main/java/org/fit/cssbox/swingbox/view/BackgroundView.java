@@ -18,23 +18,14 @@
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.Map;
-
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
-import javax.swing.text.Position;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.Position.Bias;
-import javax.swing.text.View;
-
 import org.fit.cssbox.layout.ElementBox;
 import org.fit.cssbox.swingbox.util.Anchor;
 import org.fit.cssbox.swingbox.util.Constants;
+
+import javax.swing.text.*;
+import javax.swing.text.Position.Bias;
+import java.awt.*;
+import java.util.Map;
 
 /**
  * @author Peter Bielik
@@ -69,9 +60,6 @@ public class BackgroundView extends View implements CSSBoxView
         {
             throw new IllegalArgumentException("Box reference is not an instance of ElementBox");
         }
-        
-        if (box.toString().contains("\"btn\""))
-            System.out.println("jo!");
         
         if (box.getElement() != null)
         {

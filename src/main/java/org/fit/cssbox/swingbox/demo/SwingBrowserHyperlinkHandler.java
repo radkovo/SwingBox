@@ -18,10 +18,10 @@
  */
 package org.fit.cssbox.swingbox.demo;
 
-import javax.swing.JEditorPane;
-import javax.swing.event.HyperlinkEvent;
-
 import org.fit.cssbox.swingbox.util.DefaultHyperlinkHandler;
+
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
 
 /**
  * This hyperlink handler implements the demo browser behaviour when a link is clicked.

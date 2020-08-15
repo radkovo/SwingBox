@@ -29,18 +29,11 @@ import org.fit.cssbox.layout.Box;
 import org.fit.cssbox.layout.BrowserCanvas;
 import org.fit.cssbox.layout.ElementBox;
 import org.fit.cssbox.swingbox.BrowserPane;
-import org.fit.cssbox.swingbox.util.GeneralEvent;
-import org.fit.cssbox.swingbox.util.GeneralEvent.EventType;
-import org.fit.cssbox.swingbox.util.GeneralEventListener;
 import org.w3c.dom.Document;
 
 import javax.swing.*;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
@@ -57,11 +50,11 @@ import java.net.URL;
 public class BrowserComparison extends JFrame
 {
     private static final long serialVersionUID = 3078719188136612454L;
-    BrowserPane swingbox = new BrowserPane();
-    BrowserCanvas cssbox = null;
-    JEditorPane editorkit = new JEditorPane();
-    JTextField txt = new JTextField("http://www.aktualne.cz", 60);
-    JScrollPane contentScroll = new JScrollPane();
+    private final BrowserPane swingbox = new BrowserPane();
+    private BrowserCanvas cssbox = null;
+    private final JEditorPane editorkit = new JEditorPane();
+    private final JTextField txt = new JTextField("http://www.aktualne.cz", 60);
+    private final JScrollPane contentScroll = new JScrollPane();
 
     /**
      * Creates new instance of this demo application.
@@ -80,40 +73,16 @@ public class BrowserComparison extends JFrame
         tmp.add(txt);
         tmp.add(btn);
 
-        btn.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                Thread t = new Thread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        loadPage(txt.getText());
-                    }
-                });
-                t.setDaemon(true);
-                t.start();
-            }
-        });
-        txt.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                Thread t = new Thread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        loadPage(txt.getText());
-                    }
-                });
-                t.setDaemon(true);
-                t.start();
-            }
-        });
+        btn.addActionListener( e -> {
+            Thread t = new Thread( () -> loadPage( txt.getText()) );
+            t.setDaemon(true);
+            t.start();
+        } );
+        txt.addActionListener( e -> {
+            Thread t = new Thread( () -> loadPage( txt.getText()) );
+            t.setDaemon(true);
+            t.start();
+        } );
 
         JTabbedPane tab = new JTabbedPane(JTabbedPane.TOP);
         tab.addTab("SwingBox", new JScrollPane(swingbox));
@@ -125,36 +94,9 @@ public class BrowserComparison extends JFrame
         setContentPane(panel);
 
         swingbox.addHyperlinkListener(new BrowserComparisonHyperlinkHandler(this));
-        swingbox.addGeneralEventListener(new GeneralEventListener()
-        {
-            private long time;
-
-            @Override
-            public void generalEventUpdate(GeneralEvent e)
-            {
-                if (e.event_type == EventType.page_loading_begin)
-                {
-                    time = System.currentTimeMillis();
-                }
-                else if (e.event_type == EventType.page_loading_end)
-                {
-                    System.out.println("SwingBox: page loaded in: "
-                            + (System.currentTimeMillis() - time) + " ms");
-                }
-            }
-        });
 
         editorkit.setEditorKit(new HTMLEditorKit());
         editorkit.setEditable(false);
-        editorkit.addHyperlinkListener(new HyperlinkListener()
-        {
-            @Override
-            public void hyperlinkUpdate(HyperlinkEvent e)
-            {
-                //txt.setText(e.getURL().toString());
-                //loadPage(txt.getText());
-            }
-        });
 
         contentScroll.setViewportView(cssbox);
         contentScroll.addComponentListener(new java.awt.event.ComponentAdapter()
@@ -162,9 +104,9 @@ public class BrowserComparison extends JFrame
                     @Override
                     public void componentResized(java.awt.event.ComponentEvent e)
                     {
-                        if (cssbox != null && cssbox instanceof BrowserCanvas)
+                        if ( cssbox != null )
                         {
-                            ((BrowserCanvas) cssbox).createLayout(contentScroll.getSize());
+                            cssbox.createLayout( contentScroll.getSize());
                             contentScroll.repaint();
                         }
                     }
@@ -198,9 +140,8 @@ public class BrowserComparison extends JFrame
         try
         {
             swingbox.setPage(new URL(url));
-        } catch (IOException e)
+        } catch (IOException ignored)
         {
-            e.printStackTrace();
         }
     }
 
@@ -228,10 +169,7 @@ public class BrowserComparison extends JFrame
             cssbox.addMouseListener(new MouseListener() {
                 public void mouseClicked(MouseEvent e)
                 {
-                    System.out.println("Click: " + e.getX() + ":" + e.getY());
-                    //canvasClick(e.getX(), e.getY());
                     Box node = locateBox(cssbox.getViewport(), e.getX(), e.getY());
-                    System.out.println("Box: " + node);
                     if (node != null)
                     {
                         node.drawExtent(cssbox.getImageGraphics());
@@ -245,8 +183,7 @@ public class BrowserComparison extends JFrame
             });            
             contentScroll.setViewportView(cssbox);
             
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
@@ -254,8 +191,7 @@ public class BrowserComparison extends JFrame
     {
         try {
             editorkit.setPage(new URL(url));
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
     }
 
@@ -267,13 +203,11 @@ public class BrowserComparison extends JFrame
         if (root.isVisible())
         {
             Box found = null;
-            //Rectangle bounds = root.getAbsoluteContentBounds().intersection(root.getClipBlock().getAbsoluteContentBounds());
             Rectangle bounds = root.getAbsoluteBounds();
             if (bounds.contains(x, y))
             {
                 found = root;
-                System.out.println("Fnd: " + found);
-                found.drawExtent(((BrowserCanvas)cssbox).getImageGraphics());
+                found.drawExtent( cssbox.getImageGraphics());
             }
             
             //find if there is something smallest that fits among the child boxes
@@ -309,15 +243,6 @@ public class BrowserComparison extends JFrame
      */
     public static void main(String[] args)
     {
-        SwingUtilities.invokeLater(new Runnable()
-        {
-
-            @Override
-            public void run()
-            {
-                new BrowserComparison();
-            }
-        });
+        SwingUtilities.invokeLater( BrowserComparison::new );
     }
-
 }

@@ -61,9 +61,6 @@ public class MouseController extends MouseAdapter
 
             if (bias[0] == Position.Bias.Backward && pos > 0) pos--;
 
-            //Point pt = new Point(e.getX(), e.getY());
-            //int pos = editor.viewToModel(pt);
-            // System.err.println("found position : " + pos);
             if (pos >= 0)
             {
                 Element el = ((SwingBoxDocument) editor.getDocument()).getCharacterElement(pos);
@@ -95,9 +92,6 @@ public class MouseController extends MouseAdapter
                 Element elem = ((StyledDocument) editor.getDocument()).getCharacterElement(pos);
                 Object bb = elem.getAttributes().getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
                 Anchor anchor = (Anchor) elem.getAttributes().getAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE);
-                //System.out.println("Pos: " + pos);
-                //System.out.println("Elem: " + elem.getAttributes().getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE));
-                //System.out.println("Anchor: " + anchor);
 
                 if (elem != prevElem)
                 {

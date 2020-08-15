@@ -18,27 +18,20 @@
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Shape;
+import org.fit.cssbox.swingbox.SwingBoxDocument;
+import org.fit.cssbox.swingbox.SwingBoxEditorKit;
+
+import javax.swing.*;
+import javax.swing.text.Document;
+import javax.swing.text.EditorKit;
+import javax.swing.text.Element;
+import javax.swing.text.View;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.IOException;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JViewport;
-import javax.swing.text.Document;
-import javax.swing.text.EditorKit;
-import javax.swing.text.Element;
-import javax.swing.text.View;
-
-import org.fit.cssbox.swingbox.SwingBoxDocument;
-import org.fit.cssbox.swingbox.SwingBoxEditorKit;
 
 /**
  * The Class ViewportView.
@@ -138,9 +131,6 @@ public class ViewportView extends BlockBoxView implements ComponentListener
                 cachedViewPort = new WeakReference<>(viewPort);
             }
 
-            // System.err.println("Hooked at : " + viewPort.getExtentSize());
-            // checkSize(viewPort.getExtentSize());
-
         }
         else
         {
@@ -236,9 +226,8 @@ public class ViewportView extends BlockBoxView implements ComponentListener
             preferenceChanged(null, true, true);
             return true;
         } 
-        catch (IOException e)
+        catch (IOException ignored )
         {
-            e.printStackTrace();
         }
 
         return false;

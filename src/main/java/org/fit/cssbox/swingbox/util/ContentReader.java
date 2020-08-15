@@ -76,17 +76,10 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         elements.add(new ElementSpec(SimpleAttributeSet.EMPTY, ElementSpec.EndTagType));
         order = 0;
 
-        // System.err.print("used Reader and encoding ? " +
-        // is.getCharacterStream() + "  ,  ");
-        // InputStreamReader r = (InputStreamReader)is.getCharacterStream();
-        // System.err.println(r.getEncoding());
-
         Viewport vp;
         try
         {
-            // System.err.println("analyzing...");
             vp = cba.analyze(docSource, dim);
-            // System.err.println("analyzing finished...");
         } catch (Exception e)
         {
             throw new IOException(e);
@@ -186,7 +179,6 @@ public class ContentReader implements org.fit.cssbox.render.BoxRenderer
         }
         else
         {
-            System.err.println("Unknown BOX : " + box.getClass().getName());
             return null;
         }
     }

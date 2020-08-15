@@ -18,9 +18,7 @@
 package org.fit.cssbox.swingbox.demo;
 
 import org.fit.cssbox.swingbox.BrowserPane;
-import org.fit.cssbox.swingbox.util.GeneralEvent;
 import org.fit.cssbox.swingbox.util.GeneralEvent.EventType;
-import org.fit.cssbox.swingbox.util.GeneralEventListener;
 import org.fit.net.DataURLHandler;
 
 import javax.swing.*;
@@ -80,9 +78,7 @@ public class SwingBrowser
             historyPos++;
 
             displayURLSwingBox(url);
-        } catch (Exception e) {
-            System.err.println("*** Error: "+e.getMessage());
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
     
@@ -286,28 +282,15 @@ public class SwingBrowser
     {
         swingbox = new BrowserPane();
         swingbox.addHyperlinkListener(new SwingBrowserHyperlinkHandler(this));
-        swingbox.addGeneralEventListener(new GeneralEventListener()
-        {
-            private long time;
-
-            @Override
-            public void generalEventUpdate(GeneralEvent e)
+        swingbox.addGeneralEventListener( e -> {
+            if (e.event_type == EventType.page_loading_end)
             {
-                if (e.event_type == EventType.page_loading_begin)
-                {
-                    time = System.currentTimeMillis();
-                }
-                else if (e.event_type == EventType.page_loading_end)
-                {
-                    Object title = swingbox.getDocument().getProperty(Document.TitleProperty);
-                    if (title != null)
-                        tabs.setTitleAt(0, title.toString());
-                    
-                    System.out.println("SwingBox: page loaded in: "
-                            + (System.currentTimeMillis() - time) + " ms");
+                Object title = swingbox.getDocument().getProperty(Document.TitleProperty);
+                if (title != null) {
+                    tabs.setTitleAt( 0, title.toString() );
                 }
             }
-        });
+        } );
         return swingbox;
     }
     
@@ -328,12 +311,10 @@ public class SwingBrowser
             {
                 historyPos--;
                 URL url = history.elementAt(historyPos - 1);
-                try
-                    {
-                        displayURLSwingBox(url);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    displayURLSwingBox(url);
+                } catch (IOException ignored) {
+                }
             }
         } );
         }

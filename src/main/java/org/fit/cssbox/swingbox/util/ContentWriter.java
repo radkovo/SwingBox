@@ -18,13 +18,13 @@
 
 package org.fit.cssbox.swingbox.util;
 
+import org.fit.cssbox.css.NormalOutput;
+import org.w3c.dom.Document;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-
-import org.fit.cssbox.css.NormalOutput;
-import org.w3c.dom.Document;
 
 /**
  * Tries to convert current content to a text representation.

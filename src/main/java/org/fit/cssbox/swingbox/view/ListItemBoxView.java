@@ -18,13 +18,10 @@
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Shape;
+import org.fit.cssbox.layout.ListItemBox;
 
 import javax.swing.text.Element;
-
-import org.fit.cssbox.layout.ListItemBox;
+import java.awt.*;
 
 /**
  * @author Peter Bielik

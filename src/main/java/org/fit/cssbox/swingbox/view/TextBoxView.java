@@ -115,8 +115,6 @@ public class TextBoxView extends View implements CSSBoxView
                     target = "_self";
                 }
                 elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_TARGET, target);
-                // System.err.println("## Anchor at : " + this + " attr: "+
-                // elementAttributes);
             }
             else
             {
@@ -312,15 +310,12 @@ public class TextBoxView extends View implements CSSBoxView
             return "".equals(val) ? null : "<html>" + val + "</html>";
         }
 
-        //return "NotLink: " + this;
         return null;
     }
 
     @Override
     public void paint(Graphics gg, Shape a)
     {
-        //System.out.println("Paint text: " + this + " in " + a);
-
         if (isVisible())
         {
             processPaint(gg, a);
@@ -536,7 +531,6 @@ public class TextBoxView extends View implements CSSBoxView
         try {
             return getDocument().getText(position, len);
         } catch (BadLocationException e) {
-            e.printStackTrace();
             return "";
         }
     }
