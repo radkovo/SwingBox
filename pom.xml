@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -70,6 +71,38 @@
     <developerConnection>scm:git:git@github.com:radkovo/SwingBox.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
+
+  <repositories>
+    <repository>
+      <id>MavenCentral</id>
+      <name>Maven Central</name>
+      <url>https://repo1.maven.org/maven2/</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>net.sf.cssbox</groupId>
+      <artifactId>cssbox</artifactId>
+      <version>4.15</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.cssbox</groupId>
+      <artifactId>jstyleparser</artifactId>
+      <version>1.20</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <version>1.4.01</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -170,30 +203,6 @@
       </plugins>
     </pluginManagement>
   </build>
-
-  <dependencies>
-    <dependency>
-      <groupId>net.sf.cssbox</groupId>
-      <artifactId>cssbox</artifactId>
-      <version>4.15</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.cssbox</groupId>
-      <artifactId>jstyleparser</artifactId>
-      <version>1.20</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.6</version>
-    </dependency>
-    <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-      <version>1.4.01</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
 
   <reporting>
     <plugins>

@@ -35,7 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.security.Provider;
+import java.security.Security;
 import java.util.List;
 import java.util.*;
 
@@ -80,9 +80,8 @@ public class BrowserPane extends JEditorPane {
     }
     System.setProperty( "java.protocol.handler.pkgs", handlerPkgs );
 
-    final var provider = java.security.Security.getProvider( "Sun" );
-
-    java.security.Security.addProvider( provider );
+    final var provider = Security.getProvider( "SUN" );
+    Security.addProvider( provider );
 
     // Create custom EditorKit if needed
     if( swingBoxEditorKit == null ) {
