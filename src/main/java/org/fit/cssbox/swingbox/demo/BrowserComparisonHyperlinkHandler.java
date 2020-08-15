@@ -40,7 +40,7 @@ public class BrowserComparisonHyperlinkHandler extends DefaultHyperlinkHandler
     @Override
     protected void loadPage(JEditorPane pane, HyperlinkEvent evt)
     {
-        browser.loadPage(evt.getURL().toString());
+        browser.loadPage(evt.getURL());
     }
 
 }

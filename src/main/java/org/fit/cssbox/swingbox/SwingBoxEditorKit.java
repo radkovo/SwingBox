@@ -36,7 +36,7 @@ import java.util.List;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- * This is custom implementation of EditoKit for (X)HTML with use of CSSBox.
+ * This is custom implementation of EditorKit for (X)HTML with use of CSSBox.
  * 
  * @author Peter Bielik
  * @version 1.0
@@ -323,7 +323,6 @@ public class SwingBoxEditorKit extends StyledEditorKit
     private void readImpl(InputStream in, SwingBoxDocument doc, int pos)
             throws IOException, BadLocationException
     {
-
         if (component == null)
             throw new IllegalStateException("Component is null, editor kit is probably deinstalled from a JEditorPane.");
         if (pos > doc.getLength() || pos < 0)
@@ -371,8 +370,6 @@ public class SwingBoxEditorKit extends StyledEditorKit
             DocumentSource docSource = new StreamDocumentSource(in, url, ctype);
             elements = rdr.read(docSource, analyzer, dim);
             String title = analyzer.getDocumentTitle();
-            if (title == null)
-                title = "No title";
             doc.putProperty(Document.TitleProperty, title);
         } catch (IOException e)
         {

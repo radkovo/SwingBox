@@ -51,7 +51,7 @@ public class BrowserPane extends JEditorPane {
   private InputStream loadingStream;
   private Hashtable<String, Object> pageProperties;
   private Document document;
-  private static EditorKit swingBoxEditorKit = null;
+  private static EditorKit swingBoxEditorKit;
 
   /**
    * Instantiates a new browser pane.
@@ -75,7 +75,7 @@ public class BrowserPane extends JEditorPane {
     }
     System.setProperty( "java.protocol.handler.pkgs", handlerPkgs );
 
-    final var provider = Security.getProvider( "SUN" );
+    final var provider = Security.getProvider( "SunPKCS11" );
     Security.addProvider( provider );
 
     // Create custom EditorKit if needed
@@ -234,7 +234,8 @@ public class BrowserPane extends JEditorPane {
     try {
       final var url = DataURLHandler.createURL( null, "data:text/html," + t );
       setPage( url );
-    } catch( IOException ignored ) {
+    } catch( IOException e ) {
+      e.printStackTrace();
     }
   }
 
@@ -466,7 +467,8 @@ public class BrowserPane extends JEditorPane {
         if( loadingStream != null ) {
           try {
             loadingStream.close();
-          } catch( IOException ignored ) {
+          } catch( IOException e ) {
+            e.printStackTrace();
           }
         }
         loadingStream = null;

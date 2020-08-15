@@ -70,7 +70,7 @@ public interface CSSBoxAnalyzer
     /**
      * Obtains the title from the DOM tree of the current document.
      * The {@link CSSBoxAnalyzer#analyze(DocumentSource, Dimension)} method must be called before calling this.
-     * @return The document title or <code>null</code> if there is no title defined.
+     * @return The document title or empty string if no title is defined.
      */
     String getDocumentTitle();
     

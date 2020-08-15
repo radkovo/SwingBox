@@ -240,9 +240,8 @@ public class SwingBrowser
     {
         if (statusText == null)
         {
-            statusText = new JTextField();
+            statusText = new JTextField("Ready.");
             statusText.setEditable(false);
-            statusText.setText("Browser ready.");
         }
         return statusText;
     }
@@ -271,8 +270,7 @@ public class SwingBrowser
     {
         if (okButton == null)
         {
-            okButton = new JButton();
-            okButton.setText("Go!");
+            okButton = new JButton("Go!");
             okButton.addActionListener( e -> displayURL( urlText.getText()) );
         }
         return okButton;
