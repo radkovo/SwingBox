@@ -52,7 +52,7 @@ public class SwingBrowser
     protected int historyPos;
     public static SwingBrowser browser;
     
-    protected JFrame mainWindow = null;  //  @jve:decl-index=0:visual-constraint="67,17"
+    protected JFrame mainWindow = null;
     protected JPanel mainPanel = null;
     protected JPanel urlPanel = null;
     protected JPanel statusPanel = null;
@@ -366,9 +366,6 @@ public class SwingBrowser
         return backButton;
     }
     
-    /**
-     * @param args
-     */
     public static void main(String[] args)
     {
         browser = new SwingBrowser();

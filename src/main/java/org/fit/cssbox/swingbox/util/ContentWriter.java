@@ -88,8 +88,8 @@ public class ContentWriter
      * Writes current representation of document. If empty output is produced,
      * Document may be processed in parallel (and probably has not finished
      * yet), therefore check if environment variable
-     * Constants.DOCUMENT_ASYNCHRONOUS_LOAD_PRIORITY_PROPERTY is set (value >=
-     * 0). If so, wait until document is fully processed.
+     * Constants.DOCUMENT_ASYNCHRONOUS_LOAD_PRIORITY_PROPERTY is set (
+     * {@code value >= 0}). If so, wait until document is fully processed.
      * 
      * @param doc
      *            the W3C Document

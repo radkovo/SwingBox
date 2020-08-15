@@ -29,9 +29,6 @@ import javax.swing.text.Element;
 public class TableColumnView extends BlockBoxView
 {
 
-    /**
-     * @param elem
-     */
     public TableColumnView(Element elem)
     {
         super(elem);

@@ -29,9 +29,6 @@ import javax.swing.text.Element;
 public class TableColumnGroupView extends TableColumnView
 {
 
-    /**
-     * @param elem
-     */
     public TableColumnGroupView(Element elem)
     {
         super(elem);

@@ -19,16 +19,17 @@
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
+import cz.vutbr.web.css.CSSProperty.FontVariant;
+import cz.vutbr.web.css.CSSProperty.TextDecoration;
+import org.fit.cssbox.layout.BlockBox;
+import org.fit.cssbox.layout.TextBox;
+import org.fit.cssbox.swingbox.util.Anchor;
+import org.fit.cssbox.swingbox.util.Constants;
+
+import javax.swing.event.DocumentEvent;
+import javax.swing.text.*;
+import javax.swing.text.Position.Bias;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
@@ -36,27 +37,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.event.DocumentEvent;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
-import javax.swing.text.Highlighter;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.LayeredHighlighter;
-import javax.swing.text.Position;
-import javax.swing.text.Position.Bias;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.View;
-import javax.swing.text.ViewFactory;
-
-import org.fit.cssbox.layout.BlockBox;
-import org.fit.cssbox.layout.TextBox;
-import org.fit.cssbox.swingbox.util.Anchor;
-import org.fit.cssbox.swingbox.util.Constants;
-
-import cz.vutbr.web.css.CSSProperty.FontVariant;
-import cz.vutbr.web.css.CSSProperty.TextDecoration;
 
 /**
  * The Class TextBoxView. This renders a text.

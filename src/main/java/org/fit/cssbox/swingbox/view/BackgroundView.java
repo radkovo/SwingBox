@@ -53,9 +53,6 @@ public class BackgroundView extends View implements CSSBoxView
     private boolean refreshAttributes;
     private Anchor anchor;
 
-    /**
-     * 
-     */
     public BackgroundView(Element elem)
     {
         super(elem);
