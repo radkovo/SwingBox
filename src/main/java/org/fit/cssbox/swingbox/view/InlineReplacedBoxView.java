@@ -82,9 +82,6 @@ public class InlineReplacedBoxView extends InlineBoxView
         title = box.getElement().getAttribute("title");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void paint(Graphics graphics, Shape allocation)
     {

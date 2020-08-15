@@ -19,29 +19,18 @@
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.swing.SizeRequirements;
-import javax.swing.event.DocumentEvent;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.CompositeView;
-import javax.swing.text.Element;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.View;
-import javax.swing.text.ViewFactory;
-
 import org.fit.cssbox.layout.BlockBox;
 import org.fit.cssbox.layout.Box;
 import org.fit.cssbox.layout.ElementBox;
 import org.fit.cssbox.swingbox.util.Anchor;
 import org.fit.cssbox.swingbox.util.Constants;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.text.*;
+import java.awt.*;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * @author Peter Bielik
@@ -68,9 +57,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     private SizeRequirements majorRequest;
     private SizeRequirements minorRequest;
 
-    /**
-     * @param elem
-     */
     public ElementBoxView(Element elem)
     {
         // Y axis as default
@@ -215,6 +201,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      * 
      * @param axis
      *            either <code>View.X_AXIS</code> or <code>View.Y_AXIS</code>
+     * @return {@code true} when the axis is the major axis.
      * 
      */
     protected boolean isLayoutValid(int axis)
@@ -585,9 +572,9 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      * Determines if a point falls before an allocated region.
      * 
      * @param x
-     *            the X coordinate >= 0
+     *            the X coordinate, must be non-negative integer
      * @param y
-     *            the Y coordinate >= 0
+     *            the Y coordinate, must be non-negative integer
      * @param innerAlloc
      *            the allocated region; this is the area inside of the insets
      * @return true if the point lies before the region else false
@@ -613,9 +600,9 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      * Determines if a point falls after an allocated region.
      * 
      * @param x
-     *            the X coordinate >= 0
+     *            the X coordinate, must be non-negative integer
      * @param y
-     *            the Y coordinate >= 0
+     *            the Y coordinate, must be non-negative integer
      * @param innerAlloc
      *            the allocated region; this is the area inside of the insets
      * @return true if the point lies after the region else false

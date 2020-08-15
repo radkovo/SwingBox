@@ -315,7 +315,7 @@ public class DelegateView extends CompositeView
      * model. This is implemented to return the index of the only child.
      * 
      * @param pos
-     *            the position >= 0
+     *            the position , must be non-negative integer
      * @return index of the view representing the given position, or -1 if no
      *         view represents that position
      * @since 1.3
@@ -368,13 +368,13 @@ public class DelegateView extends CompositeView
      * coordinate space of the view mapped to it.
      * 
      * @param p0
-     *            the position to convert >= 0
+     *            the position to convert, must be non-negative integer
      * @param b0
      *            the bias toward the previous character or the next character
      *            represented by p0, in case the position is a boundary of two
      *            views.
      * @param p1
-     *            the position to convert >= 0
+     *            the position to convert, must be non-negative integer
      * @param b1
      *            the bias toward the previous character or the next character
      *            represented by p1, in case the position is a boundary of two
@@ -428,7 +428,7 @@ public class DelegateView extends CompositeView
      * access to some of the locations in the model.
      * 
      * @param pos
-     *            the position to convert >= 0
+     *            the position to convert, must be non-negative integer
      * @param a
      *            the allocated region to render into
      * @param direction
@@ -438,7 +438,7 @@ public class DelegateView extends CompositeView
      *            SwingConstants.NORTH, or SwingConstants.SOUTH.
      * @return the location within the model that best represents the next
      *         location visual position.
-     * @exception BadLocationException
+     * @exception BadLocationException Bad location within document model.
      * @exception IllegalArgumentException
      *                for an invalid direction
      */

@@ -29,9 +29,6 @@ import javax.swing.text.Element;
 public class TableCaptionBoxView extends BlockBoxView
 {
 
-    /**
-     * @param elem
-     */
     public TableCaptionBoxView(Element elem)
     {
         super(elem);

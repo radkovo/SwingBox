@@ -35,9 +35,6 @@ import org.fit.cssbox.layout.ListItemBox;
 public class ListItemBoxView extends BlockBoxView
 {
 
-    /**
-     * @param elem
-     */
     public ListItemBoxView(Element elem)
     {
         super(elem);

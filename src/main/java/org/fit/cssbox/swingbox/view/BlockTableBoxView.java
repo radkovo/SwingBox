@@ -29,9 +29,6 @@ import javax.swing.text.Element;
 public class BlockTableBoxView extends BlockBoxView
 {
 
-    /**
-     * @param elem
-     */
     public BlockTableBoxView(Element elem)
     {
         super(elem);
