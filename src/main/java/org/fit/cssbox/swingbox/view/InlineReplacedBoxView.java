@@ -1,6 +1,6 @@
-/**
- * InlineReplacedBoxView.java
- * (c) Peter Bielik and Radek Burget, 2011-2012
+/*
+ *
+ (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -19,30 +19,15 @@
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.Map;
-
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
-import javax.swing.text.Highlighter;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.LayeredHighlighter;
-import javax.swing.text.Position;
-import javax.swing.text.Position.Bias;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.View;
-
 import org.fit.cssbox.layout.InlineReplacedBox;
 import org.fit.cssbox.layout.ReplacedContent;
 import org.fit.cssbox.layout.ReplacedImage;
 import org.fit.cssbox.swingbox.util.Constants;
+
+import javax.swing.text.*;
+import javax.swing.text.Position.Bias;
+import java.awt.*;
+import java.util.Map;
 
 /**
  * @author Peter Bielik
@@ -82,9 +67,6 @@ public class InlineReplacedBoxView extends InlineBoxView
         title = box.getElement().getAttribute("title");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void paint(Graphics graphics, Shape allocation)
     {

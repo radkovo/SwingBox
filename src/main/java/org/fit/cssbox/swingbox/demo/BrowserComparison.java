@@ -1,6 +1,6 @@
-/**
- * BrowserComparison.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
+ * Copyright 2020 White Magic Software, Ltd.
  *
  * SwingBox is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -19,44 +19,24 @@
 
 package org.fit.cssbox.swingbox.demo;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.IOException;
-import java.net.URL;
-
-import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-import javax.swing.text.html.HTMLEditorKit;
-
 import org.fit.cssbox.css.CSSNorm;
 import org.fit.cssbox.css.DOMAnalyzer;
 import org.fit.cssbox.css.DOMAnalyzer.Origin;
-import org.fit.cssbox.io.DOMSource;
 import org.fit.cssbox.io.DefaultDOMSource;
-import org.fit.cssbox.io.DefaultDocumentSource;
-import org.fit.cssbox.io.DocumentSource;
 import org.fit.cssbox.layout.Box;
 import org.fit.cssbox.layout.BrowserCanvas;
 import org.fit.cssbox.layout.ElementBox;
 import org.fit.cssbox.swingbox.BrowserPane;
-import org.fit.cssbox.swingbox.util.GeneralEvent;
-import org.fit.cssbox.swingbox.util.GeneralEvent.EventType;
-import org.fit.cssbox.swingbox.util.GeneralEventListener;
-import org.w3c.dom.Document;
+import org.fit.cssbox.swingbox.performance.FastDocumentSource;
+
+import javax.swing.*;
+import javax.swing.text.html.HTMLEditorKit;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * This demo provides 3 result of same location by 3 renderers. You will see CSSBox, SwingBox and JEditorPane + HTMLEditorKit.
@@ -69,11 +49,11 @@ import org.w3c.dom.Document;
 public class BrowserComparison extends JFrame
 {
     private static final long serialVersionUID = 3078719188136612454L;
-    BrowserPane swingbox = new BrowserPane();
-    BrowserCanvas cssbox = null;
-    JEditorPane editorkit = new JEditorPane();
-    JTextField txt = new JTextField("http://www.aktualne.cz", 60);
-    JScrollPane contentScroll = new JScrollPane();
+    private final BrowserPane swingbox = new BrowserPane();
+    private BrowserCanvas cssbox = null;
+    private final JEditorPane editorkit = new JEditorPane();
+    private final JTextField txt = new JTextField("http://www.aktualne.cz", 60);
+    private final JScrollPane contentScroll = new JScrollPane();
 
     /**
      * Creates new instance of this demo application.
@@ -92,40 +72,16 @@ public class BrowserComparison extends JFrame
         tmp.add(txt);
         tmp.add(btn);
 
-        btn.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                Thread t = new Thread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        loadPage(txt.getText());
-                    }
-                });
-                t.setDaemon(true);
-                t.start();
-            }
-        });
-        txt.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                Thread t = new Thread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        loadPage(txt.getText());
-                    }
-                });
-                t.setDaemon(true);
-                t.start();
-            }
-        });
+        btn.addActionListener( e -> {
+            Thread t = new Thread( () -> loadPage( txt.getText()) );
+            t.setDaemon(true);
+            t.start();
+        } );
+        txt.addActionListener( e -> {
+            Thread t = new Thread( () -> loadPage( txt.getText()) );
+            t.setDaemon(true);
+            t.start();
+        } );
 
         JTabbedPane tab = new JTabbedPane(JTabbedPane.TOP);
         tab.addTab("SwingBox", new JScrollPane(swingbox));
@@ -137,46 +93,19 @@ public class BrowserComparison extends JFrame
         setContentPane(panel);
 
         swingbox.addHyperlinkListener(new BrowserComparisonHyperlinkHandler(this));
-        swingbox.addGeneralEventListener(new GeneralEventListener()
-        {
-            private long time;
-
-            @Override
-            public void generalEventUpdate(GeneralEvent e)
-            {
-                if (e.event_type == EventType.page_loading_begin)
-                {
-                    time = System.currentTimeMillis();
-                }
-                else if (e.event_type == EventType.page_loading_end)
-                {
-                    System.out.println("SwingBox: page loaded in: "
-                            + (System.currentTimeMillis() - time) + " ms");
-                }
-            }
-        });
 
         editorkit.setEditorKit(new HTMLEditorKit());
         editorkit.setEditable(false);
-        editorkit.addHyperlinkListener(new HyperlinkListener()
-        {
-            @Override
-            public void hyperlinkUpdate(HyperlinkEvent e)
-            {
-                //txt.setText(e.getURL().toString());
-                //loadPage(txt.getText());
-            }
-        });
 
         contentScroll.setViewportView(cssbox);
-        contentScroll.addComponentListener(new java.awt.event.ComponentAdapter()
+        contentScroll.addComponentListener(new ComponentAdapter()
                 {
                     @Override
                     public void componentResized(java.awt.event.ComponentEvent e)
                     {
-                        if (cssbox != null && cssbox instanceof BrowserCanvas)
+                        if ( cssbox != null )
                         {
-                            ((BrowserCanvas) cssbox).createLayout(contentScroll.getSize());
+                            cssbox.createLayout( contentScroll.getSize());
                             contentScroll.repaint();
                         }
                     }
@@ -191,6 +120,13 @@ public class BrowserComparison extends JFrame
         setVisible(true);
     }
 
+    public void loadPage(final URL url) {
+        txt.setText(url.toExternalForm());
+        loadPage_editorkit(url);
+        loadPage_cssbox(url);
+        loadPage_swingbox(url);
+    }
+
     public void loadPage(String page)
     {
         if (!page.startsWith("http:") && !page.startsWith("ftp:")
@@ -199,75 +135,61 @@ public class BrowserComparison extends JFrame
             page = "http://" + page;
         }
 
-        txt.setText(page);
-        loadPage_editorkit(page);
-        loadPage_cssbox(page);
-        loadPage_swingbox(page);
-    }
-
-    private void loadPage_swingbox(String url)
-    {
-        try
-        {
-            swingbox.setPage(new URL(url));
-        } catch (IOException e)
-        {
-            e.printStackTrace();
+        try {
+            loadPage( new URL( page ) );
+        }
+        catch(IOException ignored) {
         }
     }
 
-    private void loadPage_cssbox(String urlstring)
+    private void loadPage_swingbox(final URL url)
     {
-        try
-        {
-            DocumentSource docSource = new DefaultDocumentSource(urlstring);
-            
-            DOMSource parser = new DefaultDOMSource(docSource);
-            Document doc = parser.parse();
-            
-            DOMAnalyzer da = new DOMAnalyzer(doc, docSource.getURL());
+        try {
+            swingbox.setPage(url);
+        } catch (IOException ignored) {
+        }
+    }
+
+    private void loadPage_cssbox(final URL url) {
+        try {
+            final var docSource = new FastDocumentSource( url);
+            final var parser = new DefaultDOMSource(docSource);
+            final var dsUrl = docSource.getURL();
+            final var doc = parser.parse();
+            final var da = new DOMAnalyzer(doc, dsUrl);
             
             da.attributesToStyles();
             da.addStyleSheet(null, CSSNorm.stdStyleSheet(), Origin.AGENT);
             da.addStyleSheet(null, CSSNorm.userStyleSheet(), Origin.AGENT);
             da.getStyleSheets();
 
-            cssbox = new BrowserCanvas(da.getRoot(), da, docSource.getURL());
+            cssbox = new BrowserCanvas(da.getRoot(), da, dsUrl);
             cssbox.getConfig().setLoadBackgroundImages(true);
             cssbox.getConfig().setLoadImages(true);
             cssbox.createLayout(contentScroll.getSize());
             
-            cssbox.addMouseListener(new MouseListener() {
-                public void mouseClicked(MouseEvent e)
+            cssbox.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(final MouseEvent e)
                 {
-                    System.out.println("Click: " + e.getX() + ":" + e.getY());
-                    //canvasClick(e.getX(), e.getY());
-                    Box node = locateBox(cssbox.getViewport(), e.getX(), e.getY());
-                    System.out.println("Box: " + node);
+                    final var node = locateBox(cssbox.getViewport(), e.getX(), e.getY());
                     if (node != null)
                     {
                         node.drawExtent(cssbox.getImageGraphics());
                         cssbox.repaint();
                     }
                 }
-                public void mousePressed(MouseEvent e) { }
-                public void mouseReleased(MouseEvent e) { }
-                public void mouseEntered(MouseEvent e) { }
-                public void mouseExited(MouseEvent e) { }
-            });            
+            });
             contentScroll.setViewportView(cssbox);
             
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
-    private void loadPage_editorkit(String url)
-    {
+    private void loadPage_editorkit(final URL url) {
         try {
-            editorkit.setPage(new URL(url));
-        } catch (IOException e) {
-            e.printStackTrace();
+            editorkit.setPage(url);
+        } catch (IOException ignored) {
         }
     }
 
@@ -279,13 +201,11 @@ public class BrowserComparison extends JFrame
         if (root.isVisible())
         {
             Box found = null;
-            //Rectangle bounds = root.getAbsoluteContentBounds().intersection(root.getClipBlock().getAbsoluteContentBounds());
             Rectangle bounds = root.getAbsoluteBounds();
             if (bounds.contains(x, y))
             {
                 found = root;
-                System.out.println("Fnd: " + found);
-                found.drawExtent(((BrowserCanvas)cssbox).getImageGraphics());
+                found.drawExtent( cssbox.getImageGraphics());
             }
             
             //find if there is something smallest that fits among the child boxes
@@ -309,8 +229,8 @@ public class BrowserComparison extends JFrame
             }
             return found;
         }
-        else
-            return null;
+
+        return null;
     }
 
     /**
@@ -321,15 +241,6 @@ public class BrowserComparison extends JFrame
      */
     public static void main(String[] args)
     {
-        SwingUtilities.invokeLater(new Runnable()
-        {
-
-            @Override
-            public void run()
-            {
-                new BrowserComparison();
-            }
-        });
+        SwingUtilities.invokeLater( BrowserComparison::new );
     }
-
 }

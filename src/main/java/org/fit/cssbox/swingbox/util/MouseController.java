@@ -1,5 +1,4 @@
-/**
- * MouseController.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -19,27 +18,20 @@
 
 package org.fit.cssbox.swingbox.util;
 
-import java.awt.Cursor;
-import java.awt.Point;
+import org.fit.cssbox.layout.TextBox;
+import org.fit.cssbox.swingbox.SwingBoxDocument;
+
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkEvent.EventType;
+import javax.swing.text.*;
+import javax.swing.text.Position.Bias;
+import javax.swing.text.html.HTMLFrameHyperlinkEvent;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import javax.swing.JEditorPane;
-import javax.swing.SwingUtilities;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkEvent.EventType;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Element;
-import javax.swing.text.Position;
-import javax.swing.text.Position.Bias;
-import javax.swing.text.StyledDocument;
-import javax.swing.text.html.HTMLFrameHyperlinkEvent;
-
-import org.fit.cssbox.layout.TextBox;
-import org.fit.cssbox.swingbox.SwingBoxDocument;
 
 /**
  * This class adds the "mouse support" to BrowserPane - generates
@@ -65,13 +57,10 @@ public class MouseController extends MouseAdapter
         {
             Bias[] bias = new Bias[1];
             Point pt = new Point(e.getX(), e.getY());
-            int pos = editor.getUI().viewToModel(editor, pt, bias);
+            int pos = editor.getUI().viewToModel2D(editor, pt, bias);
 
             if (bias[0] == Position.Bias.Backward && pos > 0) pos--;
 
-            //Point pt = new Point(e.getX(), e.getY());
-            //int pos = editor.viewToModel(pt);
-            // System.err.println("found position : " + pos);
             if (pos >= 0)
             {
                 Element el = ((SwingBoxDocument) editor.getDocument()).getCharacterElement(pos);
@@ -94,7 +83,7 @@ public class MouseController extends MouseAdapter
         {
             Bias[] bias = new Bias[1];
             Point pt = new Point(e.getX(), e.getY());
-            int pos = editor.getUI().viewToModel(editor, pt, bias);
+            int pos = editor.getUI().viewToModel2D(editor, pt, bias);
 
             if (bias[0] == Position.Bias.Backward && pos > 0) pos--;
 
@@ -103,16 +92,13 @@ public class MouseController extends MouseAdapter
                 Element elem = ((StyledDocument) editor.getDocument()).getCharacterElement(pos);
                 Object bb = elem.getAttributes().getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
                 Anchor anchor = (Anchor) elem.getAttributes().getAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE);
-                //System.out.println("Pos: " + pos);
-                //System.out.println("Elem: " + elem.getAttributes().getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE));
-                //System.out.println("Anchor: " + anchor);
 
                 if (elem != prevElem)
                 {
                     prevElem = elem;
                     if (!anchor.isActive())
                     {
-                        if (bb != null && bb instanceof TextBox)
+                        if ( bb instanceof TextBox )
                             setCursor(editor, textCursor);
                         else
                             setCursor(editor, defaultCursor);

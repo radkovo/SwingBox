@@ -1,5 +1,4 @@
-/**
- * BlockBoxView.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -19,14 +18,11 @@
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.Shape;
+import org.fit.cssbox.layout.BlockBox;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.Element;
-
-import org.fit.cssbox.layout.BlockBox;
+import java.awt.*;
 
 /**
  * This class represents BlockBox.
@@ -37,7 +33,7 @@ import org.fit.cssbox.layout.BlockBox;
  */
 public class BlockBoxView extends ElementBoxView
 {
-    private String overflowX;
+    private final String overflowX;
 
     /**
      * @param elem
@@ -80,10 +76,6 @@ public class BlockBoxView extends ElementBoxView
     @Override
     public void paint(Graphics g, Shape a)
     {
-        /*if (box.toString().contains("box-in") && box.getParent() != null && box.getParent().toString().contains("discblog"))
-            System.out.println("jo22!");
-        if (box.toString().contains("discblog-prep-2"))
-            System.out.println("jo!");*/
         if (box.isDisplayed() && box.isDeclaredVisible())
         {
             Rectangle tmpRect = new Rectangle();
@@ -98,7 +90,6 @@ public class BlockBoxView extends ElementBoxView
                 intersection(box.getAbsoluteBounds(), toRect(a), tmpRect);
             }
 
-            // System.err.println("BlockBox : " + overflow + " - " + tmpRect);
             super.paint(g, tmpRect);
 
         }

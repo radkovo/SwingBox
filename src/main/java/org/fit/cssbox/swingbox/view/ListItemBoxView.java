@@ -1,5 +1,4 @@
-/**
- * ListItemBoxView.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -19,13 +18,10 @@
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Shape;
+import org.fit.cssbox.layout.ListItemBox;
 
 import javax.swing.text.Element;
-
-import org.fit.cssbox.layout.ListItemBox;
+import java.awt.*;
 
 /**
  * @author Peter Bielik
@@ -35,9 +31,6 @@ import org.fit.cssbox.layout.ListItemBox;
 public class ListItemBoxView extends BlockBoxView
 {
 
-    /**
-     * @param elem
-     */
     public ListItemBoxView(Element elem)
     {
         super(elem);

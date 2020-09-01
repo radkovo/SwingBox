@@ -1,5 +1,4 @@
-/**
- * ElementBoxView.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -19,34 +18,24 @@
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.swing.SizeRequirements;
-import javax.swing.event.DocumentEvent;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.CompositeView;
-import javax.swing.text.Element;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.View;
-import javax.swing.text.ViewFactory;
-
 import org.fit.cssbox.layout.BlockBox;
 import org.fit.cssbox.layout.Box;
 import org.fit.cssbox.layout.ElementBox;
 import org.fit.cssbox.swingbox.util.Anchor;
 import org.fit.cssbox.swingbox.util.Constants;
 
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.text.*;
+import java.awt.*;
+import java.util.Map;
+import java.util.Vector;
+
 /**
  * @author Peter Bielik
  * @author Radek Burget
  */
+@SuppressWarnings("unused")
 public class ElementBoxView extends CompositeView implements CSSBoxView
 {
     protected ElementBox box;
@@ -57,8 +46,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     private AttributeSet attributes;
     /** decides whether to construct a cache from current working properties */
     private boolean refreshAttributes;
-    private boolean refreshProperties;
-    private Dimension oldDimension;
+    private final Dimension oldDimension;
 
     private int majorAxis;
     private boolean majorAllocValid;
@@ -68,9 +56,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     private SizeRequirements majorRequest;
     private SizeRequirements minorRequest;
 
-    /**
-     * @param elem
-     */
     public ElementBoxView(Element elem)
     {
         // Y axis as default
@@ -81,7 +66,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         Integer i = (Integer) tmpAttr.getAttribute(Constants.ATTRIBUTE_DRAWING_ORDER);
         order = (i == null) ? -1 : i;
 
-        if (obj != null && obj instanceof ElementBox)
+        if ( obj instanceof ElementBox )
         {
             box = (ElementBox) obj;
             if (box instanceof BlockBox)
@@ -98,7 +83,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         }
 
         obj = tmpAttr.getAttribute(Constants.ATTRIBUTE_ANCHOR_REFERENCE);
-        if (obj != null && obj instanceof Anchor)
+        if ( obj instanceof Anchor )
         {
             anchor = (Anchor) obj;
         }
@@ -129,8 +114,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
                 target = "_self";
             }
             elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_TARGET, target);
-            // System.err.println("## Anchor at : " + this + " attr: "+
-            // elementAttributes);
         }
         else
         {
@@ -215,6 +198,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      * 
      * @param axis
      *            either <code>View.X_AXIS</code> or <code>View.Y_AXIS</code>
+     * @return {@code true} when the axis is the major axis.
      * 
      */
     protected boolean isLayoutValid(int axis)
@@ -259,17 +243,15 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         if (parent != null)
         {
             setPropertiesFromAttributes(getElement().getAttributes());
-            refreshAttributes = true;
-            refreshProperties = false;
         }
         else
         {
             // we are removed from a hierarchy
             attributes = null;
             box = null;
-            refreshAttributes = true;
-            refreshProperties = false;
         }
+
+        refreshAttributes = true;
     }
 
     /**
@@ -292,8 +274,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     public void replace(int offset, int length, View[] views)
     {
         super.replace(offset, length, views);
-        // System.err.println("Replace : " + views.length + " view count  " +
-        // getViewCount());
 
         majorReqValid = false;
         majorAllocValid = false;
@@ -365,7 +345,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         {
             attributes = createAttributes();
             refreshAttributes = false;
-            refreshProperties = false;
         }
         // always returns the same instance.
         // We need to know, if somebody modifies us outside..
@@ -386,32 +365,22 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         {
             r = new SizeRequirements();
         }
-        r.alignment = 0f; // 0.5f;
+        r.alignment = 0f;
         if (axis == X_AXIS)
         {
-            r.maximum = r.minimum = r.preferred = box.getWidth();// box.getContentWidth();
+            r.maximum = r.minimum = r.preferred = box.getWidth();
         }
         else
         {
-            r.maximum = r.minimum = r.preferred = box.getHeight();// box.getContentHeight();
+            r.maximum = r.minimum = r.preferred = box.getHeight();
         }
 
         return r;
     }
 
-    public void updateProperties()
-    {
-        invalidateProperties(); // we are lazy :)
-    }
-
     protected void invalidateCache()
     {
         refreshAttributes = true;
-    }
-
-    protected void invalidateProperties()
-    {
-        refreshProperties = true;
     }
 
     @Override
@@ -431,7 +400,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     @Override
     public void paint(Graphics graphics, Shape allocation)
     {
-        //System.out.println("Paint: " + box + " in " + allocation);
         Graphics2D g;
         if (graphics instanceof Graphics2D)
             g = (Graphics2D) graphics;
@@ -439,9 +407,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
             throw new RuntimeException("Unknown graphics environment, java.awt.Graphics2D required !");
 
         Rectangle clip = toRect(g.getClip());
-        
-        //box.getVisualContext().updateGraphics(g);
-        //box.drawBackground(g);
 
         Rectangle alloc = toRect(allocation);
         int count = getViewCount();
@@ -454,34 +419,14 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         }
     }
 
-//    /**
-//     * renders given child, possible to override and customize.
-//     * 
-//     * @param g
-//     *            graphics context
-//     * @param v
-//     *            the View
-//     * @param rect
-//     *            an allocation
-//     * @param index
-//     *            the index of view
-//     */
-    /*protected void paintChild(Graphics g, View v, Shape rect, int index)
-    {
-        // System.err.println("Painting " + v);
-        v.paint(g, rect);
-    }*/
-
     @Override
     public Shape getChildAllocation(int index, Shape a)
     {
-        // zvyraznovanie !
-        if (a != null /* && isAllocationValid() */)
+        if (a != null)
         {
             Box tmpBox = getBox(getView(index));
 
             Rectangle alloc = (a instanceof Rectangle) ? (Rectangle) a : a.getBounds();
-            //alloc.setBounds(tmpBox.getAbsoluteBounds());
             alloc.setBounds(getCompleteBoxAllocation(tmpBox));
             return alloc;
         }
@@ -491,8 +436,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     @Override
     protected void childAllocation(int index, Rectangle alloc)
     {
-        // set allocation (== the bounds) for a view
-        //alloc.setBounds(getBox(getView(index)).getAbsoluteBounds());
         alloc.setBounds(getCompleteBoxAllocation(getBox(getView(index))));
     }
 
@@ -585,9 +528,9 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      * Determines if a point falls before an allocated region.
      * 
      * @param x
-     *            the X coordinate >= 0
+     *            the X coordinate, must be non-negative integer
      * @param y
-     *            the Y coordinate >= 0
+     *            the Y coordinate, must be non-negative integer
      * @param innerAlloc
      *            the allocated region; this is the area inside of the insets
      * @return true if the point lies before the region else false
@@ -595,9 +538,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     @Override
     protected boolean isBefore(int x, int y, Rectangle innerAlloc)
     {
-        // System.err.println("isBefore: " + innerAlloc + " my bounds " +
-        // box.getAbsoluteBounds());
-        // System.err.println("XY: " + x + " : " + y);
         innerAlloc.setBounds(box.getAbsoluteBounds());
         if (majorAxis == View.X_AXIS)
         {
@@ -613,9 +553,9 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      * Determines if a point falls after an allocated region.
      * 
      * @param x
-     *            the X coordinate >= 0
+     *            the X coordinate, must be non-negative integer
      * @param y
-     *            the Y coordinate >= 0
+     *            the Y coordinate, must be non-negative integer
      * @param innerAlloc
      *            the allocated region; this is the area inside of the insets
      * @return true if the point lies after the region else false
@@ -623,9 +563,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
     @Override
     protected boolean isAfter(int x, int y, Rectangle innerAlloc)
     {
-        // System.err.println("isAfter: " + innerAlloc + " my bounds " +
-        // box.getAbsoluteBounds());
-        // System.err.println("XY: " + x + " : " + y);
         innerAlloc.setBounds(box.getAbsoluteBounds());
         if (majorAxis == View.X_AXIS)
         {
@@ -643,7 +580,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         View retv = null;
         int retorder = -1;
         
-        Vector<View> leaves = new Vector<View>();
+        final Vector<View> leaves = new Vector<>();
         findLeaves(this, leaves);
         
         for (View leaf : leaves)
@@ -657,7 +594,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
                     while (v.getParent() != null && v.getParent() != this)
                         v = v.getParent();
                     
-                    //System.out.println("Candidate: " + v + " (leaf: " + leaf + ")");
                     int o = ((CSSBoxView) v).getDrawingOrder();
                     if (retv == null || o >= retorder) //next box is drawn after the current one
                     {
@@ -669,7 +605,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
             }
             
         }
-        //System.out.println("At " + x + ":" + y + " found " + retv);
         return retv;
     }
 
@@ -752,9 +687,8 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      * 
      * @param dim
      *            the new dimension of valid area. Validation run against this
-     * @return true, if layout during validation process has been changed.
      */
-    protected boolean validateLayout(Dimension dim)
+    protected void validateLayout( Dimension dim)
     {
         if (majorAxis == X_AXIS)
         {
@@ -773,7 +707,6 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
         minorReqValid = true;
         majorAllocValid = true;
         minorAllocValid = true;
-        return false;
     }
 
     private void checkRequests(int axis)
@@ -802,7 +735,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      *            the shape
      * @return the rectangle
      */
-    public static final Rectangle toRect(Shape a)
+    public static  Rectangle toRect(Shape a)
     {
         return a instanceof Rectangle ? (Rectangle) a : a.getBounds();
     }
@@ -816,20 +749,14 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      *            the src2
      * @param dest
      *            the dest
-     * @return true, if there is non empty intersection
      */
-    public static final boolean intersection(Rectangle src1, Rectangle src2, Rectangle dest)
+    public static void intersection( Rectangle src1, Rectangle src2, Rectangle dest)
     {
         int x1 = Math.max(src1.x, src2.x);
         int y1 = Math.max(src1.y, src2.y);
         int x2 = Math.min(src1.x + src1.width, src2.x + src2.width);
         int y2 = Math.min(src1.y + src1.height, src2.y + src2.height);
         dest.setBounds(x1, y1, x2 - x1, y2 - y1);
-
-        if (dest.width <= 0 || dest.height <= 0)
-            return false;
-
-        return true; // non-empty intersection
     }
 
     /**
@@ -839,7 +766,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      *            the view, instance of CSSBoxView.
      * @return the box set in properties.
      */
-    public static final Box getBox(CSSBoxView v)
+    public static  Box getBox(CSSBoxView v)
     {
 
         try
@@ -859,7 +786,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
      *            just a view.
      * @return the box set in properties, if there is one.
      */
-    public static final Box getBox(View v)
+    public static  Box getBox(View v)
     {
         if (v instanceof CSSBoxView) return getBox((CSSBoxView) v);
 
@@ -870,7 +797,7 @@ public class ElementBoxView extends CompositeView implements CSSBoxView
                                 + Integer.toHexString(v.hashCode()) + " is set to NULL.");
         }
         Object obj = attr.getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
-        if (obj != null && obj instanceof Box)
+        if ( obj instanceof Box )
         {
             return (Box) obj;
         }

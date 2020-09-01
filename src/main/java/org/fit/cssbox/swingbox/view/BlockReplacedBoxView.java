@@ -1,5 +1,4 @@
-/**
- * BlockReplacedBoxView.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -19,29 +18,15 @@
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.Map;
-
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
-import javax.swing.text.Highlighter;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.LayeredHighlighter;
-import javax.swing.text.Position;
-import javax.swing.text.Position.Bias;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.View;
-
 import org.fit.cssbox.layout.BlockReplacedBox;
 import org.fit.cssbox.layout.ReplacedContent;
 import org.fit.cssbox.layout.ReplacedImage;
 import org.fit.cssbox.swingbox.util.Constants;
+
+import javax.swing.text.*;
+import javax.swing.text.Position.Bias;
+import java.awt.*;
+import java.util.Map;
 
 /**
  * @author Peter Bielik
@@ -131,30 +116,10 @@ public class BlockReplacedBoxView extends BlockBoxView
                         /*g.drawString(alt, tmpRect.x + 2, tmpRect.y
                                 + (int) (tmpRect.height * 0.7));*/
                     }
-                    else
-                    {
-                        drawCross(g);
-                    }
                 }
             }
-            else
-            {
-                drawCross(g);
-            }
-
         }
 
-    }
-
-    private void drawCross(Graphics2D g)
-    {
-        /*tmpRect = box.getAbsoluteContentBounds();
-
-        g.setColor(Color.BLACK);
-        g.drawLine(tmpRect.x, tmpRect.y, tmpRect.x + tmpRect.width - 1,
-                tmpRect.y + tmpRect.height - 1);
-        g.drawLine(tmpRect.x + tmpRect.width - 1, tmpRect.y, tmpRect.x,
-                tmpRect.y + tmpRect.height - 1);*/
     }
 
     @Override
@@ -219,18 +184,9 @@ public class BlockReplacedBoxView extends BlockBoxView
     @Override
     public int viewToModel(float x, float y, Shape a, Bias[] bias)
     {
-        // Rectangle alloc = a instanceof Rectangle ? (Rectangle)a :
-        // a.getBounds();
-        // if (x < alloc.x + alloc.width) {
-        // bias[0] = Position.Bias.Forward;
-        // return getStartOffset(); // LTR
-        // }
-        // bias[0] = Position.Bias.Backward;
-        // return getEndOffset(); //RTL
-
         Rectangle alloc = a instanceof Rectangle ? (Rectangle) a : a
                 .getBounds();
-        if (x < alloc.x + (alloc.width / 2))
+        if (x < alloc.x + (alloc.width / 2f))
         {
             bias[0] = Position.Bias.Forward;
             return getStartOffset();
@@ -256,8 +212,7 @@ public class BlockReplacedBoxView extends BlockBoxView
             r.width = 0;
             return r;
         }
-        // return null;
-        // //return box.getAbsoluteBounds();
+
         throw new BadLocationException(pos + " not in range " + p0 + "," + p1,
                 pos);
     }

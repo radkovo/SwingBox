@@ -1,5 +1,4 @@
-/**
- * ViewportView.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -19,27 +18,20 @@
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Shape;
+import org.fit.cssbox.swingbox.SwingBoxDocument;
+import org.fit.cssbox.swingbox.SwingBoxEditorKit;
+
+import javax.swing.*;
+import javax.swing.text.Document;
+import javax.swing.text.EditorKit;
+import javax.swing.text.Element;
+import javax.swing.text.View;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.IOException;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JViewport;
-import javax.swing.text.Document;
-import javax.swing.text.EditorKit;
-import javax.swing.text.Element;
-import javax.swing.text.View;
-
-import org.fit.cssbox.swingbox.SwingBoxDocument;
-import org.fit.cssbox.swingbox.SwingBoxEditorKit;
 
 /**
  * The Class ViewportView.
@@ -52,7 +44,7 @@ public class ViewportView extends BlockBoxView implements ComponentListener
 {
     private Reference<JViewport> cachedViewPort;
     private JEditorPane editor;
-    private Dimension tmpDimension;
+    private final Dimension tmpDimension;
 
     /**
      * Instantiates a new viewport view.
@@ -67,7 +59,7 @@ public class ViewportView extends BlockBoxView implements ComponentListener
     }
 
     @Override
-    protected boolean validateLayout(Dimension dim)
+    protected void validateLayout( Dimension dim)
     {
         /*
          * if a new layout is created, everything is built from scratch and
@@ -77,7 +69,6 @@ public class ViewportView extends BlockBoxView implements ComponentListener
         boolean result = checkSize(dim);
         if (!result) super.validateLayout(dim);
 
-        return result;
     }
 
     @Override
@@ -105,16 +96,16 @@ public class ViewportView extends BlockBoxView implements ComponentListener
         Container container = getContainer();
         Container parentContainer;
 
-        if (container != null && (container instanceof javax.swing.JEditorPane)
-                && (parentContainer = container.getParent()) != null
-                && (parentContainer instanceof javax.swing.JViewport))
+        if ( (container instanceof JEditorPane)
+            && (parentContainer = container.getParent()) != null
+            && (parentContainer instanceof JViewport) )
         {
 
             editor = (JEditorPane) container;
 
             // our parent is a JScrollPane (JViewPort)
             JViewport viewPort = (JViewport) parentContainer;
-            Object cachedObject;
+            JComponent cachedObject;
 
             if (cachedViewPort != null)
             {
@@ -123,8 +114,7 @@ public class ViewportView extends BlockBoxView implements ComponentListener
                     if (cachedObject != viewPort)
                     {
                         // parent is different from previous, remove listener
-                        ((JComponent) cachedObject)
-                                .removeComponentListener(this);
+                        cachedObject.removeComponentListener(this);
                     }
                 }
                 else
@@ -138,11 +128,8 @@ public class ViewportView extends BlockBoxView implements ComponentListener
             {
                 // hook it
                 viewPort.addComponentListener(this);
-                cachedViewPort = new WeakReference<JViewport>(viewPort);
+                cachedViewPort = new WeakReference<>(viewPort);
             }
-
-            // System.err.println("Hooked at : " + viewPort.getExtentSize());
-            // checkSize(viewPort.getExtentSize());
 
         }
         else
@@ -155,10 +142,10 @@ public class ViewportView extends BlockBoxView implements ComponentListener
     {
         if (cachedViewPort != null)
         {
-            Object cachedObject;
+            JComponent cachedObject;
             if ((cachedObject = cachedViewPort.get()) != null)
             {
-                ((JComponent) cachedObject).removeComponentListener(this);
+                cachedObject.removeComponentListener(this);
             }
             cachedViewPort = null;
         }
@@ -233,15 +220,14 @@ public class ViewportView extends BlockBoxView implements ComponentListener
 
             if (kit instanceof SwingBoxEditorKit)
             {
-                ((SwingBoxEditorKit) kit).update(doc, box.getViewport(), dim);
+                ((SwingBoxEditorKit) kit).update(doc, dim);
             }
 
             preferenceChanged(null, true, true);
             return true;
         } 
-        catch (IOException e)
+        catch (IOException ignored )
         {
-            e.printStackTrace();
         }
 
         return false;

@@ -1,5 +1,4 @@
-/**
- * BackgroundView.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -19,23 +18,14 @@
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.Map;
-
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
-import javax.swing.text.Position;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.Position.Bias;
-import javax.swing.text.View;
-
 import org.fit.cssbox.layout.ElementBox;
 import org.fit.cssbox.swingbox.util.Anchor;
 import org.fit.cssbox.swingbox.util.Constants;
+
+import javax.swing.text.*;
+import javax.swing.text.Position.Bias;
+import java.awt.*;
+import java.util.Map;
 
 /**
  * @author Peter Bielik
@@ -44,18 +34,15 @@ import org.fit.cssbox.swingbox.util.Constants;
  */
 public class BackgroundView extends View implements CSSBoxView
 {
-    private ElementBox box;
-    private int order;
+    private final ElementBox box;
+    private final int order;
     
     /** the cache of attributes */
     private AttributeSet attributes;
     /** decides whether to construct a cache from current working properties */
     private boolean refreshAttributes;
-    private Anchor anchor;
+    private final Anchor anchor;
 
-    /**
-     * 
-     */
     public BackgroundView(Element elem)
     {
         super(elem);
@@ -73,9 +60,6 @@ public class BackgroundView extends View implements CSSBoxView
         {
             throw new IllegalArgumentException("Box reference is not an instance of ElementBox");
         }
-        
-        if (box.toString().contains("\"btn\""))
-            System.out.println("jo!");
         
         if (box.getElement() != null)
         {
@@ -139,7 +123,7 @@ public class BackgroundView extends View implements CSSBoxView
     public int viewToModel(float x, float y, Shape a, Bias[] bias)
     {
         Rectangle alloc = a instanceof Rectangle ? (Rectangle) a : a.getBounds();
-        if (x < alloc.x + (alloc.width / 2))
+        if (x < alloc.x + (alloc.width / 2f))
         {
             bias[0] = Position.Bias.Forward;
             return getStartOffset();
@@ -170,15 +154,10 @@ public class BackgroundView extends View implements CSSBoxView
     @Override
     public float getPreferredSpan(int axis)
     {
-        switch (axis)
-        {
-            case View.X_AXIS:
-                return 10f; //box.getWidth();
-            case View.Y_AXIS:
-                return 10f; //box.getHeight();
-            default:
-                throw new IllegalArgumentException("Invalid axis: " + axis);
-        }
+        return switch( axis ) {
+            case View.X_AXIS, View.Y_AXIS -> 10f;
+            default -> throw new IllegalArgumentException( "Invalid axis: " + axis );
+        };
     }
 
     @Override

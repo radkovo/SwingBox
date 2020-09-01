@@ -1,5 +1,4 @@
-/**
- * CSSBoxAnalyzer.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -19,10 +18,10 @@
 
 package org.fit.cssbox.swingbox.util;
 
-import java.awt.Dimension;
-
 import org.fit.cssbox.io.DocumentSource;
 import org.fit.cssbox.layout.Viewport;
+
+import java.awt.*;
 
 /**
  * @author Peter Bielik
@@ -71,7 +70,7 @@ public interface CSSBoxAnalyzer
     /**
      * Obtains the title from the DOM tree of the current document.
      * The {@link CSSBoxAnalyzer#analyze(DocumentSource, Dimension)} method must be called before calling this.
-     * @return The document title or <code>null</code> if there is no title defined.
+     * @return The document title or empty string if no title is defined.
      */
     String getDocumentTitle();
     

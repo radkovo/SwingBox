@@ -1,5 +1,4 @@
-/**
- * SwingBrowser.java
+/*
  * (c) Radek Burget, 2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -18,28 +17,16 @@
  */
 package org.fit.cssbox.swingbox.demo;
 
-import javax.swing.*;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.Vector;
-
 import org.fit.cssbox.swingbox.BrowserPane;
-import org.fit.cssbox.swingbox.util.GeneralEvent;
-import org.fit.cssbox.swingbox.util.GeneralEventListener;
 import org.fit.cssbox.swingbox.util.GeneralEvent.EventType;
 import org.fit.net.DataURLHandler;
 
-import java.awt.GridBagConstraints;
-
+import javax.swing.*;
 import javax.swing.text.Document;
-
-import java.awt.Rectangle;
-import java.awt.GridBagLayout;
-
-import java.awt.Insets;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Vector;
 
 /**
  * This demo implements a simple Swing-based browser.
@@ -52,23 +39,23 @@ public class SwingBrowser
     protected int historyPos;
     public static SwingBrowser browser;
     
-    protected JFrame mainWindow = null;  //  @jve:decl-index=0:visual-constraint="67,17"
-    protected JPanel mainPanel = null;
-    protected JPanel urlPanel = null;
-    protected JPanel statusPanel = null;
-    protected JTextField statusText = null;
-    protected JLabel jLabel = null;
-    protected JTextField urlText = null;
-    protected JButton okButton = null;
+    protected JFrame mainWindow;
+    protected JPanel mainPanel;
+    protected JPanel urlPanel;
+    protected JPanel statusPanel;
+    protected JTextField statusText;
+    protected JLabel jLabel;
+    protected JTextField urlText;
+    protected JButton okButton;
     private JTabbedPane tabs;
     private JButton backButton;
     
-    BrowserPane swingbox = null;
+    BrowserPane swingbox;
 
     
     public SwingBrowser()
     {
-        history = new Vector<URL>();
+        history = new Vector<>();
         historyPos = 0;
     }
 
@@ -91,9 +78,7 @@ public class SwingBrowser
             historyPos++;
 
             displayURLSwingBox(url);
-        } catch (Exception e) {
-            System.err.println("*** Error: "+e.getMessage());
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
     
@@ -255,9 +240,8 @@ public class SwingBrowser
     {
         if (statusText == null)
         {
-            statusText = new JTextField();
+            statusText = new JTextField("Ready.");
             statusText.setEditable(false);
-            statusText.setText("Browser ready.");
         }
         return statusText;
     }
@@ -272,13 +256,7 @@ public class SwingBrowser
         if (urlText == null)
         {
             urlText = new JTextField();
-            urlText.addActionListener(new java.awt.event.ActionListener()
-            {
-                public void actionPerformed(java.awt.event.ActionEvent e)
-                {
-                    displayURL(urlText.getText());
-                }
-            });
+            urlText.addActionListener( e -> displayURL( urlText.getText()) );
         }
         return urlText;
     }
@@ -292,15 +270,8 @@ public class SwingBrowser
     {
         if (okButton == null)
         {
-            okButton = new JButton();
-            okButton.setText("Go!");
-            okButton.addActionListener(new java.awt.event.ActionListener()
-            {
-                public void actionPerformed(java.awt.event.ActionEvent e)
-                {
-                    displayURL(urlText.getText());
-                }
-            });
+            okButton = new JButton("Go!");
+            okButton.addActionListener( e -> displayURL( urlText.getText()) );
         }
         return okButton;
     }
@@ -309,28 +280,15 @@ public class SwingBrowser
     {
         swingbox = new BrowserPane();
         swingbox.addHyperlinkListener(new SwingBrowserHyperlinkHandler(this));
-        swingbox.addGeneralEventListener(new GeneralEventListener()
-        {
-            private long time;
-
-            @Override
-            public void generalEventUpdate(GeneralEvent e)
+        swingbox.addGeneralEventListener( e -> {
+            if (e.event_type == EventType.page_loading_end)
             {
-                if (e.event_type == EventType.page_loading_begin)
-                {
-                    time = System.currentTimeMillis();
-                }
-                else if (e.event_type == EventType.page_loading_end)
-                {
-                    Object title = swingbox.getDocument().getProperty(Document.TitleProperty);
-                    if (title != null)
-                        tabs.setTitleAt(0, title.toString());
-                    
-                    System.out.println("SwingBox: page loaded in: "
-                            + (System.currentTimeMillis() - time) + " ms");
+                Object title = swingbox.getDocument().getProperty(Document.TitleProperty);
+                if (title != null) {
+                    tabs.setTitleAt( 0, title.toString() );
                 }
             }
-        });
+        } );
         return swingbox;
     }
     
@@ -346,29 +304,21 @@ public class SwingBrowser
     {
         if (backButton == null) {
         	backButton = new JButton("Back");
-        	backButton.addActionListener(new ActionListener() {
-        	    public void actionPerformed(ActionEvent arg0) 
-        	    {
-        	        if (historyPos > 1)
-        	        {
-        	            historyPos--;
-        	            URL url = history.elementAt(historyPos - 1);
-        	            try
-                        {
-                            displayURLSwingBox(url);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-        	        }
-        	    }
-        	});
+        	backButton.addActionListener( arg0 -> {
+            if (historyPos > 1)
+            {
+                historyPos--;
+                URL url = history.elementAt(historyPos - 1);
+                try {
+                    displayURLSwingBox(url);
+                } catch (IOException ignored) {
+                }
+            }
+        } );
         }
         return backButton;
     }
     
-    /**
-     * @param args
-     */
     public static void main(String[] args)
     {
         browser = new SwingBrowser();

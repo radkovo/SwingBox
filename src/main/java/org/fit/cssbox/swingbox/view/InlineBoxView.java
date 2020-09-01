@@ -1,5 +1,4 @@
-/**
- * InlineBoxView.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -19,13 +18,10 @@
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-
 import javax.swing.text.AttributeSet;
 import javax.swing.text.Element;
 import javax.swing.text.View;
+import java.awt.*;
 
 /**
  * @author Peter Bielik

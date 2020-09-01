@@ -1,5 +1,4 @@
-/**
- * Anchor.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -19,10 +18,10 @@
 
 package org.fit.cssbox.swingbox.util;
 
+import org.w3c.dom.Node;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.w3c.dom.Node;
 
 /**
  * The Class Anchor. Provides info about hyperlinks.
@@ -35,7 +34,7 @@ public class Anchor
 {
     // a helper object for hyperlinks
     private boolean active;
-    private Map<String, String> properties;
+    private final Map<String, String> properties;
 
     /**
      * Instantiates a new anchor.

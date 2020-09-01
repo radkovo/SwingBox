@@ -1,5 +1,4 @@
-/**
- * TableBoxView.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -29,9 +28,6 @@ import javax.swing.text.Element;
 public class TableBoxView extends BlockBoxView
 {
 
-    /**
-     * @param elem
-     */
     public TableBoxView(Element elem)
     {
         super(elem);

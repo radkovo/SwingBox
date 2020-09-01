@@ -1,34 +1,34 @@
-/**
- * TextBoxView.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *  
+ *
  * SwingBox is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with SwingBox. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package org.fit.cssbox.swingbox.view;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
+import cz.vutbr.web.css.CSSProperty.FontVariant;
+import cz.vutbr.web.css.CSSProperty.TextDecoration;
+import org.fit.cssbox.layout.BlockBox;
+import org.fit.cssbox.layout.TextBox;
+import org.fit.cssbox.swingbox.util.Anchor;
+import org.fit.cssbox.swingbox.util.Constants;
+
+import javax.swing.event.DocumentEvent;
+import javax.swing.text.*;
+import javax.swing.text.Position.Bias;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
@@ -37,43 +37,23 @@ import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.event.DocumentEvent;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
-import javax.swing.text.Highlighter;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.LayeredHighlighter;
-import javax.swing.text.Position;
-import javax.swing.text.Position.Bias;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.View;
-import javax.swing.text.ViewFactory;
-
-import org.fit.cssbox.layout.BlockBox;
-import org.fit.cssbox.layout.TextBox;
-import org.fit.cssbox.swingbox.util.Anchor;
-import org.fit.cssbox.swingbox.util.Constants;
-
-import cz.vutbr.web.css.CSSProperty.FontVariant;
-import cz.vutbr.web.css.CSSProperty.TextDecoration;
-
 /**
  * The Class TextBoxView. This renders a text.
- * 
+ *
  * @author Peter Bielik
  * @author Radek Burget
  */
+@SuppressWarnings("unused")
 public class TextBoxView extends View implements CSSBoxView
 {
-    private TextBox box;
+    private final TextBox box;
     private Font font;
     private Color foreground;
     private List<TextDecoration> textDecoration;
     private String fontVariant;
     private TextLayout layout;
     private AffineTransform transform;
-    private int order;
+    private final int order;
 
     /** the cache of attributes */
     private AttributeSet attributes;
@@ -94,10 +74,10 @@ public class TextBoxView extends View implements CSSBoxView
      * Instantiates a new text based view, able to display rich text. This view
      * corresponds to TextBox in CSSBox. <br>
      * <a href="http://www.w3.org/TR/CSS21/box.html">Box Model</a>
-     * 
+     *
      * @param elem
      *            the elem
-     * 
+     *
      */
 
     public TextBoxView(Element elem)
@@ -117,12 +97,12 @@ public class TextBoxView extends View implements CSSBoxView
         {
             throw new IllegalArgumentException("Box reference is not an instance of TextBox");
         }
-        
+
         if (box.getNode() != null && box.getNode().getParentNode() instanceof org.w3c.dom.Element)
         {
             org.w3c.dom.Element pelem = Anchor.findAnchorElement((org.w3c.dom.Element) box.getNode().getParentNode());
             Map<String, String> elementAttributes = anchor.getProperties();
-    
+
             if (pelem != null)
             {
                 anchor.setActive(true);
@@ -135,8 +115,6 @@ public class TextBoxView extends View implements CSSBoxView
                     target = "_self";
                 }
                 elementAttributes.put(Constants.ELEMENT_A_ATTRIBUTE_TARGET, target);
-                // System.err.println("## Anchor at : " + this + " attr: "+
-                // elementAttributes);
             }
             else
             {
@@ -152,7 +130,7 @@ public class TextBoxView extends View implements CSSBoxView
     {
         return order;
     }
-    
+
     // --- View methods ---------------------------------------------
 
     @Override
@@ -212,20 +190,18 @@ public class TextBoxView extends View implements CSSBoxView
         return getPreferredSpan(axis);
     }
 
+    /**
+     *
+     * @param axis Indicator of horizontal or vertical axis.
+     * @return Total width including margins and borders
+     */
     @Override
     public float getPreferredSpan(int axis)
     {
-        // returns total width including margins and borders
-        switch (axis)
-        {
-            case View.X_AXIS:
-                return 10f; //box.getWidth();
-            case View.Y_AXIS:
-                return 10f; //box.getHeight();
-            default:
-                throw new IllegalArgumentException("Invalid axis: " + axis);
-        }
-
+        return switch( axis ) {
+            case View.X_AXIS, View.Y_AXIS -> 10f;
+            default -> throw new IllegalArgumentException( "Invalid axis: " + axis );
+        };
     }
 
     @Override
@@ -237,7 +213,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Checks if is visible.
-     * 
+     *
      * @return true, if is visible
      */
     @Override
@@ -255,10 +231,11 @@ public class TextBoxView extends View implements CSSBoxView
 
     @Override
     public Shape modelToView(int pos, Shape a, Bias b)
-            throws BadLocationException
     {
         TextLayout layout = getTextLayout();
-        int offs = pos - getStartOffset(); // the start position this view is responsible for
+
+        // the start position this view is responsible for
+        int offs = pos - getStartOffset();
         Rectangle alloc = new Rectangle(toRect(a));
         TextHitInfo hit = ((b == Position.Bias.Forward) ? TextHitInfo.afterOffset(offs) : TextHitInfo.beforeOffset(offs));
         float[] locs = layout.getCaretInfo(hit);
@@ -333,15 +310,12 @@ public class TextBoxView extends View implements CSSBoxView
             return "".equals(val) ? null : "<html>" + val + "</html>";
         }
 
-        //return "NotLink: " + this;
         return null;
     }
 
     @Override
     public void paint(Graphics gg, Shape a)
     {
-        //System.out.println("Paint text: " + this + " in " + a);
-
         if (isVisible())
         {
             processPaint(gg, a);
@@ -350,7 +324,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Process paint.
-     * 
+     *
      * @param gg
      *            the graphics context
      * @param a
@@ -398,7 +372,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Renders content.
-     * 
+     *
      * @param g
      *            the graphics
      * @param a
@@ -429,7 +403,7 @@ public class TextBoxView extends View implements CSSBoxView
             Rectangle clip = toRect(oldclip).intersection(newclip);
             g.setClip(clip);
         }
-        
+
         g.setFont(getFont());
         g.setColor(fg);
 
@@ -463,7 +437,7 @@ public class TextBoxView extends View implements CSSBoxView
                 w = getFont().getSize() / 10;
             if (w < 1) w = 1;
             y += w / 2;
-            
+
             g.setStroke(new BasicStroke(w));
 
             int xx = absoluteContentBounds.x + absoluteContentBounds.width;
@@ -481,7 +455,7 @@ public class TextBoxView extends View implements CSSBoxView
                 int yy = y + absoluteContentBounds.height / 2;
                 g.drawLine(absoluteContentBounds.x, yy, xx, yy);
             }
-            
+
             g.setStroke(origStroke);
         }
 
@@ -490,7 +464,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Repaints the content, used by blink decoration.
-     * 
+     *
      * @param ms
      *            time - the upper bound of delay
      * @param bounds
@@ -508,7 +482,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Gets the string bounds.
-     * 
+     *
      * @param tl
      *            textlayout instance
      * @return the string bounds
@@ -521,7 +495,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Gets the text.
-     * 
+     *
      * @return the text
      */
     protected String getText()
@@ -531,7 +505,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Gets the text.
-     * 
+     *
      * @param p0
      *            start position
      * @param p1
@@ -545,7 +519,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Gets the text.
-     * 
+     *
      * @param position
      *            the position, where to begin
      * @param len
@@ -557,14 +531,13 @@ public class TextBoxView extends View implements CSSBoxView
         try {
             return getDocument().getText(position, len);
         } catch (BadLocationException e) {
-            e.printStackTrace();
             return "";
         }
     }
 
     /**
      * Sets the properties from the attributes.
-     * 
+     *
      * @param attr
      *            the new properties from attributes
      */
@@ -634,7 +607,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Sets the font.
-     * 
+     *
      * @param newFont
      *            the new font
      */
@@ -650,7 +623,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Sets the foreground.
-     * 
+     *
      * @param newColor
      *            the new foreground
      */
@@ -665,7 +638,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Sets the font variant.
-     * 
+     *
      * @param newFontVariant
      *            the new font variant
      */
@@ -676,7 +649,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Sets the font variant.
-     * 
+     *
      * @param newFontVariant
      *            the new font variant
      */
@@ -684,7 +657,7 @@ public class TextBoxView extends View implements CSSBoxView
     {
         if (fontVariant == null || !fontVariant.equals(newFontVariant))
         {
-            FontVariant val[] = FontVariant.values();
+            final FontVariant[] val = FontVariant.values();
 
             for (FontVariant aVal : val)
             {
@@ -701,7 +674,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Sets the text decoration.
-     * 
+     *
      * @param newTextDecoration
      *            the new text decoration
      */
@@ -741,7 +714,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Gets the text layout.
-     * 
+     *
      * @return the text layout
      */
     protected TextLayout getTextLayout()
@@ -757,7 +730,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Gets the font.
-     * 
+     *
      * @return the font
      */
     public Font getFont()
@@ -768,7 +741,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Gets the foreground.
-     * 
+     *
      * @return the foreground
      */
     public Color getForeground()
@@ -779,7 +752,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Gets the font variant.
-     * 
+     *
      * @return the font variant
      */
     public String getFontVariant()
@@ -790,7 +763,7 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * Gets the text decoration.
-     * 
+     *
      * @return the text decoration
      */
     public List<TextDecoration> getTextDecoration()
@@ -801,12 +774,12 @@ public class TextBoxView extends View implements CSSBoxView
 
     /**
      * converts a shape to rectangle
-     * 
+     *
      * @param a
      *            the allocation shape
      * @return the rectangle
      */
-    public static final Rectangle toRect(Shape a)
+    public static  Rectangle toRect(Shape a)
     {
         return a instanceof Rectangle ? (Rectangle) a : a.getBounds();
     }

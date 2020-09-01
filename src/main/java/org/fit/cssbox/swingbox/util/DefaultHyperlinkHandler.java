@@ -1,5 +1,4 @@
-/**
- * DefaultHyperlinkHandler.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -19,12 +18,11 @@
 
 package org.fit.cssbox.swingbox.util;
 
-import java.awt.Cursor;
-import java.io.IOException;
-
-import javax.swing.JEditorPane;
+import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import java.awt.*;
+import java.io.IOException;
 
 /**
  * Customizable implementation of HyperlinListener. This default implementation only changes
@@ -48,11 +46,11 @@ public class DefaultHyperlinkHandler implements HyperlinkListener
         }
         else if (evt.getEventType() == HyperlinkEvent.EventType.ENTERED)
         {
-            regionEntered(pane, evt);
+            regionEntered(pane);
         }
         else if (evt.getEventType() == HyperlinkEvent.EventType.EXITED)
         {
-            regionExited(pane, evt);
+            regionExited(pane);
         }
     }
 
@@ -71,9 +69,8 @@ public class DefaultHyperlinkHandler implements HyperlinkListener
         try
         {
             pane.setPage(evt.getURL());
-        } catch (IOException e)
+        } catch (IOException ignored)
         {
-            System.err.println(e.getLocalizedMessage());
         }
     }
 
@@ -82,10 +79,8 @@ public class DefaultHyperlinkHandler implements HyperlinkListener
      * 
      * @param pane
      *            the pane
-     * @param evt
-     *            the event
      */
-    protected void regionEntered(JEditorPane pane, HyperlinkEvent evt)
+    protected void regionEntered(JEditorPane pane)
     {
         setCursor(pane, HandCursor);
     }
@@ -95,10 +90,8 @@ public class DefaultHyperlinkHandler implements HyperlinkListener
      * 
      * @param pane
      *            the pane
-     * @param evt
-     *            the event
      */
-    protected void regionExited(JEditorPane pane, HyperlinkEvent evt)
+    protected void regionExited(JEditorPane pane)
     {
         setCursor(pane, DefaultCursor);
     }

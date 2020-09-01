@@ -1,5 +1,4 @@
-/**
- * SwingBoxDocument.java
+/*
  * (c) Peter Bielik and Radek Burget, 2011-2012
  *
  * SwingBox is free software: you can redistribute it and/or modify
@@ -19,12 +18,12 @@
 
 package org.fit.cssbox.swingbox;
 
+import org.fit.cssbox.swingbox.util.Anchor;
+import org.fit.cssbox.swingbox.util.Constants;
+
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Element;
-
-import org.fit.cssbox.swingbox.util.Anchor;
-import org.fit.cssbox.swingbox.util.Constants;
 
 /**
  * @author Peter Bielik
@@ -80,8 +79,8 @@ public class SwingBoxDocument extends DefaultStyledDocument
     public class DelegateElement extends BranchElement
     {
         private static final long serialVersionUID = 5636867648057150930L;
-        private LeafElement DEFAULT_CONTENT;
-        private String delegateName;
+        private final LeafElement DEFAULT_CONTENT;
+        private final String delegateName;
 
         /**
          * Creates a new SectionElement.
@@ -110,20 +109,10 @@ public class SwingBoxDocument extends DefaultStyledDocument
             return delegateName;
         }
 
-        /**
-         * Gets the default content.
-         * 
-         * @return the default content, instance of LabelView.
-         */
-        public Element getDefaultContent()
-        {
-            return DEFAULT_CONTENT;
-        }
-
         @Override
         public void replace(int offset, int length, Element[] elems)
         {
-            javax.swing.text.Element els[];
+            javax.swing.text.Element[] els;
             if (elems.length > 0)
             {
                 javax.swing.text.Element data = elems[0];
